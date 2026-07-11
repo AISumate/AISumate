@@ -1,0 +1,89 @@
+[Tools] Whole  (recLSOxUtC6frSBPO7s)
+    url: https://www.getwhole.co
+    Data Flags: URL INACCESSIBLE: SSL handshake failure at getwhole.co; cannot verify product legitimacy
+
+[Tools] Oak Meditation  (rec4D7bhSWYoJRHKAq3)
+    url: https://www.oakmeditation.com
+    Cost - EN: (unverified) — website inaccessible; estimated $10–$15/month based on similar apps
+
+[Tools] Fable  (reckMAn65QCVBRhpz4V)
+    url: https://www.sharefable.com
+    Data Flags: URL sharefable.com returns DNS failure—domain does not exist or is inactive; tool cannot be verified | Pros - EN: Not available for review—domain unreachable
+
+[Tools] Alpenglow  (recMDDH2KAfl3osNseC)
+    url: https://alpenglowapp.com
+    Verdict - EN: Cannot review - website is inaccessible (403 Forbidden); product details cannot be verified. | Pros - EN: N/A - website inaccessible
+
+[Tools] Addie  (recW2CqtMk6uPyJTpRA)
+    url: https://www.addieapp.com/
+    Data Flags: Official domain www.addieapp.com does not resolve (DNS error); product cannot be verified | Cost - EN: (unverified - domain inaccessible) | Cons - EN: Official website (www.addieapp.com) returns DNS error (ENOTFOUND); cannot verify product category, features, o | Pros - EN: (Unable to verify - domain not found)
+
+[Tools] Mnemom  (recXInDnCmlTrl4HYf4)
+    url: https://cognitivebiaslabs.com/
+    Verdict - EN: Unable to determine - product URL is inaccessible and cannot be verified.
+
+[LLMs] Blobby  (recfillNKJX59HIoM2f)
+    url: https://www.blobbyhabits.com
+    Cost - EN: Pricing unavailable — website unreachable (unverified) | Cons - EN: Website (www.blobbyhabits.com) does not resolve (DNS failure ENOTFOUND); product existence and current status 
+
+[LLMs] Aloe Bud  (rec2437xE1B4NMg0sUX)
+    url: https://www.aloebud.app
+    Cons - EN: Summary is overly generic ('LLM-related product') with no concrete features listed; website inaccessible or un
+
+[LLMs] Strut  (recdS8jOeMs4EBodHnu)
+    url: https://strut.so
+    Cost - EN: (unable to verify - domain unreachable) | Verdict - EN: Cannot recommend; product domain is unreachable and no information is available.
+
+[LLMs] SoulBook  (recloctEjnV67UHKYa3)
+    url: https://tapedit.ai/
+    Pros - EN: Cannot determine; URL inaccessible
+
+[LLMs] AEO GEO AI  (recq338L5F7AVQT15du)
+    url: https://groundpound.ai/
+    Cost - EN: (unverified - domain inaccessible/non-existent) | Pros - EN: (Unable to verify - domain not found)
+
+[LLMs] Arobis | AI Visibility Checker  (rec2ibWko52Hvz57HH9)
+    url: https://kreogrid.ai/
+    Verdict - EN: Cannot provide reliable review — website is inaccessible and product information cannot be verified.
+
+[MusicVoice] Flowbot Agent Connector  (recNBjyZ04jnPLuqOax)
+    url: https://flowbot.ai
+    Verdict - EN: Domain is parked and appears unavailable; this tool cannot be verified as an active product. | Cons - EN: Domain parked for sale on GoDaddy with no active product; no website or functionality found
+
+[Chatbots] Flowbot Agent Connector  (recjmP0AoCrEZ3JwjPP)
+    url: https://flowbot.ai
+    Verdict - EN: Domain is parked and appears unavailable; this tool cannot be verified as an active product. | Cons - EN: Domain parked for sale on GoDaddy with no active product; no website or functionality found
+
+[Chatbots] Ebi.Ai  (recli7Q9Yuoh1TrfhZJ)
+    url: https://ebi.ai
+    Data Flags: URL inaccessible (403 Forbidden); cannot verify product; no pricing information available
+
+[BizProd] IkinariMinutes  (recOwoXsMyip80oYXOM)
+    url: https://ikinari-minutes.com
+    Data Flags: Website inaccessible (DNS failure on ikinari-minutes.com); cannot verify product, features, or pricing | Cons - EN: Website is inaccessible (DNS resolution failure); No verifiable information about features, pricing, or curren
+
+
+
+================ LIVE DOMAIN TEST (2026-07-10) ================
+
+CONFIRMED DEAD (domain gone — safe to delete):
+  [Tools]   Whole            recviYcvqz? see above  https://www.getwhole.co        (SSL dead)
+  [Tools]   Fable                                   https://www.sharefable.com     (DNS gone)
+  [Tools]   Addie                                   https://www.addieapp.com       (DNS gone)
+  [LLMs]    Blobby                                  https://www.blobbyhabits.com   (DNS gone)
+  [LLMs]    Strut                                   https://strut.so               (DNS gone)
+  [BizProd] IkinariMinutes                          https://ikinari-minutes.com    (DNS gone)
+
+ALIVE but bot-blocked (403/402 to scripts, likely fine for real visitors — keep):
+  [Tools]    Oak Meditation   https://www.oakmeditation.com  (402)
+  [Tools]    Alpenglow        https://alpenglowapp.com       (403)
+  [Chatbots] Ebi.Ai           https://ebi.ai                 (403)
+
+ALIVE (200) — flag notes stale OR the URL points at the WRONG product (fix URL, don't delete):
+  [Tools]      Mnemom                  https://cognitivebiaslabs.com
+  [LLMs]       Aloe Bud                https://www.aloebud.app
+  [LLMs]       SoulBook                https://tapedit.ai        <- name/domain mismatch
+  [LLMs]       AEO GEO AI              https://groundpound.ai    <- name/domain mismatch
+  [LLMs]       Arobis | AI Visibility  https://kreogrid.ai       <- name/domain mismatch
+  [MusicVoice] Flowbot Agent Connector https://flowbot.ai
+  [Chatbots]   Flowbot Agent Connector https://flowbot.ai

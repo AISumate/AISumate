@@ -1,0 +1,446 @@
+# TAAFT Referral Links to Replace
+
+**Generated:** July 9, 2026
+**Total links to replace:** 422
+
+These 422 tools currently have referral links containing `ref=taaft` or `theresanaiforthat` parameters. These links earn commissions for the There's An AI For That directory, **not** for aisumate.com. Each link below needs to be replaced with your own affiliate link in the Teable `AffiliateUrl` field.
+
+---
+
+| # | Tool Name | Current TAAFT URL | Record ID |
+|---|---|---|---|
+| 1 | 1UI | https://stilla.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 2 | 3D AI Studio | https://www.getsite.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 3 | Acedit | https://www.findanomaly.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 4 | Adkit | https://www.pounce.so/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 5 | Adsby | https://www.xavier.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 6 | AdsGo AI | https://pageai.pro/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 7 | AdTurbo AI | https://editablefigure.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 8 | AEO GEO AI | https://groundpound.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 9 | Aeterna | https://sniffsub.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 10 | Agentfuel | https://clickclaw.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 11 | AgentID | https://heyroger.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 12 | Agents by Athena AI | https://athenaboard.ai/whiteboard?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 13 | AI Humanizer by WriteHybrid | https://headshotbook.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 14 | AI Humanizer Text | https://tool.video/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 15 | AI Image Combine.com | https://www.websitepublisher.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 16 | AI Image Combiner | https://uramakistudio.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 17 | AI Image Combiner | https://vdoo.ai/image-to-video?ref=taaft&utm_source=taaft&utm_medium=referral) | — |
+| 18 | AI Infographic Generator | https://pairfuse.com/ai-couple-photos?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 19 | AI Infographic Generator - CartoMind | https://unmarkai.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 20 | AI Kiss | https://viyou.ai/custom-kiss-generator?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 21 | AI Lip Sync.com | https://www.csong.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 22 | AI Motion Transfer by The Influencer AI | https://www.chronostates.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 23 | AI Natural Write | https://zinkforge.com/mail2follow/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 24 | AI Presentations App | https://vidnix.ai/image-to-video?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 25 | AI Resumma | https://isummarizer.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 26 | AI Stem Splitter | https://maxaeo.ai/?utm_source=theresanaiforthat&utm_medium=directory&utm_campaign=entity_build&ref=taaft&utm_source=t... | — |
+| 27 | AI Thesis Writer | https://www.ailipsync.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 28 | AI Video Generator.best | https://roomlab.app/en?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 29 | AiAssistWorks - GPT Gemini Claude AI for Sheets Docs Slides | https://klariqo.com/?utm_source=taaft&utm_medium=aidirectory&utm_campaign=taaftorganic&ref=taaft&utm_source=taaft&utm... | — |
+| 30 | AirMusic | https://aeogeoai.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 31 | AIsa | https://manifestme.me/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 32 | AISA - AI Skills Assessment | https://niuniu.dev/?utm_source=taaft&utm_medium=directory&utm_campaign=ai_directory_listing&ref=taaft&utm_source=taaf... | — |
+| 33 | Anomaly AI | https://www.chatnode.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 34 | ApnaVikas – AI Soft Skills &amp; Personality Coach | https://www.slopdrop.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 35 | Archie | https://www.marblism.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 36 | Arobis | AI Visibility Checker | https://kreogrid.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 37 | AskCory | https://www.fliesreplies.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 38 | Askiva AI | https://patchdesign.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 39 | AssemblyAI | https://www.riskified.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 40 | AudioScribe | https://www.junior.so/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 41 | AUDITSU | https://pencild.com/promo/TAAFT?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 42 | Automateed | https://easy-peasy.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 43 | Autopilots by Athena AI | https://www.infographicgenerator.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 44 | AvatarCraft AI | https://postline.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 45 | Axey | https://www.hostinger.com/applications/hermes-agent?utm_source=TAAFT&utm_medium=ecg&utm_id=emerging&ref=taaft&utm_sou... | — |
+| 46 | B12 AI Website Builder | https://www.remove.bg/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 47 | Base44 | https://biela.dev/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 48 | BeatMV | https://natiad.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 49 | BeCoin | https://tikbreak.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 50 | BerryViral | https://surething.io?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 51 | Better Stack | AI SRE Agent | https://notis.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 52 | BidHelm | https://reloop.so/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 53 | biela.dev | https://uluch.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 54 | Blink.new | https://viyou.ai/ai-motion-control?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 55 | BlogWorkflow AI | Opus 4.6 GPT 5.4 GPT Image 2.0 Supported | Structured SEO Workflow for Individual and Professional | https://viralreels.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 56 | Branda | https://clotheschange.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 57 | BrandJet AI | https://startkit.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 58 | BuildCheck | https://vtubeme.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 59 | BuilderStudio | https://ownvox.app/en?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 60 | BulkImagen | https://www.krater.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 61 | Bundance | https://runbase.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 62 | buzzabout | https://www.ezclaws.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 63 | CallBooker | https://www.keywordgrid.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 64 | ChartPixel | https://lightfield.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 65 | ChatFeatured | https://rumora.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 66 | ChatNode | https://www.engain.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 67 | Chraft AI | https://nanophoto.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 68 | Chronostates | https://titlegen.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 69 | CiteVerse | https://sellshots.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 70 | ClawOneClick | https://www.clearmatchats.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 71 | Cleanaudio | https://restoreoldphotos.pro/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 72 | CleanVideoAI Watermark Removal | https://viyou.ai/home?ref=taaft&utm_source=taaft&utm_medium=referral&cl=2 | — |
+| 73 | ClearMatch | https://voicepod.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 74 | Clever CSV | https://phonkmaker.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 75 | Clocsy | https://www.jamy.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 76 | ClothesChange.ai | https://viraflow.org/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 77 | CodingFleet | https://mindmapai.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 78 | Cognitive Bias Labs | https://writeabookai.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 79 | Comment Generator | https://www.chraft.ai/?ref=taaft | — |
+| 80 | ComputerX | https://tokenradar.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 81 | ContentPod | https://getthegists.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 82 | Contents Pilot | https://preuve.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 83 | Contextli | https://www.skarbe.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 84 | Cosmos | https://themeetingbrief.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 85 | CreateUpon | https://respondpilotpro.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 86 | Creen AI | https://aikiss.art/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 87 | Cresh | https://betterstacks.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 88 | Crucible AI Braintrust | https://wiki2066.iacolettisoftware.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 89 | Csong AI | https://recoverit.wondershare.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 90 | Dalil | https://www.midash.ai/taaft?utm_source=taaft&utm_medium=listing&utm_campaign=taaft_listing | — |
+| 91 | DashVox | https://www.sixseer.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 92 | DataRobot | https://h2o.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 93 | DealNavigator.Ai | https://newsletrix.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 94 | Dedoctive | https://scanread.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 95 | Deep Beat | https://ai-writer.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 96 | Deqsy | https://ainaturalwrite.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 97 | DIAGLO | https://photoguruai.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 98 | Digibate | https://makersuite.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 99 | docAnalyzer | https://www.musecut.org/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 100 | Document Transcribe | https://scifigureai.com/?ref=taaft&utm_source=taaft&utm_medium=referral&utm_campaign=taaft_paid_promotion&utm_content... | — |
+| 101 | DocuWriter.ai | https://ligosocial.com?ref=taaft&utm_source=taaft-26&utm_medium=referral-26 | — |
+| 102 | DoMyWork | https://vdoo.ai/reference-to-video?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 103 | Dreamlit AI | https://agentid.live/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 104 | Easy-Peasy.AI | https://readwonders.com/?utm_source=taaft&utm_medium=website&utm_campaign=listing | — |
+| 105 | EasyAI – AI Flow - No Code Content (Video/Image) Generation long form, Chatbots &amp; Document Automation | https://www.lyter.ai/taaft | — |
+| 106 | Edge Arena | https://documenttranscribe.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 107 | Editable Figure | https://vidnix.ai/text-to-video?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 108 | Edith | https://www.x-pilot.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 109 | Elasticnote | https://kick.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 110 | Engain | https://hypertxt.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 111 | Enliven Music | https://www.themultiverse.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 112 | Epochal - AI Video Generator | https://blink.new/?via=taaft | — |
+| 113 | esotericAI | https://photomentor.pro/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 114 | Evalyze | https://shakespeareai.braintastic.ca/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 115 | ExamWhisper | https://snowchat.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 116 | EZClaws | https://askiva.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 117 | EzImgEditor | https://scribix.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 118 | EzSolve: AI Homework Helper | https://prometai.app/business-plan-templates/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 119 | EzUGC - On-brand image and video ads in minutes. | https://aiimagecombine.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 120 | Fabricate | https://snaptaxapp.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 121 | FaceShapeDetector | https://3daistudio.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 122 | Facet | https://www.thedrive.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 123 | Farol | https://contextli.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 124 | Faye - AI for Emotional Regulation | https://verve-intelligence.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 125 | Featherless - Managed OpenClaw | https://v2.scrollsequence.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 126 | Fin | https://magicblocks.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 127 | FineVoice | https://ainotebook.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 128 | First Book AI | https://xona.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 129 | FliesReplies | https://www.mailsweeper.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 130 | Flixly | Text to Video Generator | https://aichangehair.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 131 | FlowPost | https://bidhelm.com/?ref=taaft&utm_source=theresanaiforthat.com&utm_medium=referral&utm_campaign=theresanaiforthat | — |
+| 132 | ForumScout - AI Social Listening Tool | https://tidydocs.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 133 | FounderPal | https://genppt.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 134 | FrogLead | https://citeverse.live/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 135 | Futurwise | https://esotericai.xyz/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 136 | Gamut | https://buildcheck.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 137 | GenPPT | https://usemintly.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 138 | GenPPT AI | https://digibate.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 139 | GeoInfer | https://www.rocket.new/?utm_source=listing&utm_medium=taaft&utm_campaign=20pct-off | — |
+| 140 | GetIntel | https://www.usedalil.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 141 | GetLogit | https://www.veriff.com/plans/self-serve?promo=taaft15&utm_source=taaft&utm_medium=referral | — |
+| 142 | GetSite | https://venngage.com/ai-tools/infographic-generator?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 143 | GetSpiced | https://www.contentpod.co/products/article-writer/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 144 | GetTheGists | https://www.docuwriter.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 145 | GreenPRD | https://www.anthropic.com/product?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 146 | GroundPound AI | https://handocr.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 147 | H2O.ai | https://deepbeat.org/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 148 | HandOCR | https://resumma.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 149 | Hatchable | https://www.flixly.ai/dashboard/text-to-video?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 150 | HeadshotBook - AI Headshot Generator | https://www.wallnora.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 151 | Heart Melody | https://www.reztune.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 152 | Hostinger | Hermes Agent | https://sayevent.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 153 | HyNote AI | https://athenachat.bot/chatbot?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 154 | Hypertxt | https://selfservo.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 155 | Ideogram | https://knogra.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 156 | ImagineVid | https://modelatlas.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 157 | Inbenta | https://digitalgenius.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 158 | InfoCaptor | https://www.olostep.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 159 | Ink Studio AI | https://www.futurwise.com/?promo=taaft | — |
+| 160 | INLINER | https://www.viralcanvas.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 161 | InstantMind | https://www.marketeze.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 162 | Intedat | https://www.rabbitholes.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 163 | iSummarizer | https://turbopuffer.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 164 | Jamy | https://www.firstbook.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 165 | Jason AI | https://www.aitherapy.care/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 166 | Job Match Pro | https://cartomind.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 167 | JobGPT | https://usefarol.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 168 | Junior.so | https://smallest.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 169 | Kael | https://www.weavely.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 170 | Kapitol.ai | https://reply.io/?utm_source=taaft_reply&utm_medium=referral&utm_campaign=taaft_Reply | — |
+| 171 | Kavout | https://www.assemblyai.com/?utm_source=taaft&utm_medium=referral | — |
+| 172 | KeywordSearch | https://stockimg.ai/#?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 173 | Klariqo: AI Voice Assistants | https://www.goreuben.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 174 | Knogra | https://builderstudio.dev/ide?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 175 | Knowcast | https://edgearena.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 176 | Koli | https://www.konvertly.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 177 | Konvertly | https://statuz.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 178 | Krater.ai | https://www.recall.wiki/extension?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 179 | KreoGrid | https://www.knowcast.app/en?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 180 | Laper AI | https://ezimgeditor.ai/ai-photo-enhancer?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 181 | Legal Arena | https://aithesiswriter.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 182 | Legalese Decoder - AI Lawyer on Speed Dial | https://founderpal.ai/marketing-strategy-generator?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 183 | Lexidesk for Law Firms | https://www.videoupscale.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 184 | LiftmyCV | https://www.theseoagent.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 185 | Lightfield | https://read-this.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 186 | LigoSocial | https://www.seoforge.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 187 | Limecube | https://inliner.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 188 | Link To Text | Video To Text | https://automateed.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 189 | Linkeddit | https://www.branda.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 190 | Loamly | https://adsby.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 191 | Lolaloos | https://inkstudioai.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 192 | LuminaMind | https://legalarena.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 193 | LuminixAI | https://modelence.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 194 | lxi.ai | https://pfpmaker.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 195 | Lyter | https://wordrific.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 196 | MadeFine AI | https://www.askcory.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 197 | MagicBlocks | https://chatfeatured.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 198 | MagicLight | https://outlierkit.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 199 | MagicSlides.app AI PPT Maker | https://aistemsplitter.online/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 200 | MailSweeper | https://www.trymerra.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 201 | Mailteorite | https://stormy.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 202 | MakerSuite | https://www.faceshapedetector.net/?utm_source=taaft&utm_medium=referral&utm_campaign=launch | — |
+| 203 | Manifest | https://swayclip.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 204 | Marketeze | https://www.comment-generator.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 205 | MaxAEO | https://becoin.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 206 | MeetingBrief | https://laper.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 207 | Merra | https://getintel.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 208 | MiDash AI | https://rewritebar.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 209 | MindMap AI | https://remyreads.nl/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 210 | Minds | https://refini.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 211 | Mintly 2.0 | https://www.theinfluencer.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 212 | MixMaster Pro | https://slidely.ai/?utm_source=tiaaft&ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 213 | MkAnime AI | https://podcastor.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 214 | Mnemom | https://cognitivebiaslabs.com/?utm_source=taaft&utm_medium=referral | — |
+| 215 | Mnemosphere | https://signalbots.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 216 | ModelAtlas | https://www.getreelyze.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 217 | Modelence | https://blink.new/?via=taaft | — |
+| 218 | MojoMake - AI Image to Video Generator | https://ramblefix.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 219 | Montessori Activities at Home | https://dealnavigator.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 220 | MotionGen | Make Continues Video with Top Models | https://blogworkflow.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 221 | MP3 to Text.org | https://myspec.dev/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 222 | Multiverse AI | https://www.marblism.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 223 | Musecut | https://vireels.ai/video-extend?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 224 | Music Video Generator | https://www.videowatermarkremove.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 225 | MyReport | https://resolveai.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 226 | MySpec | https://audien.to/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 227 | NanoPhoto.AI | https://tubeyakker.com/en?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 228 | Natiad | https://www.cleanaudio.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 229 | Newsletrix | https://screenjournal.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 230 | NextDocs.io | https://dreamlit.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 231 | NextDoor AI | https://deqsy.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 232 | NexusCall AI | https://auditsu.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 233 | NiuNiu | https://vibekit.bot/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 234 | Noodle Tomato - Earn with YouTube | https://www.flowpost.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 235 | Obsess AI | https://partyinvitation.ai?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 236 | Oddsmyth | https://bulkimagen.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 237 | okkslides | https://www.palmos.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 238 | Olostep | https://www.mployee.me/job-match-pro?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 239 | OmniPhoto | https://www.gamut.so/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 240 | OpenBudget | https://soularmap.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 241 | Orbecta | https://vdoo.ai/text-to-image?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 242 | Oreate AI | https://dashvox.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 243 | Osum | https://www.venturekit.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 244 | OutlierKit | https://transcriptool.cloud/?utm_source=theresanaiforthat&utm_medium=directory | — |
+| 245 | Ownvox | https://beatmv.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 246 | PageAI | https://getpagepulse.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 247 | PainPoints.fast | https://www.lolaloos.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 248 | PairFuse | AI Couple Photo Maker | https://www.aisheets.study/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 249 | Palmos AI: Automate with AI Agent Teams | https://www.useluminix.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 250 | PaperClaw | https://axey.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 251 | Party Invitation AI | https://biela.dev/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 252 | PatchDesign.AI | https://podscribe.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 253 | Pencil&#039;d | https://clawoneclick.com/en/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 254 | Phonk Maker | https://painpoints.fast/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 255 | Photo AI | https://myreport.alaba.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 256 | PhotoFuse | https://my.infocaptor.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 257 | PhotoGuruAI | https://clevercsv.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 258 | PhotoMentor | https://fabricate.build/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 259 | PicPicAI - AI Portrait Enhancer | https://spyreels.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 260 | PixieBrix | https://osum.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 261 | Pixo | https://www.aipresentations.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 262 | PodcastorAI | https://restaurantsitefinder.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 263 | PodScribe.IO | https://wisary.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 264 | PortfolioGPT | https://photofuse.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 265 | Postfox | https://www.remio.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 266 | Postline.ai | https://synthetic.actor/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 267 | Pounce | https://www.apple.com/apple-intelligence/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 268 | PRBot.ai | https://www.b12.io/free-draft/?utm_source=theresanaiforthat&utm_medium=affiliate&utm_campaign=aitools | — |
+| 269 | Preplo | https://www.evalyy.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 270 | Preuve AI | https://www.storycraftr.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 271 | Primio | https://specd.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 272 | ProductAI | https://www.portfoliogpt.xyz/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 273 | PrometAI | https://www.archie.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 274 | Publiq Studio | https://featherless.ai/openclaw/?ref=taaft&utm_source=taaft&utm_medium=referral&utm_campaign=organic_listing | — |
+| 275 | PureMIDI | Audio to MIDI | https://docanalyzer.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 276 | QuillBot: AI writing companion | https://raplyrics.eu/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 277 | Raccoon AI | https://www.intedat.com/en/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 278 | RambleFix | https://cresh.me/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 279 | Raplyrics | https://fetcher.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 280 | Reachy.ai | https://buzzabout.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 281 | Recal | https://diaglo.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 282 | Recoverit | https://createupon.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 283 | Reel to Prompt | https://mp3-to-text.org/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 284 | Reelyze | https://greenprd.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 285 | Reloop | https://www.acedit.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 286 | remove.bg | https://skillroads.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 287 | Remy - Newsletter summarizer | https://getminds.ai/?utm_source=taaft&utm_medium=referral | — |
+| 288 | Reply | https://talat.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 289 | ResolveAI | https://www.eightify.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 290 | RespondPilot Pro | https://www.bundance.net/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 291 | Restaurant Site Finder | https://mnemosphere.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 292 | Restore Old Photos.pro | https://www.voiceos.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 293 | Reuben AI | https://noodletomato.com/?utm_source=taaft&utm_medium=referral&utm_campaign=launch | — |
+| 294 | Reve Image | https://www.roundtablelabs.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 295 | Reverse Prompt | Video to Prompt | https://reply.io/?utm_source=taaft_reply&utm_medium=referral&utm_campaign=taaft_Reply | — |
+| 296 | RewriteBar | https://www.elasticnote.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 297 | Rezon8AI | https://genppt.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 298 | Reztune | https://finevoice.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 299 | Riskified | https://www.datarobot.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 300 | Roger | https://yahini.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 301 | RoomLab.app | https://linktotext.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 302 | RowSpeak | https://openbudget.sh/?utm_source=theresanaiforthat.com&utm_medium=directory&ref=taaft | — |
+| 303 | Rumora | https://sellinger.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 304 | Runbase | https://imagecombinerai.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 305 | Rusheslab | https://www.fineshare.net/ai-video/sora-watermark-remover?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 306 | RYPL | https://mojomake.com/image-to-video?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 307 | SayEvent | https://www.omniphoto.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 308 | ScanRead | https://hatchable.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 309 | SciFigureAI | https://preview.reve.art/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 310 | ScreenJournal AI | https://reply.io/for-agencies/?utm_source=taaft_agencies&utm_medium=referral&utm_campaign=taaft_agencies | — |
+| 311 | Scribix | https://reeltoprompt.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 312 | Scrollsequence | https://getkoli.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 313 | Sellinger AI | https://reply.io/jason-ai/?utm_source=taaft_Jason&utm_medium=referral&utm_campaign=taaft_Jason | — |
+| 314 | SellShots | https://thelibrarian.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 315 | SEOForge.ai | https://www.loamly.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 316 | Servo | https://www.surmado.com/review/landing/?utm_source=taaft&utm_medium=referral&utm_campaign=taaft_listing&utm_content=free | — |
+| 317 | ShakespeareAI | https://www.visionask.com/welcome/step1?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 318 | SignalBotsAI | https://www.linkeddit.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 319 | Siri AI | https://www.heyedith.com/sign-in?from=%2F&ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 320 | SixSeer | https://sonicalpha.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 321 | Skarbe | https://werd.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 322 | Skillaeo | https://www.avatarcraft.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 323 | Skillroads | https://www.kavout.com/?fpr=whatshuang&utm_source=taaft&utm_medium=directory&utm_campaign=ai_directories | — |
+| 324 | Skin Roast Lab | https://aivideogenerator.best/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 325 | SkyGen Plus | AI Image Generator | https://aihumanizertext.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 326 | Slashspace (Formerly RabbitHoles AI) | https://madefine.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 327 | Sleek Analytics | https://excelmatic.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 328 | Slidely AI (backed by YC) | https://geoinfer.com/en?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 329 | SLOPDROP.NET | https://motiongen.ai/gallery?utm_source=theresanaiforthat&utm_medium=directory&utm_campaign=profile_listing | — |
+| 330 | smallest.ai | https://betterstack.com/ai-sre/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 331 | Smarter ChatGPT by Athena AI | https://athenachat.bot/agents?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 332 | SnapTax | https://ideamap.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 333 | SniffSub | https://picpicai.com/ai-portrait-enhancer?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 334 | Snow chat | https://berryviral.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 335 | Song Lyrics Review | https://www.workclaw.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 336 | SonicAlpha | https://airmusic.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 337 | Soular Map | https://writedoc.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 338 | SoulBook | https://tapedit.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 339 | Specd.ai | https://6figr.com/auto-apply?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 340 | Spoken | https://domywork.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 341 | Spokenly | https://skillaeo.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 342 | SpyReels | https://limecube.co/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 343 | Stacks | https://www.theinfluencer.ai/ai-motion-transfer?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 344 | StarterPilot | https://guideless.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 345 | StartKit | https://nexuscallai.com/?utm_source=taaft&utm_medium=referral&utm_campaign=listing | — |
+| 346 | Statuz | https://easyai.passiolife.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 347 | Stilla | https://kapitol.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 348 | Stockimg AI | https://getlogit.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 349 | Stormy AI | https://tabtabtab.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 350 | StoryCraftr | https://mailteorite.com/chat?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 351 | SureThing.io - &quot;OpenClaw&quot; for Beginners | https://vibevideo.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 352 | Surmado Code Review | https://tryfacet.io?ref=taaft&utm_source=taaft&utm_medium=directory&utm_campaign=launch | — |
+| 353 | Swayclip | https://imagecombiner.org/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 354 | Synthetic | https://rypl.is/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 355 | TabTabTab | https://www.nextdocs.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 356 | Talkniva | https://soulbook.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 357 | TapEdit | https://micronicheengine.com/login?next=%2F&ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 358 | Team Pulse | https://www.brandjet.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 359 | Tendem | https://rusheslab.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 360 | Tented | https://www.getvoibe.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 361 | The Drive AI | https://www.trickle.so/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 362 | The Influencer AI | https://www.writehybrid.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 363 | The SEO Agent | https://mnemom.ai/?utm_source=taaft&utm_medium=directory&utm_campaign=listing | — |
+| 364 | TheLibrarian.io | https://www.rocket.new/?utm_source=listing&utm_medium=taaft&utm_campaign=20pct-off | — |
+| 365 | ThesisAI | https://instantmind.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 366 | TidyDocs | https://raccoonai.tech/?ref=taaft&utm_source=taaft&utm_medium=directory | — |
+| 367 | TikBreak | https://song-lyrics-review.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 368 | TitleGen | https://www.roastmyskin.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 369 | Token Radar | https://getspiced.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 370 | Tool.Video | https://oddsmyth.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 371 | TotalMedia | Video Enhancer | https://puremidi.com/audio-to-midi?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 372 | TranscripTool | https://www.talkniva.com/en/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 373 | Trickle Magic Canvas | https://mexty.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 374 | TubeYakker | https://getsleek.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 375 | Tufa | https://publiq.studio/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 376 | turbopuffer | https://lexidesk.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 377 | UAE SmartTaxReceipt | https://computerx.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 378 | UnMarkAI - Video Text &amp; Watermark Remover | https://ziweiastrology.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 379 | Uramaki | https://ideogram.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 380 | Vdoo AI | Image to Video Generator | https://pixo.video/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 381 | Vdoo AI | Reference to Video | https://dedoctive.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 382 | Vdoo AI | Text to Image Generator | https://mkanime.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 383 | Venturekit | https://photoai.com/?ref=taaft | — |
+| 384 | Verdent | https://mixmasterpro.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 385 | Veriff - Identity Verification and KYC | https://lxi.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 386 | Verve Intelligence | https://prbot.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 387 | VibeKit | https://postfox.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 388 | VideoUpscale.net | https://www.orchestra-ads.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 389 | Vidflux - Bikini Video Generator | https://vidflux.ai/ai-photo-to-video?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 390 | VidFlux - Photo to Video Generator | https://voooai.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 391 | Vidnix | AI Image to Video Generator | https://epochal.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 392 | Vidnix | AI Text to Video Generator | https://spoken.md/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 393 | ViraFlow | https://motiongen.ai/gallery?utm_source=theresanaiforthat&utm_medium=directory&utm_campaign=profile_listing | — |
+| 394 | ViralCanvas.ai | https://spokenly.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 395 | ViralReels | https://www.productai.photo/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 396 | Vireel AI Video Extender | https://luminamind.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 397 | Viyou AI Image Generator | https://tendem.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 398 | Viyou AI Kiss Generator | https://vidflux.ai/video-effect/ai-bikini-video-generator?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 399 | VoiceOS | https://aisa.one/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 400 | VoicePod | https://www.callbooker.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 401 | VoooAI | https://musicvideogenerator.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 402 | VTube Me | https://aisa.to/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 403 | Wallnora | https://tented.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 404 | Weavely.ai | https://tufa.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 405 | Web Gremlin | https://tryrecal.com?utm_source=taaft&utm_medium=launch&utm_campaign=taaft_launch | — |
+| 406 | WebsitePublisher AI | https://paperclaw.org/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 407 | Werd - Vibe Write with Multi-agent AI | https://legalesedecoder.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 408 | Whacka | https://www.cosmos.so/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 409 | Whiteboard by Athena AI | https://athenachat.bot/autopilots?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 410 | Wiki 2066 | https://orbecta.com/index_en?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 411 | Wisary | https://forumscout.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 412 | Wonders AI - Research Workspace | https://www.thesisai.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 413 | Wordrific | https://athanor.market/from/taaft?utm_source=taaft&utm_medium=referral&utm_campaign=taaft_launch_2026_04&utm_content=... | — |
+| 414 | WorkClaw | https://whacka.app/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 415 | WriteABookAI | https://chartpixel.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 416 | WriteDoc.ai | https://www.heartmelody.ai/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 417 | X-Pilot AI | https://zyntent.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 418 | Xavier AI | https://froglead.io/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 419 | Xona AI | https://starterpilot.com/?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 420 | Yahini | https://www.heyedith.com/sign-in?from=%2F&ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 421 | Zi Wei Astrology | https://skygen.plus/ai-image-generator?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+| 422 | Zyntent | https://tools.arobis.ai/ai-visibility-checker?ref=taaft&utm_source=taaft&utm_medium=referral | — |
+
+---
+
+## How to Replace These Links
+
+1. **In Teable:** Open your AI Tools table and filter by URLs containing `taaft`
+2. **For each tool:** Sign up for the tool's affiliate program (or use your existing affiliate link)
+3. **Update the `AffiliateUrl` field** with your new affiliate link
+4. **The website will pick up changes** within 5 minutes (cache refresh)
+
+## Bulk Update Option
+
+If you have a CSV or spreadsheet with tool names and your new affiliate links, you can use Teable's bulk import/update feature to replace all URLs at once.

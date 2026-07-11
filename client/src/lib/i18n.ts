@@ -1,0 +1,454 @@
+export type Language = "en" | "es";
+
+export const translations = {
+  en: {
+    // Hero section
+    brandName: "aisumate",
+    tagline: "Discover the best AI productivity tools in one place",
+    subtitle: "Browse, search, and find the perfect AI tool for your workflow",
+    ctaExplore: "Explore Tools",
+
+    // Search & Filter
+    searchPlaceholder: "Search tools by name...",
+    allCategories: "All Categories",
+    filterByCategory: "Filter by category",
+    results: "results",
+    noResults: "No tools found",
+    noResultsDesc: "Try adjusting your search or filter",
+
+    // Carousel
+    carouselTitle: "Browse A–Z",
+    carouselSubtitle: "Scroll through all available tools",
+
+    // Tool card
+    visitTool: "Visit Tool",
+    category: "Category",
+    description: "Description",
+    noDescription: "No description available",
+    affiliateDisclosure: "Affiliate link — we may earn a commission",
+
+    // Verified review sections
+    reviewPros: "Pros",
+    reviewCons: "Cons",
+    reviewCost: "Cost",
+    reviewVerdict: "Verdict",
+    confidenceHigh: "High confidence",
+    confidenceMedium: "Medium confidence",
+    confidenceLow: "Low confidence",
+
+    // Language switcher
+    english: "English",
+    spanish: "Español",
+
+    // Theme
+    lightMode: "Light",
+    darkMode: "Dark",
+
+    // Footer
+    footerText: "Your gateway to AI productivity",
+    footerRights: "All rights reserved",
+
+    // Section tabs
+    tabTools: "AI Tools",
+    tabGithub: "GitHub Repos",
+    tabLlms: "LLMs",
+    tabNews: "AI News",
+    tabLtds: "LTDs",
+    tabVideoImage: "Video & Image",
+    tabMusicVoice: "Music & Voice",
+    tabChatbots: "Chatbots & Agents",
+    tabFreeApis: "Free APIs",
+    tabFreeLlmIde: "Free LLM & IDE",
+    tabVibeCoding: "Vibe Coding",
+    tabDesignerTools: "Designer Tools",
+    tabAiInfra: "AI Infrastructure",
+    tabHardware: "Hardware & Computers",
+    tabTestingTools: "Testing Tools",
+    tabAiSecurity: "AI Security",
+    tabBusinessProductivity: "Business Productivity",
+    tabMcpProviders: "MCP Providers",
+    tabVpsCloud: "VPS & Cloud",
+    iconAiMedia: "AI Media",
+    iconAiInfluencers: "AI Influencers",
+    iconAiSites: "AI Sites",
+    iconAiDiscord: "AI Discord",
+
+    // GitHub Repos section
+    githubTitle: "GitHub Repositories",
+    githubSubtitle: "Explore popular AI-related repositories sorted by stars",
+    repoName: "Repository",
+    repoStars: "Stars",
+    repoOwner: "Owner",
+    repoLanguage: "Language",
+    repoDescription: "Description",
+    repoStatus: "Status",
+    visitRepo: "Visit Repo",
+
+    // LLMs section
+    llmTitle: "Large Language Models",
+    llmSubtitle: "Browse AI model providers and their offerings",
+    llmProviderType: "Provider Type",
+    visitModel: "Visit Model",
+
+    // AI News section
+    newsTitle: "AI News",
+    newsSubtitle: "Latest news and updates from the AI world",
+    newsPublished: "Published",
+    newsSource: "Source",
+    newsTopic: "Topic",
+    readArticle: "Read Article",
+    noNews: "No news articles available yet",
+
+    // LTDs section
+    ltdTitle: "Lifetime Deals",
+    ltdSubtitle: "Exclusive lifetime deals on AI tools and software",
+    ltdPlatform: "Platform",
+    ltdStatus: "Status",
+    visitDeal: "Visit Deal",
+    noDeals: "No lifetime deals available yet",
+
+    // Video & Image section
+    videoImageTitle: "Video & Image Creators",
+    videoImageSubtitle: "AI tools for generating and editing videos and images",
+    visitToolGeneric: "Visit Tool",
+    noResultsGeneric: "No tools available yet",
+
+    // Music & Voice section
+    musicVoiceTitle: "Music & Voice",
+    musicVoiceSubtitle: "AI tools for music generation and voice synthesis",
+
+    // Chatbots & Agents section
+    chatbotsTitle: "Chatbots & Agents",
+    chatbotsSubtitle: "AI chatbots and autonomous agents for every use case",
+
+    // Free APIs section
+    freeApisTitle: "Free APIs",
+    freeApisSubtitle: "Free API resources and endpoints for developers",
+
+    // Free LLM & IDE section
+    freeLlmIdeTitle: "Free LLM & IDE",
+    freeLlmIdeSubtitle: "Free large language models and integrated development environments",
+
+    // Vibe Coding section
+    vibeCodingTitle: "Vibe Coding",
+    vibeCodingSubtitle: "AI-powered coding tools for the vibe coding movement",
+
+    // Designer Tools section
+    designerToolsTitle: "Designer Tools",
+    designerToolsSubtitle: "AI tools for designers and creative professionals",
+
+    // AI Infrastructure section
+    aiInfraTitle: "AI Infrastructure",
+    aiInfraSubtitle: "Infrastructure and platform tools for building AI applications",
+
+    // Hardware & Computers section
+    hardwareTitle: "Hardware & Computers",
+    hardwareSubtitle: "Hardware and computing devices optimized for AI workloads",
+
+    // Testing Tools section
+    testingToolsTitle: "Testing Tools",
+    testingToolsSubtitle: "AI-powered testing tools for QA and software testing teams",
+
+    // AI Security section
+    aiSecurityTitle: "AI Security",
+    aiSecuritySubtitle: "Security tools and platforms for protecting AI systems and data",
+
+    // Business Productivity section
+    businessProductivityTitle: "Business Productivity",
+    businessProductivitySubtitle: "AI tools for boosting business productivity and team collaboration",
+
+    // MCP Providers section
+    mcpProvidersTitle: "MCP Providers",
+    mcpProvidersSubtitle: "Model Context Protocol providers and integration platforms",
+
+    // VPS & Cloud Providers section
+    vpsCloudTitle: "VPS & Cloud Providers",
+    vpsCloudSubtitle: "Cloud hosting and VPS providers optimized for AI workloads",
+
+    // AI Media section
+    aiMediaTitle: "AI Media",
+    aiMediaSubtitle: "AI-powered media platforms, channels, and content creators",
+
+    // AI Influencers section
+    aiInfluencersTitle: "AI Influencers",
+    aiInfluencersSubtitle: "Key voices and influencers shaping the AI industry and community",
+
+    // AI Sites section
+    aiSitesTitle: "AI Sites",
+    aiSitesSubtitle: "Curated directories and websites dedicated to AI tools and resources",
+
+    // AI Discord section
+    aiDiscordTitle: "AI Discord",
+    aiDiscordSubtitle: "Active Discord communities and servers for AI discussions and networking",
+
+    // Misc
+    loading: "Loading...",
+    errorLoading: "Failed to load data. Please try again later.",
+    toolsCount: "tools available",
+    toggleLanguage: "Toggle language",
+    toggleTheme: "Toggle theme",
+    clearSearch: "Clear search",
+    previousSlide: "Previous slide",
+    nextSlide: "Next slide",
+    of: "of",
+    sortByName: "Sort by name",
+    sortByStars: "Sort by stars",
+    sortByLanguage: "Sort by language",
+    sortBy: "Sort by",
+    sortAscending: "Ascending",
+    sortDescending: "Descending",
+    loadMore: "Load more",
+    showingResults: "Showing {shown} of {total}",
+    allOption: "All",
+    resetFilters: "Reset filters",
+    filterByLanguage: "Filter by language",
+    filterByProvider: "Filter by provider",
+    filterByPlatform: "Filter by platform",
+    filterByStatus: "Filter by status",
+    filterByTopic: "Filter by topic",
+    filterBySource: "Filter by source",
+    filterByType: "Filter by type",
+    filterByAffiliate: "Filter by affiliate",
+    affiliateOnly: "Affiliate only",
+    directOnly: "Direct only",
+    sortByDate: "Sort by date",
+    sortByPlatform: "Sort by platform",
+    sortByStatus: "Sort by status",
+    sortByProvider: "Sort by provider",
+    sortByRating: "Sort by rating",
+
+    // Global search
+    globalSearchPlaceholder: "Search across all tools...",
+    globalSearchResults: "results found across all categories",
+    globalSearchNoResults: "No tools found. Try a different search term.",
+    globalSearchLoading: "Searching across all tables...",
+    globalSearchTitle: "Global Search Results",
+    sourceTable: "Category",
+  },
+  es: {
+    // Hero section
+    brandName: "aisumate",
+    tagline: "Descubre las mejores herramientas de productividad con IA en un solo lugar",
+    subtitle: "Explora, busca y encuentra la herramienta de IA perfecta para tu flujo de trabajo",
+    ctaExplore: "Explorar Herramientas",
+
+    // Search & Filter
+    searchPlaceholder: "Buscar herramientas por nombre...",
+    allCategories: "Todas las Categorías",
+    filterByCategory: "Filtrar por categoría",
+    results: "resultados",
+    noResults: "No se encontraron herramientas",
+    noResultsDesc: "Intenta ajustar tu búsqueda o filtro",
+
+    // Carousel
+    carouselTitle: "Explorar A–Z",
+    carouselSubtitle: "Desplázate por todas las herramientas disponibles",
+
+    // Tool card
+    visitTool: "Visitar Herramienta",
+    category: "Categoría",
+    description: "Descripción",
+    noDescription: "No hay descripción disponible",
+    affiliateDisclosure: "Enlace de afiliado — podemos ganar una comisión",
+
+    // Verified review sections
+    reviewPros: "Ventajas",
+    reviewCons: "Desventajas",
+    reviewCost: "Precio",
+    reviewVerdict: "Veredicto",
+    confidenceHigh: "Confianza alta",
+    confidenceMedium: "Confianza media",
+    confidenceLow: "Confianza baja",
+
+    // Language switcher
+    english: "English",
+    spanish: "Español",
+
+    // Theme
+    lightMode: "Claro",
+    darkMode: "Oscuro",
+
+    // Footer
+    footerText: "Tu puerta de entrada a la productividad con IA",
+    footerRights: "Todos los derechos reservados",
+
+    // Section tabs
+    tabTools: "Herramientas IA",
+    tabGithub: "Repos GitHub",
+    tabLlms: "LLMs",
+    tabNews: "Noticias IA",
+    tabLtds: "Ofertas LTD",
+    tabVideoImage: "Video e Imagen",
+    tabMusicVoice: "Música y Voz",
+    tabChatbots: "Chatbots y Agentes",
+    tabFreeApis: "APIs Gratis",
+    tabFreeLlmIde: "LLM e IDE Gratis",
+    tabVibeCoding: "Vibe Coding",
+    tabDesignerTools: "Herramientas para Diseñadores",
+    tabAiInfra: "Infraestructura IA",
+    tabHardware: "Hardware y Computadoras",
+    tabTestingTools: "Herramientas de Testing",
+    tabAiSecurity: "Seguridad IA",
+    tabBusinessProductivity: "Productividad Empresarial",
+    tabMcpProviders: "Proveedores MCP",
+    tabVpsCloud: "VPS y Nube",
+    iconAiMedia: "IA Media",
+    iconAiInfluencers: "IA Influencers",
+    iconAiSites: "Sitios IA",
+    iconAiDiscord: "IA Discord",
+
+    // GitHub Repos section
+    githubTitle: "Repositorios de GitHub",
+    githubSubtitle: "Explora repositorios populares relacionados con IA ordenados por estrellas",
+    repoName: "Repositorio",
+    repoStars: "Estrellas",
+    repoOwner: "Propietario",
+    repoLanguage: "Lenguaje",
+    repoDescription: "Descripción",
+    repoStatus: "Estado",
+    visitRepo: "Visitar Repo",
+
+    // LLMs section
+    llmTitle: "Modelos de Lenguaje Grande",
+    llmSubtitle: "Explora proveedores de modelos de IA y sus ofertas",
+    llmProviderType: "Tipo de Proveedor",
+    visitModel: "Visitar Modelo",
+
+    // AI News section
+    newsTitle: "Noticias de IA",
+    newsSubtitle: "Últimas noticias y actualizaciones del mundo de la IA",
+    newsPublished: "Publicado",
+    newsSource: "Fuente",
+    newsTopic: "Tema",
+    readArticle: "Leer Artículo",
+    noNews: "No hay artículos de noticias disponibles aún",
+
+    // LTDs section
+    ltdTitle: "Ofertas de por Vida",
+    ltdSubtitle: "Ofertas exclusivas de por vida en herramientas y software de IA",
+    ltdPlatform: "Plataforma",
+    ltdStatus: "Estado",
+    visitDeal: "Visitar Oferta",
+    noDeals: "No hay ofertas de por vida disponibles aún",
+
+    // Video & Image section
+    videoImageTitle: "Creadores de Video e Imagen",
+    videoImageSubtitle: "Herramientas de IA para generar y editar videos e imágenes",
+    visitToolGeneric: "Visitar Herramienta",
+    noResultsGeneric: "No hay herramientas disponibles aún",
+
+    // Music & Voice section
+    musicVoiceTitle: "Música y Voz",
+    musicVoiceSubtitle: "Herramientas de IA para generación de música y síntesis de voz",
+
+    // Chatbots & Agents section
+    chatbotsTitle: "Chatbots y Agentes",
+    chatbotsSubtitle: "Chatbots de IA y agentes autónomos para cada caso de uso",
+
+    // Free APIs section
+    freeApisTitle: "APIs Gratis",
+    freeApisSubtitle: "Recursos y endpoints de API gratuitos para desarrolladores",
+
+    // Free LLM & IDE section
+    freeLlmIdeTitle: "LLM e IDE Gratis",
+    freeLlmIdeSubtitle: "Modelos de lenguaje gratuitos y entornos de desarrollo integrados",
+
+    // Vibe Coding section
+    vibeCodingTitle: "Vibe Coding",
+    vibeCodingSubtitle: "Herramientas de programación con IA para el movimiento vibe coding",
+
+    // Designer Tools section
+    designerToolsTitle: "Herramientas para Diseñadores",
+    designerToolsSubtitle: "Herramientas de IA para diseñadores y profesionales creativos",
+
+    // AI Infrastructure section
+    aiInfraTitle: "Infraestructura IA",
+    aiInfraSubtitle: "Herramientas de infraestructura y plataforma para construir aplicaciones de IA",
+
+    // Hardware & Computers section
+    hardwareTitle: "Hardware y Computadoras",
+    hardwareSubtitle: "Hardware y dispositivos de cómputo optimizados para cargas de trabajo de IA",
+
+    // Testing Tools section
+    testingToolsTitle: "Herramientas de Testing",
+    testingToolsSubtitle: "Herramientas de testing con IA para equipos de QA y pruebas de software",
+
+    // AI Security section
+    aiSecurityTitle: "Seguridad IA",
+    aiSecuritySubtitle: "Herramientas y plataformas de seguridad para proteger sistemas y datos de IA",
+
+    // Business Productivity section
+    businessProductivityTitle: "Productividad Empresarial",
+    businessProductivitySubtitle: "Herramientas de IA para impulsar la productividad empresarial y la colaboración en equipo",
+
+    // MCP Providers section
+    mcpProvidersTitle: "Proveedores MCP",
+    mcpProvidersSubtitle: "Proveedores de Model Context Protocol y plataformas de integración",
+
+    // VPS & Cloud Providers section
+    vpsCloudTitle: "VPS y Proveedores Cloud",
+    vpsCloudSubtitle: "Proveedores de hosting en la nube y VPS optimizados para cargas de trabajo de IA",
+
+    // AI Media section
+    aiMediaTitle: "IA Media",
+    aiMediaSubtitle: "Plataformas, canales y creadores de contenido con IA",
+
+    // AI Influencers section
+    aiInfluencersTitle: "IA Influencers",
+    aiInfluencersSubtitle: "Voces clave e influencers que dan forma a la industria y comunidad de IA",
+
+    // AI Sites section
+    aiSitesTitle: "Sitios IA",
+    aiSitesSubtitle: "Directorios y sitios web curados dedicados a herramientas y recursos de IA",
+
+    // AI Discord section
+    aiDiscordTitle: "IA Discord",
+    aiDiscordSubtitle: "Comunidades y servidores de Discord activos para discusiones y networking de IA",
+
+    // Misc
+    loading: "Cargando...",
+    errorLoading: "Error al cargar los datos. Inténtalo de nuevo más tarde.",
+    toolsCount: "herramientas disponibles",
+    toggleLanguage: "Cambiar idioma",
+    toggleTheme: "Cambiar tema",
+    clearSearch: "Borrar búsqueda",
+    previousSlide: "Diapositiva anterior",
+    nextSlide: "Diapositiva siguiente",
+    of: "de",
+    sortByName: "Ordenar por nombre",
+    sortByStars: "Ordenar por estrellas",
+    sortByLanguage: "Ordenar por lenguaje",
+    sortBy: "Ordenar por",
+    sortAscending: "Ascendente",
+    sortDescending: "Descendente",
+    loadMore: "Cargar más",
+    showingResults: "Mostrando {shown} de {total}",
+    allOption: "Todos",
+    resetFilters: "Restablecer filtros",
+    filterByLanguage: "Filtrar por lenguaje",
+    filterByProvider: "Filtrar por proveedor",
+    filterByPlatform: "Filtrar por plataforma",
+    filterByStatus: "Filtrar por estado",
+    filterByTopic: "Filtrar por tema",
+    filterBySource: "Filtrar por fuente",
+    filterByType: "Filtrar por tipo",
+    filterByAffiliate: "Filtrar por afiliado",
+    affiliateOnly: "Solo afiliados",
+    directOnly: "Solo directos",
+    sortByDate: "Ordenar por fecha",
+    sortByPlatform: "Ordenar por plataforma",
+    sortByStatus: "Ordenar por estado",
+    sortByProvider: "Ordenar por proveedor",
+    sortByRating: "Ordenar por calificación",
+
+    // Global search
+    globalSearchPlaceholder: "Buscar en todas las herramientas...",
+    globalSearchResults: "resultados encontrados en todas las categorías",
+    globalSearchNoResults: "No se encontraron herramientas. Prueba con otro término de búsqueda.",
+    globalSearchLoading: "Buscando en todas las tablas...",
+    globalSearchTitle: "Resultados de búsqueda global",
+    sourceTable: "Categoría",
+  },
+} as const;
+
+export type TranslationKey = keyof typeof translations.en;

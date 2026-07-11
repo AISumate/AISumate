@@ -1,0 +1,185 @@
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, X, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+export interface FilterOption {
+  value: string;
+  label: string;
+}
+
+export interface SortOption {
+  value: string;
+  labelKey: string;
+  defaultDirection?: "asc" | "desc";
+}
+
+interface FilterBarProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  filters: {
+    key: string;
+    value: string;
+    onChange: (value: string) => void;
+    options: FilterOption[];
+    placeholderKey: string;
+  }[];
+  sort?: {
+    field: string;
+    direction: "asc" | "desc";
+    onFieldChange: (field: string) => void;
+    onDirectionChange: (direction: "asc" | "desc") => void;
+    options: SortOption[];
+  };
+  resultCount: number;
+  onReset?: () => void;
+}
+
+export function FilterBar({
+  searchTerm,
+  onSearchChange,
+  filters,
+  sort,
+  resultCount,
+  onReset,
+}: FilterBarProps) {
+  const { t } = useLanguage();
+
+  const hasActiveFilters = searchTerm.trim() || filters.some((f) => f.value !== "all");
+
+  return (
+    <div className="mb-6 space-y-4">
+      {/* Search + sort row */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        {/* Search bar */}
+        <div className="relative flex-1 max-w-xl">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            type="text"
+            placeholder={t("searchPlaceholder")}
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10 pr-10 h-11"
+            aria-label={t("searchPlaceholder")}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => onSearchChange("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={t("clearSearch")}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Sort dropdown */}
+        {sort && (
+          <div className="flex items-center gap-2">
+            <Select
+              value={sort.field}
+              onValueChange={sort.onFieldChange}
+            >
+              <SelectTrigger className="w-[180px] h-11" aria-label={t("sortBy")}>
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {sort.options.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {t(opt.labelKey as never)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Sort direction toggle */}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-11 w-11 shrink-0"
+              onClick={() =>
+                sort.onDirectionChange(sort.direction === "asc" ? "desc" : "asc")
+              }
+              aria-label={sort.direction === "asc" ? t("sortDescending") : t("sortAscending")}
+            >
+              {sort.direction === "asc" ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Filter dropdowns row */}
+      {filters.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3">
+          {filters.map((filter) => (
+            <Select
+              key={filter.key}
+              value={filter.value}
+              onValueChange={filter.onChange}
+            >
+              <SelectTrigger className="w-[160px] h-10" aria-label={t(filter.placeholderKey as never)}>
+                <SelectValue placeholder={t(filter.placeholderKey as never)} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allOption")}</SelectItem>
+                {filter.options.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ))}
+
+          {/* Reset button */}
+          {hasActiveFilters && onReset && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onReset}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5 mr-1" />
+              {t("resetFilters")}
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Results count */}
+      <p className="text-sm text-muted-foreground">
+        {resultCount} {t("results")}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Helper to extract unique values from an array of objects for filter options.
+ * This is a plain function — wrap it in useMemo at the call site for memoization.
+ */
+export function buildFilterOptions<T>(
+  items: T[],
+  getter: (item: T) => string,
+): FilterOption[] {
+  const set = new Set<string>();
+  items.forEach((item) => {
+    const val = getter(item);
+    if (val && val.trim()) set.add(val.trim());
+  });
+  return Array.from(set).sort((a, b) => a.localeCompare(b)).map((val) => ({ value: val, label: val }));
+}

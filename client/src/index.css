@@ -1,0 +1,246 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  --font-heading: "Geist", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", "SF Mono", "Fira Code", Menlo, monospace;
+}
+
+:root {
+  /* Sau5 Light Mode — mirrors sau5-claude-op: Terracotta on Bone, Ink text, Tobacco muted */
+  --primary: #C8501E;                           /* Sau5 terracotta */
+  --primary-foreground: #F4EFE6;                /* bone */
+  --sidebar-primary: #C8501E;
+  --sidebar-primary-foreground: #F4EFE6;
+  --chart-1: #C8501E;                           /* terracotta */
+  --chart-2: #8B6F47;                           /* tobacco */
+  --chart-3: #A03D12;                           /* burnt clay */
+  --chart-4: #6E6B3F;                           /* olive */
+  --chart-5: #B8863B;                           /* amber */
+  --radius: 0.75rem;
+  --background: #F4EFE6;                        /* bone */
+  --foreground: #1A1A1A;                        /* ink */
+  --card: #FFFFFF;                              /* paper */
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --secondary: #EAE3D5;                         /* bone, one step deeper */
+  --secondary-foreground: #1A1A1A;
+  --muted: #EAE3D5;
+  --muted-foreground: #8B6F47;                  /* tobacco */
+  --accent: #F1DFD2;                            /* terracotta tint */
+  --accent-foreground: #A03D12;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: #E0D7C6;                            /* bone hairline */
+  --input: #E0D7C6;
+  --ring: #C8501E;
+  --sidebar: #F4EFE6;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-accent: #F1DFD2;
+  --sidebar-accent-foreground: #A03D12;
+  --sidebar-border: #E0D7C6;
+  --sidebar-ring: #C8501E;
+}
+
+.dark {
+  /* Sau5 Dark Mode — mirrors sau5-claude-op .dark: near-black bone, warm ink text */
+  --primary: #D96A35;                           /* terracotta, lifted for dark bg */
+  --primary-foreground: #0E0E0E;
+  --sidebar-primary: #D96A35;
+  --sidebar-primary-foreground: #0E0E0E;
+  --background: #0E0E0E;                        /* dark bone */
+  --foreground: #EDE7DC;                        /* warm ink */
+  --card: #181818;                              /* dark paper */
+  --card-foreground: #EDE7DC;
+  --popover: #181818;
+  --popover-foreground: #EDE7DC;
+  --secondary: #232220;
+  --secondary-foreground: #DDD5C8;
+  --muted: #232220;
+  --muted-foreground: #A08B72;                  /* dark tobacco */
+  --accent: #2C201A;                            /* terracotta-tinted dark */
+  --accent-foreground: #E8946B;
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: #2A2925;
+  --input: #2A2925;
+  --ring: #D96A35;
+  --chart-1: #D96A35;                           /* terracotta */
+  --chart-2: #A08B72;                           /* tobacco */
+  --chart-3: #E8946B;                           /* clay */
+  --chart-4: #8F8B5A;                           /* olive */
+  --chart-5: #CFA45E;                           /* amber */
+  --sidebar: #121212;
+  --sidebar-foreground: #EDE7DC;
+  --sidebar-accent: #2C201A;
+  --sidebar-accent-foreground: #E8946B;
+  --sidebar-border: #2A2925;
+  --sidebar-ring: #D96A35;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+
+  /* Glass box effect for hero heading overlay */
+  .glass-box {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border-radius: 1.5rem;
+  }
+
+  .dark .glass-box {
+    background: rgba(14, 14, 14, 0.5);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid rgba(217, 106, 53, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Tool card color accents — rotating Sau5 earthy tones */
+  .tool-accent-0 { --tool-accent: #C8501E; }   /* terracotta */
+  .tool-accent-1 { --tool-accent: #8B6F47; }   /* tobacco */
+  .tool-accent-2 { --tool-accent: #A03D12; }   /* burnt clay */
+  .tool-accent-3 { --tool-accent: #6E6B3F; }   /* olive */
+  .tool-accent-4 { --tool-accent: #B8863B; }   /* amber */
+  .tool-accent-5 { --tool-accent: #7A6A55; }   /* taupe */
+
+  /* Dark mode: lifted accents for visibility */
+  .dark .tool-accent-0 { --tool-accent: #D96A35; }   /* terracotta */
+  .dark .tool-accent-1 { --tool-accent: #A08B72; }   /* tobacco */
+  .dark .tool-accent-2 { --tool-accent: #E8946B; }   /* clay */
+  .dark .tool-accent-3 { --tool-accent: #8F8B5A; }   /* olive */
+  .dark .tool-accent-4 { --tool-accent: #CFA45E; }   /* amber */
+  .dark .tool-accent-5 { --tool-accent: #9C8C77; }   /* taupe */
+
+  /* Hairline grid background — 32px ink grid, same as the Command Centre */
+  .grid-pattern-bg {
+    background-image:
+      linear-gradient(rgba(26, 26, 26, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 26, 26, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .dark .grid-pattern-bg {
+    background-image:
+      linear-gradient(rgba(237, 231, 220, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(237, 231, 220, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Hero entrance — content rises gently as the video starts */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .fade-up-delay-1 { animation-delay: 0.15s; }
+  .fade-up-delay-2 { animation-delay: 0.3s; }
+
+  /* Live status pulse — same rhythm as the Command Centre health dots */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+}
+
+/* Active tab in terracotta — unlayered so it wins over Tailwind utilities */
+[role="tablist"] [role="tab"][data-state="active"] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--primary) 35%, transparent);
+}
