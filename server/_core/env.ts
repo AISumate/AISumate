@@ -11,8 +11,8 @@ export const ENV = {
   teableApiUrl: process.env.TEABLE_API_URL ?? "https://app.teable.ai/api",
   teableTableId: process.env.TEABLE_TABLE_ID ?? "",
   teableGithubTableId: process.env.TEABLE_GITHUB_TABLE_ID ?? "",
+  teableWeeklyViralGithubTableId: process.env.TEABLE_WEEKLY_VIRAL_GITHUB_TABLE_ID ?? "",
   teableLlmTableId: process.env.TEABLE_LLM_TABLE_ID ?? "",
-  teableNewsTableId: process.env.TEABLE_NEWS_TABLE_ID ?? "",
   teableLtdTableId: process.env.TEABLE_LTD_TABLE_ID ?? "",
   teableVideoImageTableId: process.env.TEABLE_VIDEO_IMAGE_TABLE_ID ?? "",
   teableMusicVoiceTableId: process.env.TEABLE_MUSIC_VOICE_TABLE_ID ?? "",
@@ -32,4 +32,6 @@ export const ENV = {
   teableAiInfluencersTableId: process.env.TEABLE_AI_INFLUENCERS_TABLE_ID ?? "",
   teableAiSitesTableId: process.env.TEABLE_AI_SITES_TABLE_ID ?? "",
   teableAiDiscordTableId: process.env.TEABLE_AI_DISCORD_TABLE_ID ?? "",
+  teableAuSeoToolsTableId: process.env.TEABLE_AU_SEO_TOOLS_TABLE_ID ?? "",
+  teableSumateTopRecommendationsTableId: process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? "",
 };

@@ -66,6 +66,24 @@ export interface GithubRepo {
   isNew: boolean;
 }
 
+export interface WeeklyViralRepo extends ReviewFields {
+  id: string;
+  name: string;
+  repoUrl: string;
+  description: string;
+  descriptionEn: string;
+  descriptionEs: string;
+  owner: string;
+  language: string;
+  stars: number;
+  starsThisWeek: number;
+  weeklyRank: number;
+  weekEnding: string;
+  whyViral: string;
+  iconUrl: string;
+  rating: number;
+}
+
 export interface LlmModel extends ReviewFields {
   id: string;
   name: string;
@@ -78,16 +96,6 @@ export interface LlmModel extends ReviewFields {
   isAffiliate: boolean;
   rating: number;
   isNew: boolean;
-}
-
-export interface NewsItem {
-  id: string;
-  title: string;
-  url: string;
-  summary: string;
-  source: string;
-  publishedDate: string;
-  topic: string;
 }
 
 export interface LtdDeal extends ReviewFields {
@@ -116,6 +124,27 @@ export interface GenericTool extends ReviewFields {
   isAffiliate: boolean;
   rating: number;
   isNew: boolean;
+  /**
+   * Content-language flags (currently only populated on AI Influencers via
+   * its "English"/"Spanish" checkbox columns) — the CHANNEL's own broadcast
+   * language, independent of the site's EN/ES UI toggle which still governs
+   * which of descriptionEn/descriptionEs is shown.
+   */
+  isEnglishContent: boolean;
+  isSpanishContent: boolean;
+  /** Popularity metric (currently only populated on AI Influencers via its "Subscribers" column). */
+  popularity: number;
+  /** Curated rank (currently only populated on AI Influencers and Sumate Top Recommendations via their "Rank" column). */
+  rank: number;
+  /** Blog-post fields (currently only populated on AI Media). */
+  slug: string;
+  bodyEn: string;
+  /** Empty until a "Body - ES" column exists in Teable — client falls back to bodyEn. */
+  bodyEs: string;
+  author: string;
+  tags: string[];
+  readingTimeMinutes: number;
+  publishedDate: string;
 }
 
 // --- Cache with stale-on-error ---
@@ -195,7 +224,7 @@ function affiliateUrl(f: Record<string, unknown>): string {
 
 /** Try multiple possible field name variants for outbound URL */
 function outboundUrl(f: Record<string, unknown>): string {
-  return validUrl(str(f, "OutboundUrl") || str(f, "Outbound URL") || str(f, "Website") || str(f, "Repository URL") || "");
+  return validUrl(str(f, "OutboundUrl") || str(f, "Outbound URL") || str(f, "Website") || str(f, "Repository URL") || str(f, "URL") || "");
 }
 
 /**
@@ -333,6 +362,17 @@ function mapGenericTool(record: TeableRecord): GenericTool {
     isAffiliate: bool(f, "Affiliate"),
     rating: num(f, "Rating 1-5"),
     isNew: isNewRecord(record),
+    isEnglishContent: bool(f, "English"),
+    isSpanishContent: bool(f, "Spanish"),
+    popularity: num(f, "Subscribers"),
+    rank: num(f, "Rank"),
+    slug: cleanStr(f, "Slug"),
+    bodyEn: cleanStr(f, "Body - EN"),
+    bodyEs: cleanStr(f, "Body - ES"),
+    author: cleanStr(f, "Author"),
+    tags: str(f, "Tags").split(",").map((s) => s.trim()).filter(Boolean),
+    readingTimeMinutes: num(f, "Reading Time"),
+    publishedDate: normalizeDate(f["InputDate"]),
     ...reviewFields(f),
   };
 }
@@ -361,6 +401,8 @@ export const GENERIC_TABLES = [
   { key: "aiInfluencers", label: "AI Influencers", tableId: () => ENV.teableAiInfluencersTableId },
   { key: "aiSites", label: "AI Sites", tableId: () => ENV.teableAiSitesTableId },
   { key: "aiDiscord", label: "AI Discord", tableId: () => ENV.teableAiDiscordTableId },
+  { key: "auSeoTools", label: "AU SEO Tools", tableId: () => ENV.teableAuSeoToolsTableId },
+  { key: "sumateTopRecommendations", label: "Sumate Top Recommendations", tableId: () => ENV.teableSumateTopRecommendationsTableId },
 ] as const;
 
 export type GenericTableKey = (typeof GENERIC_TABLES)[number]["key"];
@@ -370,7 +412,11 @@ export async function fetchGenericTools(key: GenericTableKey): Promise<GenericTo
   if (!table) return [];
   return withCache(key, async () => {
     const records = await fetchAllRecords(table.tableId());
-    const tools = records.map(mapGenericTool);
+    // "Published" (currently only on AI Media) gates drafts from the public site;
+    // a no-op filter on every other table, which never has this column.
+    const tools = records
+      .filter((r) => r.fields["Published"] === undefined || bool(r.fields, "Published"))
+      .map(mapGenericTool);
     tools.sort((a, b) => a.name.localeCompare(b.name));
     return tools;
   });
@@ -395,6 +441,8 @@ export const fetchAiMediaTools = () => fetchGenericTools("aiMedia");
 export const fetchAiInfluencersTools = () => fetchGenericTools("aiInfluencers");
 export const fetchAiSitesTools = () => fetchGenericTools("aiSites");
 export const fetchAiDiscordTools = () => fetchGenericTools("aiDiscord");
+export const fetchAuSeoTools = () => fetchGenericTools("auSeoTools");
+export const fetchSumateTopRecommendations = () => fetchGenericTools("sumateTopRecommendations");
 
 // --- Tools (main table) ---
 
@@ -451,6 +499,44 @@ export async function fetchGithubRepos(): Promise<GithubRepo[]> {
   });
 }
 
+// --- Weekly Viral GitHub Repos (curated trending highlight, refreshed weekly) ---
+
+export async function fetchWeeklyViralGithubRepos(): Promise<WeeklyViralRepo[]> {
+  return withCache("weeklyViralGithub", async () => {
+    const records = await fetchAllRecords(ENV.teableWeeklyViralGithubTableId);
+    const repos = records.map((record) => {
+      const f = record.fields ?? {};
+      const repoUrl = validUrl(str(f, "Repository URL"));
+      const description = cleanStr(f, "Description");
+      return {
+        id: record.id,
+        name: str(f, "Name") || record.name || "Untitled",
+        repoUrl,
+        description,
+        descriptionEn: cleanStr(f, "Summary - EN") || description,
+        descriptionEs: cleanStr(f, "Summary - ES") || description,
+        owner: str(f, "Owner"),
+        language: cleanStr(f, "Language"),
+        stars: num(f, "Stars"),
+        starsThisWeek: num(f, "Stars This Week"),
+        weeklyRank: num(f, "Weekly Rank"),
+        weekEnding: normalizeDate(f["Week Ending"]),
+        whyViral: cleanStr(f, "Why Viral"),
+        iconUrl: iconUrlFor(f, repoUrl),
+        rating: num(f, "Rating 1-5"),
+        ...reviewFields(f),
+      };
+    });
+    // Weekly Rank ascending (1 = most viral); unranked rows sink to the bottom.
+    repos.sort((a, b) => {
+      const ar = a.weeklyRank || Infinity;
+      const br = b.weeklyRank || Infinity;
+      return ar !== br ? ar - br : b.starsThisWeek - a.starsThisWeek;
+    });
+    return repos;
+  });
+}
+
 // --- LLMs ---
 
 export async function fetchLlmModels(): Promise<LlmModel[]> {
@@ -479,7 +565,7 @@ export async function fetchLlmModels(): Promise<LlmModel[]> {
   });
 }
 
-// --- AI News ---
+// --- Date helper ---
 
 /** Normalize Teable date cells (text, ISO, or epoch ms) to an ISO string. */
 function normalizeDate(raw: unknown): string {
@@ -488,30 +574,6 @@ function normalizeDate(raw: unknown): string {
   const date = !isNaN(asNumber) && asNumber > 0 ? new Date(asNumber) : new Date(String(raw));
   if (isNaN(date.getTime())) return "";
   return date.toISOString();
-}
-
-export async function fetchNewsItems(): Promise<NewsItem[]> {
-  return withCache("news", async () => {
-    const records = await fetchAllRecords(ENV.teableNewsTableId);
-    const items = records.map((record) => {
-      const f = record.fields ?? {};
-      const topicRaw = f["Topic"];
-      const topic = Array.isArray(topicRaw) ? topicRaw.join(", ") : String(topicRaw ?? "");
-
-      return {
-        id: record.id,
-        title: str(f, "Title") || record.name || "Untitled",
-        url: validUrl(str(f, "URL")),
-        summary: cleanStr(f, "Summary - EN") || cleanStr(f, "Summary"),
-        source: cleanStr(f, "Source"),
-        publishedDate: normalizeDate(f["Published Date"]),
-        topic,
-      };
-    });
-    // ISO strings sort correctly with localeCompare; blanks sink to the bottom.
-    items.sort((a, b) => b.publishedDate.localeCompare(a.publishedDate));
-    return items;
-  });
 }
 
 // --- LTDs (Lifetime Deals) ---
@@ -548,9 +610,9 @@ export async function fetchTotalToolCount(): Promise<number> {
   const tasks: (() => Promise<{ length: number }>)[] = [
     () => fetchAllTools(),
     () => fetchGithubRepos(),
+    () => fetchWeeklyViralGithubRepos(),
     () => fetchLlmModels(),
-    () => fetchNewsItems(),
-    () => fetchLtdDeals(),
+    // LTDs intentionally excluded — the LTDs tab is hidden from the site for now.
     ...GENERIC_TABLES.map((t) => () => fetchGenericTools(t.key)),
   ];
   const results = await staggeredAll(tasks, 3, 200);

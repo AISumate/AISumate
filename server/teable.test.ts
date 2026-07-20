@@ -6,8 +6,8 @@ import type { TrpcContext } from "./_core/context";
 vi.mock("./teable", () => ({
   fetchAllTools: vi.fn(),
   fetchGithubRepos: vi.fn(),
+  fetchWeeklyViralGithubRepos: vi.fn(),
   fetchLlmModels: vi.fn(),
-  fetchNewsItems: vi.fn(),
   fetchLtdDeals: vi.fn(),
   fetchVideoImageTools: vi.fn(),
   fetchMusicVoiceTools: vi.fn(),
@@ -27,14 +27,16 @@ vi.mock("./teable", () => ({
   fetchAiInfluencersTools: vi.fn(),
   fetchAiSitesTools: vi.fn(),
   fetchAiDiscordTools: vi.fn(),
+  fetchAuSeoTools: vi.fn(),
+  fetchSumateTopRecommendations: vi.fn(),
   fetchTotalToolCount: vi.fn(),
 }));
 
 import {
   fetchAllTools,
   fetchGithubRepos,
+  fetchWeeklyViralGithubRepos,
   fetchLlmModels,
-  fetchNewsItems,
   fetchLtdDeals,
   fetchVideoImageTools,
   fetchMusicVoiceTools,
@@ -54,12 +56,14 @@ import {
   fetchAiInfluencersTools,
   fetchAiSitesTools,
   fetchAiDiscordTools,
+  fetchAuSeoTools,
+  fetchSumateTopRecommendations,
 } from "./teable";
 
 const mockFetchAllTools = vi.mocked(fetchAllTools);
 const mockFetchGithubRepos = vi.mocked(fetchGithubRepos);
+const mockFetchWeeklyViralGithubRepos = vi.mocked(fetchWeeklyViralGithubRepos);
 const mockFetchLlmModels = vi.mocked(fetchLlmModels);
-const mockFetchNewsItems = vi.mocked(fetchNewsItems);
 const mockFetchLtdDeals = vi.mocked(fetchLtdDeals);
 const mockFetchVideoImageTools = vi.mocked(fetchVideoImageTools);
 const mockFetchMusicVoiceTools = vi.mocked(fetchMusicVoiceTools);
@@ -79,6 +83,8 @@ const mockFetchAiMediaTools = vi.mocked(fetchAiMediaTools);
 const mockFetchAiInfluencersTools = vi.mocked(fetchAiInfluencersTools);
 const mockFetchAiSitesTools = vi.mocked(fetchAiSitesTools);
 const mockFetchAiDiscordTools = vi.mocked(fetchAiDiscordTools);
+const mockFetchAuSeoTools = vi.mocked(fetchAuSeoTools);
+const mockFetchSumateTopRecommendations = vi.mocked(fetchSumateTopRecommendations);
 
 function createPublicContext(): { ctx: TrpcContext } {
   const ctx: TrpcContext = {
@@ -103,16 +109,17 @@ const sampleRepos = [
   { id: "r3", name: "microsoft/semantic-kernel", repoUrl: "https://github.com/microsoft/semantic-kernel", description: "Integrate AI services", owner: "microsoft", language: "C#", stars: 20000, status: "Active" },
 ];
 
+// Pre-sorted by Weekly Rank ascending (as fetchWeeklyViralGithubRepos would do)
+const sampleWeeklyViralRepos = [
+  { id: "w1", name: "Zackriya-Solutions/meetily", repoUrl: "https://github.com/Zackriya-Solutions/meetily", descriptionEn: "Privacy-first AI meeting assistant", descriptionEs: "Asistente de reuniones IA que prioriza la privacidad", owner: "Zackriya-Solutions", language: "Rust", stars: 22957, starsThisWeek: 8795, weeklyRank: 1, weekEnding: "2026-07-11T00:00:00.000Z", whyViral: "Growing backlash against cloud meeting bots.", iconUrl: "", rating: 0 },
+  { id: "w2", name: "asgeirtj/system_prompts_leaks", repoUrl: "https://github.com/asgeirtj/system_prompts_leaks", descriptionEn: "Extracted system prompts from major AI providers", descriptionEs: "Prompts de sistema extraídos de los principales proveedores de IA", owner: "asgeirtj", language: "JavaScript", stars: 56033, starsThisWeek: 7765, weeklyRank: 2, weekEnding: "2026-07-11T00:00:00.000Z", whyViral: "Perennial curiosity about frontier assistants.", iconUrl: "", rating: 0 },
+];
+
 // Pre-sorted alphabetically (as fetchLlmModels would do)
 const sampleLlms = [
   { id: "l2", name: "Claude", summaryEn: "AI assistant for text", summaryEs: "Asistente de IA para texto", providerType: "Model Provider", url: "https://claude.ai", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
   { id: "l3", name: "Gemini", summaryEn: "AI platform by Google", summaryEs: "Plataforma de IA de Google", providerType: "Model Provider", url: "https://gemini.google.com", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
   { id: "l1", name: "OpenAI", summaryEn: "GPT-based APIs", summaryEs: "APIs basadas en GPT", providerType: "Model Provider", url: "https://openai.com", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
-];
-
-const sampleNews = [
-  { id: "n1", title: "OpenAI releases GPT-5", url: "https://example.com/gpt5", summary: "New model announcement", source: "TechCrunch", publishedDate: "2025-01-15T00:00:00.000Z", topic: "Models" },
-  { id: "n2", title: "Google unveils Gemini 2.0", url: "https://example.com/gemini2", summary: "Google's latest AI", source: "The Verge", publishedDate: "2025-02-01T00:00:00.000Z", topic: "Models" },
 ];
 
 const sampleLtds = [
@@ -260,6 +267,47 @@ describe("github.list", () => {
   });
 });
 
+describe("weeklyViralGithub.list", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns all weekly viral repos, ranked (Weekly Rank ascending)", async () => {
+    mockFetchWeeklyViralGithubRepos.mockResolvedValue(sampleWeeklyViralRepos);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.weeklyViralGithub.list({});
+
+    expect(result.repos).toHaveLength(2);
+    expect(result.repos[0].name).toBe("Zackriya-Solutions/meetily");
+    expect(result.repos[1].name).toBe("asgeirtj/system_prompts_leaks");
+    expect(result.total).toBe(2);
+  });
+
+  it("filters by search term across name, description, owner, and why-viral", async () => {
+    mockFetchWeeklyViralGithubRepos.mockResolvedValue(sampleWeeklyViralRepos);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.weeklyViralGithub.list({ search: "meeting" });
+
+    expect(result.repos).toHaveLength(1);
+    expect(result.repos[0].name).toBe("Zackriya-Solutions/meetily");
+  });
+
+  it("returns empty array when the table has no records", async () => {
+    mockFetchWeeklyViralGithubRepos.mockResolvedValue([]);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.weeklyViralGithub.list({});
+
+    expect(result.repos).toHaveLength(0);
+    expect(result.total).toBe(0);
+  });
+});
+
 describe("llms.list", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -288,34 +336,6 @@ describe("llms.list", () => {
 
     expect(result.models).toHaveLength(1);
     expect(result.models[0].name).toBe("Gemini");
-  });
-});
-
-describe("news.list", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("returns all news items", async () => {
-    mockFetchNewsItems.mockResolvedValue(sampleNews);
-    const { ctx } = createPublicContext();
-    const caller = appRouter.createCaller(ctx);
-
-    const result = await caller.news.list({});
-
-    expect(result.news).toHaveLength(2);
-    expect(result.total).toBe(2);
-  });
-
-  it("filters news by search term", async () => {
-    mockFetchNewsItems.mockResolvedValue(sampleNews);
-    const { ctx } = createPublicContext();
-    const caller = appRouter.createCaller(ctx);
-
-    const result = await caller.news.list({ search: "gpt" });
-
-    expect(result.news).toHaveLength(1);
-    expect(result.news[0].title).toBe("OpenAI releases GPT-5");
   });
 });
 
@@ -666,5 +686,51 @@ describe("aiDiscord.list", () => {
     const result = await caller.aiDiscord.list({});
     expect(result.tools).toHaveLength(3);
     expect(result.total).toBe(3);
+  });
+});
+
+describe("auSeoTools.list", () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it("returns all AU SEO tools sorted alphabetically", async () => {
+    mockFetchAuSeoTools.mockResolvedValue(sampleGenericTools);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.auSeoTools.list({});
+    expect(result.tools).toHaveLength(3);
+    expect(result.tools[0].name).toBe("DALL-E");
+    expect(result.total).toBe(3);
+  });
+
+  it("filters AU SEO tools by search term", async () => {
+    mockFetchAuSeoTools.mockResolvedValue(sampleGenericTools);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.auSeoTools.list({ search: "suno" });
+    expect(result.tools).toHaveLength(1);
+    expect(result.tools[0].name).toBe("Suno");
+  });
+});
+
+describe("sumateTopRecommendations.list", () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it("returns all Sumate Top Recommendations sorted alphabetically", async () => {
+    mockFetchSumateTopRecommendations.mockResolvedValue(sampleGenericTools);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.sumateTopRecommendations.list({});
+    expect(result.tools).toHaveLength(3);
+    expect(result.tools[0].name).toBe("DALL-E");
+    expect(result.total).toBe(3);
+  });
+
+  it("filters Sumate Top Recommendations by search term", async () => {
+    mockFetchSumateTopRecommendations.mockResolvedValue(sampleGenericTools);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.sumateTopRecommendations.list({ search: "suno" });
+    expect(result.tools).toHaveLength(1);
+    expect(result.tools[0].name).toBe("Suno");
   });
 });

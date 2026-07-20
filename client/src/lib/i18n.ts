@@ -27,6 +27,10 @@ export const translations = {
     noDescription: "No description available",
     affiliateDisclosure: "Affiliate link — we may earn a commission",
 
+    visitChannel: "Visit Channel",
+    visitSite: "Visit Site",
+    visitServer: "Join Server",
+
     // Verified review sections
     reviewPros: "Pros",
     reviewCons: "Cons",
@@ -52,7 +56,6 @@ export const translations = {
     tabTools: "AI Tools",
     tabGithub: "GitHub Repos",
     tabLlms: "LLMs",
-    tabNews: "AI News",
     tabLtds: "LTDs",
     tabVideoImage: "Video & Image",
     tabMusicVoice: "Music & Voice",
@@ -68,10 +71,11 @@ export const translations = {
     tabBusinessProductivity: "Business Productivity",
     tabMcpProviders: "MCP Providers",
     tabVpsCloud: "VPS & Cloud",
-    iconAiMedia: "AI Media",
+    iconAiMedia: "Sumate Media",
     iconAiInfluencers: "AI Influencers",
     iconAiSites: "AI Sites",
     iconAiDiscord: "AI Discord",
+    tabAuSeoTools: "AU SEO Tools",
 
     // GitHub Repos section
     githubTitle: "GitHub Repositories",
@@ -84,20 +88,22 @@ export const translations = {
     repoStatus: "Status",
     visitRepo: "Visit Repo",
 
+    // Weekly Viral GitHub Repos section
+    weeklyViralGithubTitle: "This Week's Viral GitHub Repos",
+    weeklyViralGithubSubtitle: "The AI repos exploding on GitHub this week, ranked by trending velocity",
+    weeklyViralWeekOf: "Week of",
+    weeklyViralWhyViral: "Why it's viral",
+    weeklyViralStarsThisWeek: "this week",
+
+    // AU SEO Tools section
+    auSeoToolsTitle: "AU SEO Tools",
+    auSeoToolsSubtitle: "AI-powered SEO and GEO/AEO tools for content optimization and search visibility",
+
     // LLMs section
     llmTitle: "Large Language Models",
     llmSubtitle: "Browse AI model providers and their offerings",
     llmProviderType: "Provider Type",
     visitModel: "Visit Model",
-
-    // AI News section
-    newsTitle: "AI News",
-    newsSubtitle: "Latest news and updates from the AI world",
-    newsPublished: "Published",
-    newsSource: "Source",
-    newsTopic: "Topic",
-    readArticle: "Read Article",
-    noNews: "No news articles available yet",
 
     // LTDs section
     ltdTitle: "Lifetime Deals",
@@ -166,12 +172,16 @@ export const translations = {
     vpsCloudSubtitle: "Cloud hosting and VPS providers optimized for AI workloads",
 
     // AI Media section
-    aiMediaTitle: "AI Media",
+    aiMediaTitle: "Sumate Media",
     aiMediaSubtitle: "AI-powered media platforms, channels, and content creators",
 
     // AI Influencers section
     aiInfluencersTitle: "AI Influencers",
     aiInfluencersSubtitle: "Key voices and influencers shaping the AI industry and community",
+
+    // Sumate Top Recommendations — English-only, hidden entirely in Spanish
+    sumateTopRecommendationsTitle: "Sumate Top Recommendations",
+    sumateTopRecommendationsSubtitle: "Our editors' picks — the creators and channels we rate highest",
 
     // AI Sites section
     aiSitesTitle: "AI Sites",
@@ -193,10 +203,12 @@ export const translations = {
     of: "of",
     sortByName: "Sort by name",
     sortByStars: "Sort by stars",
-    sortByLanguage: "Sort by language",
+    sortByPopularity: "Sort by popularity",
     sortBy: "Sort by",
     sortAscending: "Ascending",
     sortDescending: "Descending",
+    ratingsLegend: "1 = Indie · 5 = Market Leader",
+    ratingsLegendFull: "Ratings run from 1 (Indie) to 5 (Market Leader)",
     loadMore: "Load more",
     showingResults: "Showing {shown} of {total}",
     allOption: "All",
@@ -216,6 +228,11 @@ export const translations = {
     sortByStatus: "Sort by status",
     sortByProvider: "Sort by provider",
     sortByRating: "Sort by rating",
+    languageFilterEnglish: "English",
+    languageFilterSpanish: "Spanish",
+    languageFilterBoth: "Both",
+    blogByAuthor: "By",
+    blogReadingTime: "{minutes} min read",
 
     // Global search
     globalSearchPlaceholder: "Search across all tools...",
@@ -224,6 +241,40 @@ export const translations = {
     globalSearchLoading: "Searching across all tables...",
     globalSearchTitle: "Global Search Results",
     sourceTable: "Category",
+
+    // Hero redesign (2026-07 Claude Design handoff)
+    heroBadgeSuffix: "tools indexed · updated daily",
+    heroHeadlineLine1: "Find the right",
+    heroHeadlineHighlight: "AI tool",
+    heroHeadlineLine2: "Skip the noise.",
+    heroDescription: "Every tool is tested, rated, and reviewed in English and Spanish — so you can shortlist in minutes, not hours.",
+    heroSearchPlaceholder: "Search a tool, task, or category…",
+    heroTryLabel: "Try:",
+    heroChipVoiceCloning: "voice cloning",
+    heroChipFreeLlmApi: "free LLM API",
+    heroChipImageUpscaler: "image upscaler",
+    trustCurated: "Human-curated",
+    trustNoPayToRank: "No pay-to-rank",
+    trustBilingual: "EN / ES reviews",
+
+    // Header
+    submitATool: "Submit a tool",
+    submitToolComingSoon: "Tool submissions are coming soon!",
+
+    // Tool card hover teaser
+    clickForDetails: "Click for details →",
+
+    // Category bar visibility toggle
+    hideCategoryBar: "Hide category bar",
+    showCategoryBar: "Show category bar",
+
+    // Category groups
+    groupAll: "All",
+    groupDiscover: "Discover",
+    groupBuild: "Build & Code",
+    groupCreate: "Create",
+    groupWork: "Work",
+    groupRun: "Infra & Ops",
   },
   es: {
     // Hero section
@@ -251,6 +302,10 @@ export const translations = {
     noDescription: "No hay descripción disponible",
     affiliateDisclosure: "Enlace de afiliado — podemos ganar una comisión",
 
+    visitChannel: "Visitar Canal",
+    visitSite: "Visitar Sitio",
+    visitServer: "Unirse al Servidor",
+
     // Verified review sections
     reviewPros: "Ventajas",
     reviewCons: "Desventajas",
@@ -276,7 +331,6 @@ export const translations = {
     tabTools: "Herramientas IA",
     tabGithub: "Repos GitHub",
     tabLlms: "LLMs",
-    tabNews: "Noticias IA",
     tabLtds: "Ofertas LTD",
     tabVideoImage: "Video e Imagen",
     tabMusicVoice: "Música y Voz",
@@ -292,10 +346,11 @@ export const translations = {
     tabBusinessProductivity: "Productividad Empresarial",
     tabMcpProviders: "Proveedores MCP",
     tabVpsCloud: "VPS y Nube",
-    iconAiMedia: "IA Media",
+    iconAiMedia: "Sumate Media",
     iconAiInfluencers: "IA Influencers",
     iconAiSites: "Sitios IA",
     iconAiDiscord: "IA Discord",
+    tabAuSeoTools: "SEO AU",
 
     // GitHub Repos section
     githubTitle: "Repositorios de GitHub",
@@ -308,20 +363,22 @@ export const translations = {
     repoStatus: "Estado",
     visitRepo: "Visitar Repo",
 
+    // Weekly Viral GitHub Repos section
+    weeklyViralGithubTitle: "Repos Virales de GitHub de la Semana",
+    weeklyViralGithubSubtitle: "Los repos de IA que están explotando en GitHub esta semana, ordenados por velocidad de tendencia",
+    weeklyViralWeekOf: "Semana de",
+    weeklyViralWhyViral: "Por qué es viral",
+    weeklyViralStarsThisWeek: "esta semana",
+
+    // Sección AU SEO Tools
+    auSeoToolsTitle: "Herramientas SEO AU",
+    auSeoToolsSubtitle: "Herramientas de SEO y GEO/AEO con IA para optimización de contenido y visibilidad en buscadores",
+
     // LLMs section
     llmTitle: "Modelos de Lenguaje Grande",
     llmSubtitle: "Explora proveedores de modelos de IA y sus ofertas",
     llmProviderType: "Tipo de Proveedor",
     visitModel: "Visitar Modelo",
-
-    // AI News section
-    newsTitle: "Noticias de IA",
-    newsSubtitle: "Últimas noticias y actualizaciones del mundo de la IA",
-    newsPublished: "Publicado",
-    newsSource: "Fuente",
-    newsTopic: "Tema",
-    readArticle: "Leer Artículo",
-    noNews: "No hay artículos de noticias disponibles aún",
 
     // LTDs section
     ltdTitle: "Ofertas de por Vida",
@@ -390,12 +447,16 @@ export const translations = {
     vpsCloudSubtitle: "Proveedores de hosting en la nube y VPS optimizados para cargas de trabajo de IA",
 
     // AI Media section
-    aiMediaTitle: "IA Media",
+    aiMediaTitle: "Sumate Media",
     aiMediaSubtitle: "Plataformas, canales y creadores de contenido con IA",
 
     // AI Influencers section
     aiInfluencersTitle: "IA Influencers",
     aiInfluencersSubtitle: "Voces clave e influencers que dan forma a la industria y comunidad de IA",
+
+    // Sumate Top Recommendations — solo en inglés, se oculta por completo en español
+    sumateTopRecommendationsTitle: "Sumate Top Recommendations",
+    sumateTopRecommendationsSubtitle: "Las selecciones de nuestros editores — los creadores y canales mejor valorados",
 
     // AI Sites section
     aiSitesTitle: "Sitios IA",
@@ -417,10 +478,12 @@ export const translations = {
     of: "de",
     sortByName: "Ordenar por nombre",
     sortByStars: "Ordenar por estrellas",
-    sortByLanguage: "Ordenar por lenguaje",
+    sortByPopularity: "Ordenar por popularidad",
     sortBy: "Ordenar por",
     sortAscending: "Ascendente",
     sortDescending: "Descendente",
+    ratingsLegend: "1 = Indie · 5 = Líder del mercado",
+    ratingsLegendFull: "Las calificaciones van de 1 (Indie) a 5 (Líder del mercado)",
     loadMore: "Cargar más",
     showingResults: "Mostrando {shown} de {total}",
     allOption: "Todos",
@@ -440,6 +503,11 @@ export const translations = {
     sortByStatus: "Ordenar por estado",
     sortByProvider: "Ordenar por proveedor",
     sortByRating: "Ordenar por calificación",
+    languageFilterEnglish: "Inglés",
+    languageFilterSpanish: "Español",
+    languageFilterBoth: "Ambos",
+    blogByAuthor: "Por",
+    blogReadingTime: "{minutes} min de lectura",
 
     // Global search
     globalSearchPlaceholder: "Buscar en todas las herramientas...",
@@ -448,6 +516,40 @@ export const translations = {
     globalSearchLoading: "Buscando en todas las tablas...",
     globalSearchTitle: "Resultados de búsqueda global",
     sourceTable: "Categoría",
+
+    // Hero redesign (2026-07 Claude Design handoff)
+    heroBadgeSuffix: "herramientas indexadas · actualizado a diario",
+    heroHeadlineLine1: "Encuentra la",
+    heroHeadlineHighlight: "herramienta de IA correcta",
+    heroHeadlineLine2: "Sin el ruido.",
+    heroDescription: "Cada herramienta es probada, calificada y reseñada en inglés y español — así puedes elegir en minutos, no horas.",
+    heroSearchPlaceholder: "Busca una herramienta, tarea o categoría…",
+    heroTryLabel: "Prueba:",
+    heroChipVoiceCloning: "clonación de voz",
+    heroChipFreeLlmApi: "API LLM gratis",
+    heroChipImageUpscaler: "mejorador de imágenes",
+    trustCurated: "Curado por humanos",
+    trustNoPayToRank: "Sin pago por ranking",
+    trustBilingual: "Reseñas EN / ES",
+
+    // Header
+    submitATool: "Enviar una herramienta",
+    submitToolComingSoon: "¡Los envíos de herramientas llegarán pronto!",
+
+    // Tool card hover teaser
+    clickForDetails: "Clic para ver detalles →",
+
+    // Category bar visibility toggle
+    hideCategoryBar: "Ocultar barra de categorías",
+    showCategoryBar: "Mostrar barra de categorías",
+
+    // Category groups
+    groupAll: "Todo",
+    groupDiscover: "Descubrir",
+    groupBuild: "Desarrollo",
+    groupCreate: "Crear",
+    groupWork: "Trabajo",
+    groupRun: "Infra y Operaciones",
   },
 } as const;
 

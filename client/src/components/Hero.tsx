@@ -1,83 +1,85 @@
+import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GlobalSearch } from "./GlobalSearch";
 
-const VIDEO_URL = "/hero-video.mp4";
-
 export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: boolean }) {
   const { t } = useLanguage();
+  const [chipQuery, setChipQuery] = useState<string | undefined>(undefined);
+
+  const chips = [
+    { label: t("heroChipVoiceCloning"), value: "voice cloning" },
+    { label: t("heroChipFreeLlmApi"), value: "free LLM API" },
+    { label: t("heroChipImageUpscaler"), value: "image upscaler" },
+  ];
 
   return (
-    <section className="relative overflow-hidden border-b border-border min-h-[420px] flex items-center justify-center">
-      {/* Video background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        poster=""
-      >
-        <source src={VIDEO_URL} type="video/mp4" />
-      </video>
+    // z-40: the search dropdown must paint over the sticky category nav (z-30) below.
+    // overflow stays visible so the dropdown can extend past the hero's bottom edge.
+    <section className="relative z-40 border-b border-border">
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(640px 300px at 22% -10%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 70%), radial-gradient(720px 340px at 78% 0%, color-mix(in srgb, var(--chart-3) 9%, transparent), transparent 70%)",
+        }}
+      />
 
-      {/* Dark overlay for video readability */}
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-
-      {/* Content with glass box */}
-      <div className="container relative py-20 sm:py-28 text-center z-10">
-        <div className="glass-box inline-block px-8 sm:px-12 py-8 sm:py-10 max-w-2xl fade-up">
-          {/* Mono tick label — Command Centre signature */}
-          <p
-            className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/70 mb-3 drop-shadow"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            AI Tool Directory — EN / ES
-          </p>
-
-          {/* Brand name — no .com */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tighter text-white mb-4 drop-shadow-lg">
-            <span className="text-primary drop-shadow-lg">ai</span>sumate
-          </h1>
-
-          {/* Tagline */}
-          <p className="text-lg sm:text-xl text-white/90 max-w-xl mx-auto leading-relaxed mb-2 drop-shadow">
-            {t("tagline")}
-          </p>
-
-          {/* Subtitle */}
-          <p className="text-sm sm:text-base text-white/70 max-w-lg mx-auto mb-6 drop-shadow">
-            {t("subtitle")}
-          </p>
-
-          {/* Tool count badge */}
+      <div className="relative container max-w-3xl mx-auto text-center py-16 sm:py-20">
+        {/* Tools-indexed pill */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 backdrop-blur-sm px-3.5 py-1.5 text-xs font-semibold text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--chart-2)] pulse-dot" />
           {isLoading ? (
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm px-5 py-2">
-              <span className="h-2 w-2 rounded-full bg-primary pulse-dot" />
-              <span className="h-4 w-10 animate-pulse rounded bg-white/30" />
-              <span className="text-sm text-white/80">
-                {t("toolsCount")}
-              </span>
-            </div>
-          ) : toolCount > 0 ? (
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm px-5 py-2">
-              <span className="h-2 w-2 rounded-full bg-primary pulse-dot" />
-              <span
-                className="text-sm font-semibold text-white tabular-nums"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
-                {toolCount.toLocaleString()}
-              </span>
-              <span className="text-sm text-white/80">
-                {t("toolsCount")}
-              </span>
-            </div>
-          ) : null}
+            <span className="h-4 w-10 animate-pulse rounded bg-muted-foreground/20" />
+          ) : (
+            <span className="text-foreground font-extrabold tabular-nums" style={{ fontFamily: "var(--font-mono)" }}>
+              {toolCount.toLocaleString()}
+            </span>
+          )}{" "}
+          {t("heroBadgeSuffix")}
         </div>
 
-        {/* Global search bar */}
-        <div className="mt-8 relative z-20 fade-up fade-up-delay-1">
-          <GlobalSearch />
+        {/* Headline */}
+        <h1 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.06] tracking-tight text-foreground fade-up">
+          {t("heroHeadlineLine1")} <span className="text-primary">{t("heroHeadlineHighlight")}</span>.
+          <br />
+          {t("heroHeadlineLine2")}
+        </h1>
+
+        {/* Description */}
+        <p className="mt-4 max-w-xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed fade-up fade-up-delay-1">
+          {t("heroDescription")}
+        </p>
+
+        {/* Search */}
+        <div className="mt-7 fade-up fade-up-delay-1">
+          <GlobalSearch presetQuery={chipQuery} placeholder={t("heroSearchPlaceholder")} />
+        </div>
+
+        {/* Quick-search chips — kept tight under the search bar with the trust row */}
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs fade-up fade-up-delay-2">
+          <span className="text-muted-foreground font-medium">{t("heroTryLabel")}</span>
+          {chips.map((chip) => (
+            <button
+              key={chip.value}
+              onClick={() => setChipQuery(chip.value)}
+              className="rounded-full border border-border px-3 py-1 font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Trust row */}
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-5 text-xs font-semibold text-muted-foreground fade-up fade-up-delay-2">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="text-[color:var(--chart-2)]">✓</span> {t("trustCurated")}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="text-[color:var(--chart-2)]">✓</span> {t("trustNoPayToRank")}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="text-[color:var(--chart-2)]">✓</span> {t("trustBilingual")}
+          </span>
         </div>
       </div>
     </section>

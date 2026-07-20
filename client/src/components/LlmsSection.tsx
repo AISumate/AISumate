@@ -209,8 +209,8 @@ export function LlmsSection() {
                         </div>
                       </div>
 
-                      {/* Rating stars */}
-                      {model.rating && model.rating > 0 && (
+                      {/* Rating stars — note: guard must be boolean, `rating &&` renders a literal 0 */}
+                      {(model.rating ?? 0) > 0 && (
                         <StarRating rating={model.rating} accent="var(--tool-accent)" />
                       )}
 

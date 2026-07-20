@@ -7,8 +7,8 @@ import { publicProcedure, router } from "./_core/trpc";
 import {
   fetchAllTools,
   fetchGithubRepos,
+  fetchWeeklyViralGithubRepos,
   fetchLlmModels,
-  fetchNewsItems,
   fetchLtdDeals,
   fetchVideoImageTools,
   fetchMusicVoiceTools,
@@ -28,6 +28,8 @@ import {
   fetchAiInfluencersTools,
   fetchAiSitesTools,
   fetchAiDiscordTools,
+  fetchAuSeoTools,
+  fetchSumateTopRecommendations,
   fetchTotalToolCount,
   type GenericTool,
 } from "./teable";
@@ -149,6 +151,27 @@ export const appRouter = router({
       }),
   }),
 
+  weeklyViralGithub: router({
+    /**
+     * Public endpoint: this week's curated trending AI repos, ranked by
+     * Weekly Rank (1 = most viral). Shown as a highlight strip above the
+     * full GitHub Repos table.
+     */
+    list: publicProcedure
+      .input(searchInput)
+      .query(async ({ input }) => {
+        const repos = await fetchWeeklyViralGithubRepos();
+        let filtered = repos;
+        if (input?.search && input.search.trim()) {
+          const term = input.search.toLowerCase().trim();
+          filtered = filtered.filter((r) =>
+            matchesTerm(term, r.name, r.description, r.owner, r.whyViral)
+          );
+        }
+        return { repos: filtered, total: repos.length };
+      }),
+  }),
+
   llms: router({
     /**
      * Public endpoint: fetch all LLM models from Teable.
@@ -165,23 +188,6 @@ export const appRouter = router({
           );
         }
         return { models: filtered, total: models.length };
-      }),
-  }),
-
-  news: router({
-    /**
-     * Public endpoint: fetch all AI news items from Teable.
-     */
-    list: publicProcedure
-      .input(searchInput)
-      .query(async ({ input }) => {
-        const items = await fetchNewsItems();
-        let filtered = items;
-        if (input?.search && input.search.trim()) {
-          const term = input.search.toLowerCase().trim();
-          filtered = filtered.filter((n) => matchesTerm(term, n.title, n.summary));
-        }
-        return { news: filtered, total: items.length };
       }),
   }),
 
@@ -223,6 +229,8 @@ export const appRouter = router({
   aiInfluencers: makeGenericListRouter(fetchAiInfluencersTools),
   aiSites: makeGenericListRouter(fetchAiSitesTools),
   aiDiscord: makeGenericListRouter(fetchAiDiscordTools),
+  auSeoTools: makeGenericListRouter(fetchAuSeoTools),
+  sumateTopRecommendations: makeGenericListRouter(fetchSumateTopRecommendations),
 
   search: router({
     /**
@@ -265,9 +273,8 @@ export const appRouter = router({
         const tableFetchers: Array<{ label: string; fetch: () => Promise<SearchSourceItem[]> }> = [
           { label: "AI Tools", fetch: () => fetchAllTools() },
           { label: "GitHub Repos", fetch: () => fetchGithubRepos() },
+          { label: "Weekly Viral GitHub", fetch: () => fetchWeeklyViralGithubRepos() },
           { label: "LLMs", fetch: () => fetchLlmModels() },
-          { label: "AI News", fetch: () => fetchNewsItems() },
-          { label: "LTDs", fetch: () => fetchLtdDeals() },
           { label: "Video & Image", fetch: () => fetchVideoImageTools() },
           { label: "Music & Voice", fetch: () => fetchMusicVoiceTools() },
           { label: "Chatbots & Agents", fetch: () => fetchChatbotsTools() },
@@ -286,6 +293,8 @@ export const appRouter = router({
           { label: "AI Influencers", fetch: () => fetchAiInfluencersTools() },
           { label: "AI Sites", fetch: () => fetchAiSitesTools() },
           { label: "AI Discord", fetch: () => fetchAiDiscordTools() },
+          { label: "AU SEO Tools", fetch: () => fetchAuSeoTools() },
+          { label: "Sumate Top Recommendations", fetch: () => fetchSumateTopRecommendations() },
         ];
 
         // Staggered fetch: the cache serves most of these instantly, but on a

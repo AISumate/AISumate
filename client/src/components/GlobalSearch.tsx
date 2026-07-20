@@ -23,13 +23,29 @@ interface SearchResult {
   sourceTable: string;
 }
 
-export function GlobalSearch() {
+export function GlobalSearch({
+  presetQuery,
+  placeholder,
+  inputClassName,
+}: {
+  /** Set from an ancestor (e.g. hero quick-search chips) to populate and open the dropdown. */
+  presetQuery?: string;
+  placeholder?: string;
+  inputClassName?: string;
+} = {}) {
   const { t, language } = useLanguage();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [displayCount, setDisplayCount] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (presetQuery) {
+      setQuery(presetQuery);
+      setShowResults(true);
+    }
+  }, [presetQuery]);
 
   // Debounce the search query
   useEffect(() => {
@@ -93,8 +109,8 @@ export function GlobalSearch() {
             setShowResults(true);
           }}
           onFocus={() => setShowResults(true)}
-          placeholder={t("globalSearchPlaceholder")}
-          className="pl-12 pr-10 h-12 text-base rounded-full border-border bg-background/80 backdrop-blur-sm shadow-lg"
+          placeholder={placeholder ?? t("globalSearchPlaceholder")}
+          className={inputClassName ?? "pl-12 pr-10 h-12 text-base rounded-full border-border bg-background/80 backdrop-blur-sm shadow-lg"}
         />
         {query && (
           <button

@@ -2,15 +2,13 @@ import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Loader2, ImageIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { Loader2 } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
-import { accentClassFor, ReviewDetails, reviewHoverCardClass, SectionHeading, StarRating, ToolIcon, VisitButton, type ReviewInfo } from "./toolVisuals";
+import { SectionHeading, type ReviewInfo } from "./toolVisuals";
+import { ToolCard } from "./ToolCard";
+import { BlogPostDialog } from "./BlogPostDialog";
 
 interface GenericTool extends ReviewInfo {
   id: string;
@@ -24,23 +22,45 @@ interface GenericTool extends ReviewInfo {
   isAffiliate: boolean;
   rating?: number;
   isNew?: boolean;
+  isEnglishContent?: boolean;
+  isSpanishContent?: boolean;
+  popularity?: number;
+  slug?: string;
+  bodyEn?: string;
+  bodyEs?: string;
+  author?: string;
+  tags?: string[];
+  readingTimeMinutes?: number;
+  publishedDate?: string;
 }
 
-type SectionTabKey = "videoImage" | "musicVoice" | "chatbots" | "freeApis" | "freeLlmIde" | "vibeCoding" | "designerTools" | "aiInfra" | "hardware" | "testingTools" | "aiSecurity" | "businessProductivity" | "mcpProviders" | "vpsCloud" | "aiMedia" | "aiInfluencers" | "aiSites" | "aiDiscord";
+type ContentLanguageFilter = "all" | "en" | "es";
+
+type SectionTabKey = "videoImage" | "musicVoice" | "chatbots" | "freeApis" | "freeLlmIde" | "vibeCoding" | "designerTools" | "aiInfra" | "hardware" | "testingTools" | "aiSecurity" | "businessProductivity" | "mcpProviders" | "vpsCloud" | "aiMedia" | "aiInfluencers" | "aiSites" | "aiDiscord" | "auSeoTools";
 type TranslationKey = Parameters<ReturnType<typeof useLanguage>["t"]>[0];
 
 interface GenericToolSectionProps {
   queryKey: SectionTabKey;
   titleKey: TranslationKey;
   subtitleKey: TranslationKey;
+  /** Visit-button label, e.g. "visitChannel" for AI Influencers. Defaults to "Visit Tool". */
+  visitLabelKey?: TranslationKey;
+  /** Show a "sort by popularity" option — only meaningful for tables with a Subscribers/popularity metric (AI Influencers). */
+  hasPopularitySort?: boolean;
+  /** Show the English/Spanish/Both content-language radio filter — only meaningful for tables with English/Spanish content flags (AI Influencers). */
+  hasLanguageFilter?: boolean;
+  /** Clicking a tile opens its full body content in a blog-post dialog (AI Media). */
+  hasBlogView?: boolean;
 }
 
-export function GenericToolSection({ queryKey, titleKey, subtitleKey }: GenericToolSectionProps) {
-  const { t, language } = useLanguage();
+export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabelKey = "visitToolGeneric", hasPopularitySort = false, hasLanguageFilter = false, hasBlogView = false }: GenericToolSectionProps) {
+  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [languageFilter, setLanguageFilter] = useState<ContentLanguageFilter>("all");
+  const [blogPostTool, setBlogPostTool] = useState<GenericTool | null>(null);
   const [displayCount, setDisplayCount] = useState(100);
 
   // Fetch the full (server-cached) list once; search/filter/sort client-side
@@ -70,6 +90,11 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey }: GenericT
     if (categoryFilter !== "all") {
       result = result.filter((tool) => tool.category === categoryFilter);
     }
+    if (hasLanguageFilter && languageFilter !== "all") {
+      result = result.filter((tool) =>
+        languageFilter === "en" ? tool.isEnglishContent : tool.isSpanishContent,
+      );
+    }
     const sorted = [...result].sort((a, b) => {
       let cmp = 0;
       if (sortField === "name") {
@@ -80,11 +105,14 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey }: GenericT
       } else if (sortField === "rating") {
         cmp = (b.rating || 0) - (a.rating || 0);
         if (cmp === 0) cmp = a.name.localeCompare(b.name);
+      } else if (sortField === "popularity") {
+        cmp = (b.popularity || 0) - (a.popularity || 0);
+        if (cmp === 0) cmp = a.name.localeCompare(b.name);
       }
       return sortDirection === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [tools, search, categoryFilter, sortField, sortDirection]);
+  }, [tools, search, categoryFilter, sortField, sortDirection, hasLanguageFilter, languageFilter]);
 
   const displayedTools = useMemo(() => filteredTools.slice(0, displayCount), [filteredTools, displayCount]);
 
@@ -98,11 +126,13 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey }: GenericT
     setCategoryFilter("all");
     setSortField("name");
     setSortDirection("asc");
+    setLanguageFilter("all");
     setDisplayCount(100);
   };
 
   return (
-    <div className="py-6">
+    // max-w-5xl: keep the tools area in a centered middle column like the mockup
+    <div className="py-6 max-w-5xl mx-auto">
       <SectionHeading title={t(titleKey)} subtitle={t(subtitleKey)} />
 
       <FilterBar
@@ -128,11 +158,35 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey }: GenericT
             { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
             { value: "category", labelKey: "filterByCategory", defaultDirection: "asc" },
             { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
+            ...(hasPopularitySort
+              ? [{ value: "popularity", labelKey: "sortByPopularity", defaultDirection: "desc" as const }]
+              : []),
           ],
         }}
         resultCount={filteredTools.length}
         onReset={handleReset}
       />
+
+      {hasLanguageFilter && (
+        <RadioGroup
+          value={languageFilter}
+          onValueChange={(v) => { setLanguageFilter(v as ContentLanguageFilter); setDisplayCount(100); }}
+          className="mb-6 -mt-3 flex flex-row flex-wrap items-center gap-5"
+        >
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="en" id={`${queryKey}-lang-en`} />
+            <Label htmlFor={`${queryKey}-lang-en`} className="font-normal cursor-pointer">{t("languageFilterEnglish")}</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="es" id={`${queryKey}-lang-es`} />
+            <Label htmlFor={`${queryKey}-lang-es`} className="font-normal cursor-pointer">{t("languageFilterSpanish")}</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="all" id={`${queryKey}-lang-both`} />
+            <Label htmlFor={`${queryKey}-lang-both`} className="font-normal cursor-pointer">{t("languageFilterBoth")}</Label>
+          </div>
+        </RadioGroup>
+      )}
 
       {/* Loading state */}
       {isLoading && (
@@ -158,81 +212,17 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey }: GenericT
       {/* Tools grid */}
       {!isLoading && !isError && filteredTools.length > 0 && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {displayedTools.map((tool, idx) => {
-              const description = language === "es" ? tool.descriptionEs : tool.descriptionEn;
-              const visitUrl = tool.isAffiliate && tool.affiliateUrl ? tool.affiliateUrl : tool.url;
+              const canOpenBlogPost = hasBlogView && Boolean(tool.bodyEn);
               return (
-              <HoverCard key={tool.id} openDelay={300} closeDelay={200}>
-                <HoverCardTrigger asChild>
-                  <div className={`group relative flex flex-col items-center justify-center rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-xl hover:-translate-y-1 cursor-pointer min-h-[120px] overflow-hidden ${accentClassFor(idx)}`}>
-                    {/* Icon */}
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden ring-2 ring-border group-hover:ring-[var(--tool-accent)] transition-all duration-200" style={{ backgroundColor: "color-mix(in oklch, var(--tool-accent) 12%, var(--card))" }}>
-                      <ToolIcon
-                        iconUrl={tool.iconUrl}
-                        siteUrl={tool.url}
-                        alt={tool.name}
-                        className="h-full w-full object-contain"
-                        fallback={<ImageIcon className="h-6 w-6" style={{ color: "var(--tool-accent)" }} />}
-                      />
-                    </div>
-                    {/* Name */}
-                    <p className="text-sm font-medium text-center text-foreground line-clamp-2">
-                      {tool.name}
-                    </p>
-
-                    {/* New badge pinned to the corner so it never crowds the title */}
-                    {tool.isNew && (
-                      <Badge className="absolute bottom-2 right-2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">New</Badge>
-                    )}
-                  </div>
-                </HoverCardTrigger>
-                {/* Accent class repeated: portal content doesn't inherit --tool-accent from the card */}
-                <HoverCardContent className={`${reviewHoverCardClass(tool, "p-4")} ${accentClassFor(idx)}`} side="top" align="center">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <ToolIcon
-                        iconUrl={tool.iconUrl}
-                        siteUrl={tool.url}
-                        alt={tool.name}
-                        className="h-8 w-8 rounded object-contain"
-                        fallback={null}
-                      />
-                      <div className="flex items-center gap-1.5">
-                        <h4 className="font-semibold text-foreground">{tool.name}</h4>
-                        {tool.isNew && (
-                          <Badge className="shrink-0 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">New</Badge>
-                        )}
-                      </div>
-                    </div>
-                    {/* Rating stars */}
-                    {tool.rating && tool.rating > 0 && (
-                      <StarRating rating={tool.rating} accent="var(--tool-accent)" />
-                    )}
-                    {description && (
-                      <div>
-                        <p className="text-sm text-muted-foreground line-clamp-4">
-                          {description}
-                        </p>
-                        {tool.isAffiliate && tool.affiliateUrl && (
-                          <p className="text-xs text-muted-foreground italic mt-2">
-                            {t("affiliateDisclosure")}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {tool.category && (
-                      <span className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ backgroundColor: "color-mix(in oklch, var(--tool-accent) 15%, transparent)", color: "var(--tool-accent)" }}>
-                        {tool.category}
-                      </span>
-                    )}
-                    {/* Verified review: pros / cons / cost / verdict in the active language */}
-                    <ReviewDetails review={tool} />
-                    {/* Visit button — the only link out, so affiliate URLs can't be bypassed */}
-                    <VisitButton url={visitUrl} label={t("visitToolGeneric")} />
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
+                <ToolCard
+                  key={tool.id}
+                  tool={tool}
+                  index={idx}
+                  visitLabel={t(visitLabelKey)}
+                  onOpenDetails={canOpenBlogPost ? () => setBlogPostTool(tool) : undefined}
+                />
               );
             })}
           </div>
@@ -255,6 +245,14 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey }: GenericT
             </div>
           )}
         </>
+      )}
+
+      {hasBlogView && (
+        <BlogPostDialog
+          tool={blogPostTool}
+          open={blogPostTool !== null}
+          onOpenChange={(open) => { if (!open) setBlogPostTool(null); }}
+        />
       )}
     </div>
   );

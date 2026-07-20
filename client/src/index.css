@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -236,6 +237,15 @@
     50% { opacity: 0.35; }
   }
   .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+  /* Scrollable but with the scrollbar itself hidden (hover review plane, pill nav) */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Active tab in terracotta — unlayered so it wins over Tailwind utilities */

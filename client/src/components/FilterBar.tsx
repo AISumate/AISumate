@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, X, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, X, ArrowUpDown, ArrowUp, ArrowDown, Star } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -55,7 +55,9 @@ export function FilterBar({
   const hasActiveFilters = searchTerm.trim() || filters.some((f) => f.value !== "all");
 
   return (
-    <div className="mb-6 space-y-4">
+    // Glass panel: the tabs' gridline background otherwise runs straight through
+    // the search/sort controls and makes them hard to read.
+    <div className="mb-6 space-y-4 rounded-2xl border border-border/70 bg-card/80 backdrop-blur-md p-4 shadow-sm">
       {/* Search + sort row */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         {/* Search bar */}
@@ -120,6 +122,15 @@ export function FilterBar({
             </Button>
           </div>
         )}
+
+        {/* Ratings legend — far right, same row as sort */}
+        <span
+          className="ml-auto hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap"
+          title={t("ratingsLegendFull")}
+        >
+          <Star className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
+          {t("ratingsLegend")}
+        </span>
       </div>
 
       {/* Filter dropdowns row */}

@@ -1,14 +1,15 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, PanelTopClose, PanelTopOpen } from "lucide-react";
 import { ToolGrid } from "./ToolGrid";
 import { type AiTool } from "./ToolCard";
 import { GithubReposSection } from "./GithubReposSection";
+import { WeeklyViralGithubSection } from "./WeeklyViralGithubSection";
+import { SumateTopRecommendationsSection } from "./SumateTopRecommendationsSection";
 import { LlmsSection } from "./LlmsSection";
-import { NewsSection } from "./NewsSection";
-import { LtdsSection } from "./LtdsSection";
 import { GenericToolSection } from "./GenericToolSection";
+import { GroupedCategoryNav } from "./GroupedCategoryNav";
 
 interface SectionTabsProps {
   tools: AiTool[];
@@ -20,8 +21,17 @@ interface SectionTabsProps {
 export function SectionTabs({ tools, categories, toolsLoading, toolsError }: SectionTabsProps) {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("tools");
+  // The 3-row category bar can feel bulky — a floating toggle hides it, remembered per browser.
+  const [navHidden, setNavHidden] = useState(() => localStorage.getItem("hideCategoryBar") === "true");
 
-  // Sync with URL hash so icon links can switch tabs
+  const toggleNav = () => {
+    setNavHidden((prev) => {
+      localStorage.setItem("hideCategoryBar", String(!prev));
+      return !prev;
+    });
+  };
+
+  // Sync with URL hash so icon links (and direct links) can switch tabs
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
     if (hash) {
@@ -36,81 +46,21 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
   }, []);
 
   return (
-    <div className="flex-1" data-tabs-section>
-      <div className="container py-2">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full justify-start h-auto p-1.5 bg-secondary/50 flex-wrap gap-1 rounded-xl">
-            <TabsTrigger value="tools" className="text-sm">
-              {t("tabTools")}
-            </TabsTrigger>
-            <TabsTrigger value="github" className="text-sm">
-              {t("tabGithub")}
-            </TabsTrigger>
-            <TabsTrigger value="llms" className="text-sm">
-              {t("tabLlms")}
-            </TabsTrigger>
-            <TabsTrigger value="videoImage" className="text-sm">
-              {t("tabVideoImage")}
-            </TabsTrigger>
-            <TabsTrigger value="musicVoice" className="text-sm">
-              {t("tabMusicVoice")}
-            </TabsTrigger>
-            <TabsTrigger value="chatbots" className="text-sm">
-              {t("tabChatbots")}
-            </TabsTrigger>
-            <TabsTrigger value="news" className="text-sm">
-              {t("tabNews")}
-            </TabsTrigger>
-            <TabsTrigger value="ltds" className="text-sm">
-              {t("tabLtds")}
-            </TabsTrigger>
-            <TabsTrigger value="freeApis" className="text-sm">
-              {t("tabFreeApis")}
-            </TabsTrigger>
-            <TabsTrigger value="freeLlmIde" className="text-sm">
-              {t("tabFreeLlmIde")}
-            </TabsTrigger>
-            <TabsTrigger value="vibeCoding" className="text-sm">
-              {t("tabVibeCoding")}
-            </TabsTrigger>
-            <TabsTrigger value="designerTools" className="text-sm">
-              {t("tabDesignerTools")}
-            </TabsTrigger>
-            <TabsTrigger value="aiInfra" className="text-sm">
-              {t("tabAiInfra")}
-            </TabsTrigger>
-            <TabsTrigger value="hardware" className="text-sm">
-              {t("tabHardware")}
-            </TabsTrigger>
-            <TabsTrigger value="testingTools" className="text-sm">
-              {t("tabTestingTools")}
-            </TabsTrigger>
-            <TabsTrigger value="aiSecurity" className="text-sm">
-              {t("tabAiSecurity")}
-            </TabsTrigger>
-            <TabsTrigger value="businessProductivity" className="text-sm">
-              {t("tabBusinessProductivity")}
-            </TabsTrigger>
-            <TabsTrigger value="mcpProviders" className="text-sm">
-              {t("tabMcpProviders")}
-            </TabsTrigger>
-            <TabsTrigger value="vpsCloud" className="text-sm">
-              {t("tabVpsCloud")}
-            </TabsTrigger>
-            <TabsTrigger value="aiMedia" className="text-sm">
-              {t("iconAiMedia")}
-            </TabsTrigger>
-            <TabsTrigger value="aiInfluencers" className="text-sm">
-              {t("iconAiInfluencers")}
-            </TabsTrigger>
-            <TabsTrigger value="aiSites" className="text-sm">
-              {t("iconAiSites")}
-            </TabsTrigger>
-            <TabsTrigger value="aiDiscord" className="text-sm">
-              {t("iconAiDiscord")}
-            </TabsTrigger>
-          </TabsList>
+    <div className="flex-1">
+      {!navHidden && <GroupedCategoryNav activeTab={activeTab} onChange={setActiveTab} />}
 
+      {/* Floating show/hide toggle for the category bar — persisted in localStorage */}
+      <button
+        onClick={toggleNav}
+        title={navHidden ? t("showCategoryBar") : t("hideCategoryBar")}
+        aria-label={navHidden ? t("showCategoryBar") : t("hideCategoryBar")}
+        className="fixed bottom-4 right-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/90 backdrop-blur-md shadow-lg text-muted-foreground transition-colors hover:text-primary hover:border-primary/50"
+      >
+        {navHidden ? <PanelTopOpen className="h-4 w-4" /> : <PanelTopClose className="h-4 w-4" />}
+      </button>
+
+      <div className="container py-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsContent value="tools" className="mt-0 grid-pattern-bg">
             {toolsLoading ? (
               <div className="flex items-center justify-center py-20">
@@ -123,7 +73,17 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
             )}
           </TabsContent>
 
+          <TabsContent value="aiMedia" className="mt-0 grid-pattern-bg">
+            <GenericToolSection
+              queryKey="aiMedia"
+              titleKey="aiMediaTitle"
+              subtitleKey="aiMediaSubtitle"
+              hasBlogView
+            />
+          </TabsContent>
+
           <TabsContent value="github" className="mt-0 grid-pattern-bg">
+            <WeeklyViralGithubSection />
             <GithubReposSection />
           </TabsContent>
 
@@ -153,14 +113,6 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
               titleKey="chatbotsTitle"
               subtitleKey="chatbotsSubtitle"
             />
-          </TabsContent>
-
-          <TabsContent value="news" className="mt-0 grid-pattern-bg">
-            <NewsSection />
-          </TabsContent>
-
-          <TabsContent value="ltds" className="mt-0 grid-pattern-bg">
-            <LtdsSection />
           </TabsContent>
 
           <TabsContent value="freeApis" className="mt-0 grid-pattern-bg">
@@ -251,35 +203,43 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
             />
           </TabsContent>
 
-          <TabsContent value="aiMedia" className="mt-0 grid-pattern-bg">
-            <GenericToolSection
-              queryKey="aiMedia"
-              titleKey="aiMediaTitle"
-              subtitleKey="aiMediaSubtitle"
-            />
-          </TabsContent>
-
           <TabsContent value="aiInfluencers" className="mt-0 grid-pattern-bg">
+            <SumateTopRecommendationsSection />
             <GenericToolSection
               queryKey="aiInfluencers"
               titleKey="aiInfluencersTitle"
               subtitleKey="aiInfluencersSubtitle"
+              visitLabelKey="visitChannel"
+              hasPopularitySort
+              hasLanguageFilter
             />
           </TabsContent>
 
           <TabsContent value="aiSites" className="mt-0 grid-pattern-bg">
             <GenericToolSection
               queryKey="aiSites"
+              visitLabelKey="visitSite"
               titleKey="aiSitesTitle"
               subtitleKey="aiSitesSubtitle"
+              hasLanguageFilter
             />
           </TabsContent>
 
           <TabsContent value="aiDiscord" className="mt-0 grid-pattern-bg">
             <GenericToolSection
               queryKey="aiDiscord"
+              visitLabelKey="visitServer"
               titleKey="aiDiscordTitle"
               subtitleKey="aiDiscordSubtitle"
+              hasLanguageFilter
+            />
+          </TabsContent>
+
+          <TabsContent value="auSeoTools" className="mt-0 grid-pattern-bg">
+            <GenericToolSection
+              queryKey="auSeoTools"
+              titleKey="auSeoToolsTitle"
+              subtitleKey="auSeoToolsSubtitle"
             />
           </TabsContent>
         </Tabs>

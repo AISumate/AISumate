@@ -236,8 +236,8 @@ export function LtdsSection() {
                         </div>
                       </div>
 
-                      {/* Rating stars */}
-                      {deal.rating && deal.rating > 0 && (
+                      {/* Rating stars — note: guard must be boolean, `rating &&` renders a literal 0 */}
+                      {(deal.rating ?? 0) > 0 && (
                         <StarRating rating={deal.rating} accent="var(--tool-accent)" />
                       )}
 

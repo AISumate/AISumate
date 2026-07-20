@@ -4,7 +4,7 @@ import { Star, ExternalLink, GitBranch, ArrowUp, ArrowDown, ArrowUpDown } from "
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
-import { SectionHeading } from "./toolVisuals";
+import { formatCompactNumber, SectionHeading } from "./toolVisuals";
 
 export interface GithubRepo {
   id: string;
@@ -18,13 +18,6 @@ export interface GithubRepo {
 
 type SortField = "name" | "stars";
 type SortDirection = "asc" | "desc";
-
-function formatStars(stars: number): string {
-  if (stars >= 1000) {
-    return `${(stars / 1000).toFixed(1)}k`;
-  }
-  return String(stars);
-}
 
 export function GithubReposSection() {
   const { t } = useLanguage();
@@ -190,7 +183,7 @@ export function GithubReposSection() {
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center gap-1 text-foreground font-medium">
                         <Star className="h-3.5 w-3.5 fill-current" style={{ color: "var(--tool-accent)" }} />
-                        {formatStars(repo.stars)}
+                        {formatCompactNumber(repo.stars)}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">

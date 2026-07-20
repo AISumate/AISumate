@@ -95,7 +95,8 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
 
   return (
     <section className="py-12 grid-pattern-bg">
-      <div className="container">
+      {/* max-w-5xl: keep the tools area in a centered middle column like the mockup */}
+      <div className="container max-w-5xl">
         <FilterBar
           searchTerm={searchTerm}
           onSearchChange={handleSearchChange}
@@ -123,7 +124,7 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
 
         {filteredTools.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTools.slice(0, displayCount).map((tool, idx) => (
                 <ToolCard key={tool.id} tool={tool} index={idx} />
               ))}

@@ -25,6 +25,38 @@ export function accentClassFor(index: number): string {
   return ACCENT_CLASSES[index % ACCENT_CLASSES.length];
 }
 
+/**
+ * Small EN/ES chip for a record's own content language (e.g. an AI
+ * Influencers channel that broadcasts in Spanish) — independent of the
+ * site's UI language toggle, which still controls which translated summary
+ * is shown. Pinned to the icon's corner like an avatar status badge.
+ */
+export function ContentLanguageBadge({
+  isEnglish,
+  isSpanish,
+}: {
+  isEnglish?: boolean;
+  isSpanish?: boolean;
+}) {
+  if (!isEnglish && !isSpanish) return null;
+  const label = isEnglish && isSpanish ? "EN/ES" : isEnglish ? "EN" : "ES";
+  return (
+    <span
+      className="absolute -bottom-1 -right-1 rounded-full border border-border bg-card px-1 py-px text-[8px] font-bold leading-tight text-foreground shadow-sm"
+      style={{ fontFamily: "var(--font-mono)" }}
+      title={isEnglish && isSpanish ? "English & Spanish channel" : isEnglish ? "English-language channel" : "Spanish-language channel"}
+    >
+      {label}
+    </span>
+  );
+}
+
+/** Compact number formatting for star counts etc. (12500 -> "12.5k"). */
+export function formatCompactNumber(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
+  return String(n);
+}
+
 export function StarRating({
   rating,
   accent,
