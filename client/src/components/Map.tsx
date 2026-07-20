@@ -86,6 +86,10 @@ declare global {
   }
 }
 
+// VITE_-prefixed vars are bundled into the public client JS by Vite convention —
+// never put a real server secret here. This one is meant to be a browser-key
+// (Google Maps JS API key restricted by HTTP referrer in Google Cloud Console),
+// same as VITE_APP_ID in const.ts — not a confidential credential.
 const API_KEY = import.meta.env.VITE_FRONTEND_FORGE_API_KEY;
 const FORGE_BASE_URL =
   import.meta.env.VITE_FRONTEND_FORGE_API_URL ||

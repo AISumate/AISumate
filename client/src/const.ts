@@ -13,6 +13,11 @@ export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 // with "invalid oauth state". It returns void by design, so there is no URL to
 // stash across renders.
 export const startLogin = () => {
+  // VITE_-prefixed vars ship in the public client bundle by Vite convention.
+  // appId here is a public OAuth client identifier (no client secret is used
+  // in this flow — see the nonce/state handshake below) — safe to expose,
+  // same as VITE_FRONTEND_FORGE_API_KEY in Map.tsx. Never put a real secret
+  // behind a VITE_ var.
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
   const redirectUri = `${window.location.origin}/api/oauth/callback`;
