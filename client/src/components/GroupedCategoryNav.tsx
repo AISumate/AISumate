@@ -41,8 +41,10 @@ export function GroupedCategoryNav({ activeTab, onChange }: GroupedCategoryNavPr
   return (
     <div className="sticky top-16 z-30 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="container py-2.5">
-        {/* All 22 pills visible at once, wrapped into ~3 centered rows — no horizontal scroll */}
-        <div className="flex flex-wrap justify-center gap-1.5">
+        {/* Desktop (sm+): all pills visible at once, wrapped into ~3 centered rows.
+            Mobile: single scrollable row — wrapping here would push the sticky bar
+            past half the viewport height (~20 pills x ~3 lines). */}
+        <div className="flex flex-nowrap gap-1.5 overflow-x-auto sm:flex-wrap sm:justify-center sm:overflow-visible">
           {CATEGORY_TABS.map((tab) => (
             <button
               key={tab.tabValue}

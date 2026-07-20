@@ -734,3 +734,44 @@ describe("sumateTopRecommendations.list", () => {
     expect(result.tools[0].name).toBe("Suno");
   });
 });
+
+describe("search.global", () => {
+  // search.global calls all 24 table fetchers, unlike the single-fetcher
+  // `.list` endpoints above — resetAllMocks (not clearAllMocks) is required so
+  // an un-mocked fetcher here returns undefined (caught, treated as empty)
+  // instead of silently keeping whatever another describe block last resolved.
+  beforeEach(() => { vi.resetAllMocks(); });
+
+  it("dedupes a tool cross-listed in AI Tools and its specialized table, preferring the specialized match", async () => {
+    mockFetchAllTools.mockResolvedValue([
+      { id: "g2", name: "Suno", descriptionEn: "AI music generator", descriptionEs: "Generador de música IA", url: "https://suno.com", affiliateUrl: "", iconUrl: "", category: "Music", isAffiliate: true, rating: 0 },
+    ]);
+    mockFetchMusicVoiceTools.mockResolvedValue([
+      { id: "mv1", name: "Suno", descriptionEn: "AI music generator", descriptionEs: "Generador de música IA", url: "https://suno.com", affiliateUrl: "", iconUrl: "", category: "Music & Voice", isAffiliate: true, rating: 0 },
+    ]);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.search.global({ query: "suno" });
+
+    expect(result.results).toHaveLength(1);
+    expect(result.results[0].sourceTable).toBe("Music & Voice");
+    expect(result.total).toBe(1);
+  });
+
+  it("keeps distinct tools from different tables un-deduped", async () => {
+    mockFetchAllTools.mockResolvedValue([
+      { id: "g1", name: "DALL-E", descriptionEn: "AI image generator", descriptionEs: "Generador de imágenes IA", url: "https://openai.com/dall-e", affiliateUrl: "", iconUrl: "", category: "Image", isAffiliate: false, rating: 0 },
+    ]);
+    mockFetchMusicVoiceTools.mockResolvedValue([
+      { id: "mv1", name: "Suno", descriptionEn: "AI music generator", descriptionEs: "Generador de música IA", url: "https://suno.com", affiliateUrl: "", iconUrl: "", category: "Music & Voice", isAffiliate: true, rating: 0 },
+    ]);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.search.global({ query: "ai" });
+
+    expect(result.results).toHaveLength(2);
+    expect(result.total).toBe(2);
+  });
+});

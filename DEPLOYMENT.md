@@ -80,7 +80,5 @@ one registry line in `server/teable.ts` + one router line + a list test.
   existing `aisumate-dev` launcher (cmd wrapper), or use WSL/Git Bash.
 - The Teable API key must stay server-side only; it is read from env in
   `server/_core/env.ts` and never shipped to the client bundle.
-- `client/public/hero-video.mp4` (~10 MB) deploys to the CDN as-is — consider
-  re-encoding to ~2–3 MB before heavy traffic.
 - Manus-era pieces (OAuth login, forge LLM/image APIs) are unconfigured
   outside Manus; all public pages work without them.

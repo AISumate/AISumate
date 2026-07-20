@@ -331,13 +331,26 @@ export const appRouter = router({
           })
         );
 
-        // Flatten, sort by name, and limit
+        // Flatten. The same real-world tool can legitimately live in both the
+        // generic "AI Tools" table and its specialized category table (e.g. a
+        // music tool tagged into both AI Tools and Music & Voice) — dedupe by
+        // url (falling back to name) so search doesn't show it twice, keeping
+        // the more specific category match over the generic "AI Tools" one.
         const allResults = results.flat();
-        allResults.sort((a, b) => a.name.localeCompare(b.name));
+        const deduped = new Map<string, (typeof allResults)[number]>();
+        for (const result of allResults) {
+          const key = (result.url || result.name).trim().toLowerCase();
+          const existing = deduped.get(key);
+          if (!existing || existing.sourceTable === "AI Tools") {
+            deduped.set(key, result);
+          }
+        }
+        const uniqueResults = Array.from(deduped.values());
+        uniqueResults.sort((a, b) => a.name.localeCompare(b.name));
 
         return {
-          results: allResults.slice(0, limit),
-          total: allResults.length,
+          results: uniqueResults.slice(0, limit),
+          total: uniqueResults.length,
         };
       }),
   }),
