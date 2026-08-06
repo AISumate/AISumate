@@ -27,11 +27,14 @@ export function GlobalSearch({
   presetQuery,
   placeholder,
   inputClassName,
+  onOpenChange,
 }: {
   /** Set from an ancestor (e.g. hero quick-search chips) to populate and open the dropdown. */
   presetQuery?: string;
   placeholder?: string;
   inputClassName?: string;
+  /** Fires when the results dropdown opens/closes, so ancestors can hide content it would overlap. */
+  onOpenChange?: (open: boolean) => void;
 } = {}) {
   const { t, language } = useLanguage();
   const [query, setQuery] = useState("");
@@ -93,6 +96,11 @@ export function GlobalSearch({
   };
 
   const hasQuery = query.trim().length >= 2;
+  const isOpen = showResults && hasQuery;
+
+  useEffect(() => {
+    onOpenChange?.(isOpen);
+  }, [isOpen, onOpenChange]);
 
   return (
     <div ref={containerRef} className="relative w-full max-w-2xl mx-auto">
@@ -124,7 +132,7 @@ export function GlobalSearch({
       </div>
 
       {/* Results dropdown */}
-      {showResults && hasQuery && (
+      {isOpen && (
         <div className="absolute top-full mt-3 w-full rounded-2xl border border-border bg-popover shadow-2xl overflow-hidden z-50 max-h-[600px] overflow-y-auto">
           {/* Loading state */}
           {(isLoading || isFetching) && (

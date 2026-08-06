@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GlobalSearch } from "./GlobalSearch";
 
 export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: boolean }) {
   const { t } = useLanguage();
   const [chipQuery, setChipQuery] = useState<string | undefined>(undefined);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const handleSearchOpenChange = useCallback((open: boolean) => setSearchOpen(open), []);
+
+  // The results dropdown is absolutely positioned over these two rows and is
+  // narrower than them, so their ends bleed out around its edges. Hide them
+  // while it's open, keeping their layout space so the page doesn't jump.
+  // Must be `visibility`, not opacity: these rows carry `fade-up`, whose
+  // `animation-fill-mode: both` retains `opacity: 1` and outranks an opacity
+  // utility in the cascade. The keyframes don't touch visibility.
+  const hiddenUnderDropdown = searchOpen ? "invisible" : "visible";
 
   const chips = [
     { label: t("heroChipVoiceCloning"), value: "voice cloning" },
@@ -52,11 +62,17 @@ export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: 
 
         {/* Search */}
         <div className="mt-7 fade-up fade-up-delay-1">
-          <GlobalSearch presetQuery={chipQuery} placeholder={t("heroSearchPlaceholder")} />
+          <GlobalSearch
+            presetQuery={chipQuery}
+            placeholder={t("heroSearchPlaceholder")}
+            onOpenChange={handleSearchOpenChange}
+          />
         </div>
 
         {/* Quick-search chips — kept tight under the search bar with the trust row */}
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs fade-up fade-up-delay-2">
+        <div
+          className={`mt-3 flex flex-wrap items-center justify-center gap-2 text-xs fade-up fade-up-delay-2 ${hiddenUnderDropdown}`}
+        >
           <span className="text-muted-foreground font-medium">{t("heroTryLabel")}</span>
           {chips.map((chip) => (
             <button
@@ -70,7 +86,9 @@ export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: 
         </div>
 
         {/* Trust row */}
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-5 text-xs font-semibold text-muted-foreground fade-up fade-up-delay-2">
+        <div
+          className={`mt-3 flex flex-wrap items-center justify-center gap-5 text-xs font-semibold text-muted-foreground fade-up fade-up-delay-2 ${hiddenUnderDropdown}`}
+        >
           <span className="inline-flex items-center gap-1.5">
             <span className="text-[color:var(--chart-2)]">✓</span> {t("trustCurated")}
           </span>
