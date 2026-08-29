@@ -14,18 +14,22 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-md shadow-sm">
-      <div className="container flex h-16 items-center justify-between gap-3">
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-2.5 shrink-0">
+      <div className="container flex h-20 items-center justify-between gap-3">
+        {/* Logo — wordmark deliberately oversized. The mark scales with it, and the
+            header grows to h-20 so a 36px cap-height still clears the bar. */}
+        <a href="/" className="flex items-center gap-3 shrink-0">
           <img
             src="/aisumate-logo-192.png"
             alt=""
             aria-hidden="true"
-            width={36}
-            height={36}
-            className="h-9 w-9 shrink-0 rounded-full"
+            width={48}
+            height={48}
+            className="h-10 w-10 shrink-0 rounded-full sm:h-12 sm:w-12"
           />
-          <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
+          <span
+            className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
             <span className="text-primary">ai</span><span className="text-foreground">sumate</span>
           </span>
         </a>

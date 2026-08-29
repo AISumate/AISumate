@@ -51,6 +51,16 @@ export const translations = {
     // Footer
     footerText: "Your gateway to AI productivity",
     footerRights: "All rights reserved",
+    footerContactLabel: "Contact us:",
+    // Deliberately precise: the site loads Google Fonts and falls back to Google's
+    // favicon service for tool logos, so a blanket "we collect nothing" would be
+    // untrue. Revisit this wording if those third-party calls are ever removed.
+    footerPrivacy:
+      "We run no analytics and set no tracking or advertising cookies — we don't collect, store or sell your personal data. Your language and theme choices are saved only in your own browser. Fonts and some tool logos load from Google, so your IP address is visible to them.",
+    footerRatingsDisclaimer:
+      "Ratings are opinions only and may be changed after further review.",
+    footerAffiliateDisclaimer:
+      "Affiliate links may be added to some sites, which provides funding to keep this site alive.",
 
     // Section tabs
     tabTools: "AI Tools",
@@ -326,6 +336,13 @@ export const translations = {
     // Footer
     footerText: "Tu puerta de entrada a la productividad con IA",
     footerRights: "Todos los derechos reservados",
+    footerContactLabel: "Contáctanos:",
+    footerPrivacy:
+      "No usamos analíticas ni cookies de rastreo o publicidad, y no recopilamos, almacenamos ni vendemos tus datos personales. Tus preferencias de idioma y tema se guardan solo en tu propio navegador. Las fuentes y algunos logos de herramientas se cargan desde Google, por lo que tu dirección IP es visible para ellos.",
+    footerRatingsDisclaimer:
+      "Las calificaciones son solo opiniones y pueden cambiar tras una revisión posterior.",
+    footerAffiliateDisclaimer:
+      "Es posible que se añadan enlaces de afiliados a algunos sitios, lo que ayuda a financiar el mantenimiento de este sitio.",
 
     // Section tabs
     tabTools: "Herramientas IA",

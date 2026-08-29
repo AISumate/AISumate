@@ -39,7 +39,8 @@ export function GroupedCategoryNav({ activeTab, onChange }: GroupedCategoryNavPr
   const { t } = useLanguage();
 
   return (
-    <div className="sticky top-16 z-30 border-b border-border bg-background/85 backdrop-blur-md">
+    // top-20 must track the header's h-20, or this bar overlaps it or floats below it.
+    <div className="sticky top-20 z-30 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="container py-2.5">
         {/* Desktop (sm+): all pills visible at once, wrapped into ~3 centered rows.
             Mobile: single scrollable row — wrapping here would push the sticky bar
