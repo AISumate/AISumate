@@ -212,7 +212,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
       {/* Tools grid */}
       {!isLoading && !isError && filteredTools.length > 0 && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* 5-up at xl, where the container is at its 1216px cap (218px cards).
+              lg holds a 960px container, so it stops at 4 (228px cards). */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {displayedTools.map((tool, idx) => {
               const canOpenBlogPost = hasBlogView && Boolean(tool.bodyEn);
               return (

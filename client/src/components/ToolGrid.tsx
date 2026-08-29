@@ -124,7 +124,9 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
 
         {filteredTools.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Matches GenericToolSection: 5-up at xl (1216px container → 218px cards),
+                4 at lg (960px container → 228px). */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {filteredTools.slice(0, displayCount).map((tool, idx) => (
                 <ToolCard key={tool.id} tool={tool} index={idx} />
               ))}

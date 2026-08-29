@@ -10,12 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Bot } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { cleanVerdict } from "@shared/reviewSanitize";
 import {
   accentClassFor,
-  ConfidenceBadge,
   ContentLanguageBadge,
-  hasReviewContent,
   ReviewDetails,
   StarRating,
   ToolIcon,
@@ -58,8 +55,6 @@ export function ToolCard({
   const description = language === "es" ? tool.descriptionEs : tool.descriptionEn;
   const visitUrl = tool.isAffiliate && tool.affiliateUrl ? tool.affiliateUrl : tool.url;
   const label = visitLabel ?? t("visitTool");
-  const showOverlay = hasReviewContent(tool);
-  const verdict = cleanVerdict(language === "es" ? tool.verdictEs : tool.verdictEn);
   const openDetails = onOpenDetails ?? (() => setOpen(true));
 
   return (
@@ -73,7 +68,9 @@ export function ToolCard({
         }}
         className={`group relative flex flex-col gap-2.5 min-h-[220px] rounded-xl border border-border bg-card p-4 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:z-20 focus-within:z-20 hover:border-[color-mix(in_oklch,var(--tool-accent)_45%,var(--border))] hover:shadow-xl ${accentClass}`}
       >
-        {/* Header: icon on the left, title + rating share one row so the description gets more room below */}
+        {/* Header: icon + title/category only. The rating sits on its own row below —
+            sharing this row with it cost ~92px, which at 5-up (218px cards) left the
+            title just ~31px and truncated nearly every name. */}
         <div className="flex items-center gap-2.5">
           <div
             className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl overflow-hidden ring-2 ring-border group-hover:ring-[var(--tool-accent)] transition-all duration-200"
@@ -96,12 +93,13 @@ export function ToolCard({
               <p className="text-xs text-muted-foreground mt-0.5 truncate">{tool.category}</p>
             )}
           </div>
-          {(tool.rating ?? 0) > 0 && (
-            <div className="shrink-0">
-              <StarRating rating={tool.rating!} accent="var(--tool-accent)" starClassName="h-3 w-3" />
-            </div>
-          )}
         </div>
+
+        {(tool.rating ?? 0) > 0 && (
+          <div className="-mt-1">
+            <StarRating rating={tool.rating!} accent="var(--tool-accent)" starClassName="h-3 w-3" />
+          </div>
+        )}
 
         {tool.isNew && (
           <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">
@@ -116,15 +114,15 @@ export function ToolCard({
           </p>
         )}
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 mt-auto">
-          <div onClick={(e) => e.stopPropagation()} className="flex-1">
-            <VisitButton url={visitUrl} label={label} compact />
-          </div>
+        {/* Actions — stacked, not side by side. At 5-up the card is 179px (145px of
+            content) but the two buttons need ~198px in a row, so they overflowed.
+            Description sits on top and opens the detail modal; it replaced the old
+            hover teaser as the way into the full review. */}
+        <div className="flex flex-col gap-1.5 mt-auto">
           <Button
             variant="outline"
             size="sm"
-            className="h-7 px-3 text-xs"
+            className="h-7 w-full px-3 text-xs"
             onClick={(e) => {
               e.stopPropagation();
               openDetails();
@@ -132,36 +130,10 @@ export function ToolCard({
           >
             {t("description")}
           </Button>
-        </div>
-
-        {/* Hover teaser — a small peek (verdict + confidence) on a rounded plane slightly
-            larger than the card. The full review lives in the click-to-open modal. */}
-        {showOverlay && (
-          <div
-            className="absolute -left-4 -right-4 -top-2 z-20 flex flex-col gap-2 rounded-2xl p-4 max-h-0 opacity-0 pointer-events-none overflow-hidden transition-[max-height,opacity,box-shadow] duration-300 ease-out group-hover:max-h-56 group-hover:opacity-100 group-hover:pointer-events-auto group-hover:shadow-2xl"
-            style={{
-              background: "color-mix(in oklch, var(--card) 96%, var(--tool-accent))",
-              backdropFilter: "blur(6px)",
-              border: "1px solid color-mix(in oklch, var(--tool-accent) 35%, var(--border))",
-            }}
-          >
-            <div className="flex items-center gap-2 shrink-0">
-              <h3 className="text-sm font-semibold text-card-foreground truncate">{tool.name}</h3>
-              <ConfidenceBadge level={tool.reviewConfidence} />
-            </div>
-            <p className="text-xs leading-relaxed text-card-foreground line-clamp-3">
-              {verdict || description}
-            </p>
-            <div className="mt-auto flex items-center gap-2 shrink-0">
-              <span className="flex-1 text-xs font-bold" style={{ color: "var(--tool-accent)" }}>
-                {t("clickForDetails")}
-              </span>
-              <div onClick={(e) => e.stopPropagation()}>
-                <VisitButton url={visitUrl} label={label} compact />
-              </div>
-            </div>
+          <div onClick={(e) => e.stopPropagation()} className="flex justify-center">
+            <VisitButton url={visitUrl} label={label} compact />
           </div>
-        )}
+        </div>
       </div>
 
       {/* Tool detail modal */}
