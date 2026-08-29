@@ -16,7 +16,15 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-md shadow-sm">
       <div className="container flex h-16 items-center justify-between gap-3">
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2 shrink-0">
+        <a href="/" className="flex items-center gap-2.5 shrink-0">
+          <img
+            src="/aisumate-logo-192.png"
+            alt=""
+            aria-hidden="true"
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 rounded-full"
+          />
           <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
             <span className="text-primary">ai</span><span className="text-foreground">sumate</span>
           </span>
