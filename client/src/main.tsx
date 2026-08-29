@@ -6,6 +6,13 @@ import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
 import { startLogin } from "./const";
+// Self-hosted Geist, replacing the Google Fonts <link> — no third-party request,
+// so no visitor IP reaches Google on page load. `wght` only (no italic axis),
+// matching the old `family=Geist:wght@100..900` URL, so italics stay synthetic
+// exactly as before. These ship every subset but each is unicode-range gated,
+// so a Latin page only ever downloads the Latin file.
+import "@fontsource-variable/geist/wght.css";
+import "@fontsource-variable/geist-mono/wght.css";
 import "./index.css";
 
 const queryClient = new QueryClient();
