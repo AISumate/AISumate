@@ -1,0 +1,13 @@
+# Marks this project as its own pnpm workspace root.
+#
+# C:\Users\dietg\ contains a pnpm-workspace.yaml, and pnpm walks up until it
+# finds the nearest one. Without this file, installs run against the home
+# directory as the workspace root and materialise packages into
+# C:\Users\dietg\node_modules — TypeScript's typeRoots then walk up into that
+# tree, find a second @types/react (and @types/estree), and every component
+# fails with "ReactNode is not assignable to ReactNode". Tests and the Vite
+# build stay green throughout, so only `pnpm check` catches it.
+#
+# `ignore-workspace=true` in .npmrc is NOT sufficient — pnpm add ignores it.
+packages:
+  - .
