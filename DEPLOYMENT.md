@@ -1,7 +1,11 @@
 # aisumate — CI/CD & Deployment
 
-How changes get from your editor to **aisumate.ai** on Vercel, and what has to
+How changes get from your editor to **aisumate.com** on Vercel, and what has to
 pass before anything ships.
+
+> Domain note: the site was originally built for `aisumate.ai`, which lapsed at
+> the registry and is gone. The live domain is now **aisumate.com**, registered
+> at Hostinger.
 
 ## The pipeline at a glance
 
@@ -44,28 +48,41 @@ one registry line in `server/teable.ts` + one router line + a list test.
 - The standalone server (`server/_core/index.ts`, used by `pnpm dev` and any
   VPS deploy) uses the same `createApp()` — one API codebase, two runtimes.
 
-## One-time setup (new GitHub + new Vercel account)
+## One-time setup (AISumate GitHub + Vercel account)
 
-1. **GitHub**: create an empty repo on the new account, then from this folder:
+The GitHub account is **`AISumate`** (a personal user account, not an org) and
+the repo is **`AISumate/AISumate`** (private).
+
+1. **GitHub**: from this folder —
    ```bash
-   git remote add origin https://github.com/<account>/aisumate.git
+   git remote add origin https://github.com/AISumate/AISumate.git
    git push -u origin main
    ```
-2. **Vercel**: `npm i -g vercel`, then `vercel login` (new account) and
-   `vercel link` in this folder → creates `.vercel/project.json` containing
-   `orgId` and `projectId`.
-3. **GitHub secrets** (repo → Settings → Secrets and variables → Actions):
+   Whoever pushes must be the `AISumate` account or a collaborator on that repo.
+2. **Vercel**: sign in to the Vercel account for `hello@aisumate.com`, then
+   either **Import the GitHub repo from the Vercel dashboard** (simplest — gives
+   automatic deploys on every push and needs no local CLI), or link locally with
+   `npx vercel login` + `npx vercel link` → creates `.vercel/project.json`.
+3. **GitHub secrets** — only needed if you want the bundled `cd.yml` workflow to
+   deploy instead of Vercel's own Git integration (repo → Settings → Secrets and
+   variables → Actions):
    | Secret | Value |
    |---|---|
    | `VERCEL_TOKEN` | vercel.com → Account Settings → Tokens |
    | `VERCEL_ORG_ID` | `orgId` from `.vercel/project.json` |
    | `VERCEL_PROJECT_ID` | `projectId` from `.vercel/project.json` |
 4. **Vercel environment variables** (project → Settings → Environment
-   Variables, for Production): copy every key from your local `.env` —
-   `TEABLE_API_KEY`, `TEABLE_API_URL`, and all 23 `TEABLE_*_TABLE_ID` vars.
-   Without these the site deploys but shows no data.
-5. **Domain**: point `aisumate.ai` at the Vercel project (project → Settings
-   → Domains) once the first deploy looks right.
+   Variables, Production): the fastest route is Vercel's bulk paste — open your
+   local `.env` and paste the whole file in. That covers `TEABLE_API_KEY`,
+   `TEABLE_API_URL`, and all 25 `TEABLE_*_TABLE_ID` vars. Without these the site
+   deploys but shows no data.
+5. **Domain** (`aisumate.com`, registered at **Hostinger**): add the domain in
+   Vercel (project → Settings → Domains), then in Hostinger point DNS at Vercel —
+   either switch to Vercel's nameservers, or keep Hostinger DNS and set an
+   `A` record for `@` → `76.76.21.21` plus a `CNAME` for `www` →
+   `cname.vercel-dns.com`. The domain currently sits on Hostinger's parking
+   nameservers (`*.dns-parking.com`), so it must be repointed before it serves
+   the site.
 
 ## Day-to-day
 
