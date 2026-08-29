@@ -30,6 +30,23 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- MindPal AI assistant (floating-corner widget). Knowledge-base + output
+         only — no conversation storage or webhooks. Loads from getmindpal.com. -->
+    <script>
+      window.mindpalConfig = {
+        chatbotId: "ai-sumate-website-assistant-xi3",
+        display: {
+          type: "floating-corner",
+          anchor: "right"
+        },
+        behavior: {
+          showInitialMessageBubbleWhenMinimized: true,
+          minimizedByDefault: true
+        }
+      };
+    </script>
+    <script src="https://chatbot.getmindpal.com/embed.min.js"></script>
   </body>
 
 </html>
