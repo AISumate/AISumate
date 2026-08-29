@@ -281,14 +281,26 @@ function isNewRecord(record: TeableRecord): boolean {
 // --- Fetching ---
 
 /** Retry a fetch with exponential backoff on 429 responses. */
-async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
+// Teable rate-limits bursts with 429 AND, under heavier concurrency (e.g. a
+// cold serverless instance fetching all ~24 tables at once), 503. Retry both,
+// plus transient 502/504, honouring Retry-After when present. Without this a
+// single rate-limited response bubbles up as a thrown error and the section
+// renders empty.
+const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
+
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 5): Promise<Response> {
   let lastResponse: Response | null = null;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const response = await fetch(url, options);
-    if (response.status !== 429) return response;
+    if (!RETRYABLE_STATUS.has(response.status)) return response;
     lastResponse = response;
-    const backoffMs = Math.min(500 * Math.pow(2, attempt), 4000);
-    console.warn(`[Teable] Rate limited (429), retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`);
+    if (attempt === maxRetries) break;
+    // Prefer the server's Retry-After (seconds) if it sent one; else exponential backoff.
+    const retryAfter = Number(response.headers.get("retry-after"));
+    const backoffMs = Number.isFinite(retryAfter) && retryAfter > 0
+      ? Math.min(retryAfter * 1000, 8000)
+      : Math.min(500 * Math.pow(2, attempt), 8000);
+    console.warn(`[Teable] ${response.status}, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`);
     await delay(backoffMs);
   }
   return lastResponse!;

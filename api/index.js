@@ -47,7 +47,7 @@ function getSessionCookieOptions(req) {
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-async function staggeredAll(tasks, batchSize = 3, delayMs = 200) {
+async function staggeredAll(tasks, batchSize = 2, delayMs = 350) {
   const results = [];
   for (let i = 0; i < tasks.length; i += batchSize) {
     const batch = tasks.slice(i, i + batchSize);
@@ -344,14 +344,17 @@ function isNewRecord(record) {
   if (isNaN(created)) return false;
   return Date.now() - created < NEW_BADGE_WINDOW_MS;
 }
-async function fetchWithRetry(url, options, maxRetries = 3) {
+var RETRYABLE_STATUS = /* @__PURE__ */ new Set([429, 502, 503, 504]);
+async function fetchWithRetry(url, options, maxRetries = 5) {
   let lastResponse = null;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const response = await fetch(url, options);
-    if (response.status !== 429) return response;
+    if (!RETRYABLE_STATUS.has(response.status)) return response;
     lastResponse = response;
-    const backoffMs = Math.min(500 * Math.pow(2, attempt), 4e3);
-    console.warn(`[Teable] Rate limited (429), retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`);
+    if (attempt === maxRetries) break;
+    const retryAfter = Number(response.headers.get("retry-after"));
+    const backoffMs = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(retryAfter * 1e3, 8e3) : Math.min(500 * Math.pow(2, attempt), 8e3);
+    console.warn(`[Teable] ${response.status}, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`);
     await delay(backoffMs);
   }
   return lastResponse;
