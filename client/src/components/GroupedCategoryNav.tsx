@@ -66,7 +66,6 @@ const NAV_GROUPS: NavGroup[] = [
     tabs: [
       { tabValue: "vibeCoding", labelKey: "tabVibeCoding" },
       { tabValue: "freeLlmIde", labelKey: "tabFreeLlmIde" },
-      { tabValue: "github", labelKey: "tabGithub" },
       { tabValue: "mcpProviders", labelKey: "tabMcpProviders" },
       { tabValue: "testingTools", labelKey: "tabTestingTools" },
     ],
@@ -83,6 +82,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     labelKey: "groupDiscover",
     tabs: [
+      { tabValue: "github", labelKey: "tabGithub" },
       { tabValue: "aiInfluencers", labelKey: "iconAiInfluencers" },
       { tabValue: "aiSites", labelKey: "iconAiSites" },
       { tabValue: "aiDiscord", labelKey: "iconAiDiscord" },
