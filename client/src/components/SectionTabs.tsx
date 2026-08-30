@@ -225,6 +225,7 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
               titleKey="aiSitesTitle"
               subtitleKey="aiSitesSubtitle"
               hasLanguageFilter
+              compactCards
             />
           </TabsContent>
 
@@ -235,6 +236,7 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
               titleKey="aiDiscordTitle"
               subtitleKey="aiDiscordSubtitle"
               hasLanguageFilter
+              compactCards
             />
           </TabsContent>
 
