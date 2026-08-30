@@ -214,6 +214,7 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
               visitLabelKey="visitChannel"
               hasPopularitySort
               hasLanguageFilter
+              compactCards
             />
           </TabsContent>
 

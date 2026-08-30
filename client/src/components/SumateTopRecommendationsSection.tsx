@@ -44,11 +44,13 @@ export function SumateTopRecommendationsSection() {
           subtitle={t("sumateTopRecommendationsSubtitle")}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        {/* Compact tiles, matching the AI Influencers grid this strip sits above. */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {sorted.map((item, idx) => (
             <ToolCard
               key={item.id}
               index={idx}
+              compact
               visitLabel={t("visitChannel")}
               tool={{ ...item, affiliateUrl: "" } as AiTool}
             />

@@ -51,9 +51,14 @@ interface GenericToolSectionProps {
   hasLanguageFilter?: boolean;
   /** Clicking a tile opens its full body content in a blog-post dialog (AI Media). */
   hasBlogView?: boolean;
+  /**
+   * Denser tiles with no description teaser, and more columns per row — for
+   * long lists (AI Influencers) where fitting more on screen beats the preview.
+   */
+  compactCards?: boolean;
 }
 
-export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabelKey = "visitToolGeneric", hasPopularitySort = false, hasLanguageFilter = false, hasBlogView = false }: GenericToolSectionProps) {
+export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabelKey = "visitToolGeneric", hasPopularitySort = false, hasLanguageFilter = false, hasBlogView = false, compactCards = false }: GenericToolSectionProps) {
   const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -220,8 +225,15 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
       {!isLoading && !isError && filteredTools.length > 0 && (
         <>
           {/* 5-up at xl, where the container is at its 1216px cap (218px cards).
-              lg holds a 960px container, so it stops at 4 (228px cards). */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+              lg holds a 960px container, so it stops at 4 (228px cards).
+              Compact mode goes two columns denser at every breakpoint. */}
+          <div
+            className={`grid gap-3 ${
+              compactCards
+                ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
+            }`}
+          >
             {displayedTools.map((tool, idx) => {
               const canOpenBlogPost = hasBlogView && Boolean(tool.bodyEn);
               return (
@@ -229,6 +241,7 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
                   key={tool.id}
                   tool={tool}
                   index={idx}
+                  compact={compactCards}
                   visitLabel={t(visitLabelKey)}
                   onOpenDetails={canOpenBlogPost ? () => setBlogPostTool(tool) : undefined}
                 />

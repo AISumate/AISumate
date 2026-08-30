@@ -44,6 +44,7 @@ export function ToolCard({
   rank,
   cornerBadge,
   detailExtra,
+  compact = false,
 }: {
   tool: AiTool;
   index?: number;
@@ -56,6 +57,12 @@ export function ToolCard({
   cornerBadge?: React.ReactNode;
   /** Extra content rendered inside the detail dialog, under the description. */
   detailExtra?: React.ReactNode;
+  /**
+   * Denser card: drops the description teaser and shrinks the tile, so pages
+   * with many entries (AI Influencers) fit more per screen. The full
+   * description is still one click away via the Description button.
+   */
+  compact?: boolean;
 }) {
   const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -75,9 +82,9 @@ export function ToolCard({
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") openDetails();
         }}
-        className={`group relative flex flex-col gap-2.5 min-h-[220px] rounded-xl border border-border bg-card p-4 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:z-20 focus-within:z-20 hover:border-[color-mix(in_oklch,var(--tool-accent)_45%,var(--border))] hover:shadow-xl ${
-          rank != null || cornerBadge ? "pt-9" : ""
-        } ${accentClass}`}
+        className={`group relative flex flex-col rounded-xl border border-border bg-card cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:z-20 focus-within:z-20 hover:border-[color-mix(in_oklch,var(--tool-accent)_45%,var(--border))] hover:shadow-xl ${
+          compact ? "gap-2 min-h-[128px] p-3" : "gap-2.5 min-h-[220px] p-4"
+        } ${rank != null || cornerBadge ? "pt-9" : ""} ${accentClass}`}
       >
         {/* Rank badge (top-left) — used by the Weekly Viral GitHub strip. */}
         {rank != null && (
@@ -110,7 +117,14 @@ export function ToolCard({
             <ContentLanguageBadge isEnglish={tool.isEnglishContent} isSpanish={tool.isSpanishContent} />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-semibold leading-tight text-card-foreground truncate">
+            {/* Compact tiles are narrower, so long names (YouTube channels) get
+                two lines instead of an ellipsis — the room freed by dropping
+                the description teaser. */}
+            <h3
+              className={`text-sm font-semibold leading-tight text-card-foreground ${
+                compact ? "line-clamp-2" : "truncate"
+              }`}
+            >
               {tool.name}
             </h3>
             {tool.category && (
@@ -132,8 +146,10 @@ export function ToolCard({
           </Badge>
         )}
 
-        {/* Description — freed up a full row by folding the rating into the header above */}
-        {description && (
+        {/* Description — freed up a full row by folding the rating into the header
+            above. Hidden in compact mode: on dense pages it only ever showed a
+            truncated fragment, so it's better read in full via the button. */}
+        {description && !compact && (
           <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 flex-1">
             {description}
           </p>
