@@ -193,6 +193,8 @@ export const translations = {
     // Sumate Top Recommendations — English-only, hidden entirely in Spanish
     sumateTopRecommendationsTitle: "Sumate Top Recommendations",
     sumateTopRecommendationsSubtitle: "Our editors' picks — the creators and channels we rate highest",
+    thisWeeksAiPicksTitle: "This Week's AI Picks",
+    thisWeeksAiPicksSubtitle: "Our top 5 tools this week — hand-picked, tested and reviewed",
 
     // AI Sites section
     aiSitesTitle: "AI Sites",
@@ -481,6 +483,8 @@ export const translations = {
     // Sumate Top Recommendations — solo en inglés, se oculta por completo en español
     sumateTopRecommendationsTitle: "Sumate Top Recommendations",
     sumateTopRecommendationsSubtitle: "Las selecciones de nuestros editores — los creadores y canales mejor valorados",
+    thisWeeksAiPicksTitle: "Selecciones IA de la Semana",
+    thisWeeksAiPicksSubtitle: "Nuestras 5 mejores herramientas de la semana — elegidas, probadas y reseñadas",
 
     // AI Sites section
     aiSitesTitle: "Sitios IA",

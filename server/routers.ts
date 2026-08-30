@@ -30,6 +30,7 @@ import {
   fetchAiDiscordTools,
   fetchAuSeoTools,
   fetchSumateTopRecommendations,
+  fetchThisWeeksAiPicks,
   fetchTotalToolCount,
   type GenericTool,
 } from "./teable";
@@ -275,6 +276,7 @@ export const appRouter = router({
   aiDiscord: makeGenericListRouter(fetchAiDiscordTools),
   auSeoTools: makeGenericListRouter(fetchAuSeoTools),
   sumateTopRecommendations: makeGenericListRouter(fetchSumateTopRecommendations),
+  thisWeeksAiPicks: makeGenericListRouter(fetchThisWeeksAiPicks),
 
   search: router({
     /**

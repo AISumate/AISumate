@@ -4,6 +4,7 @@ import { ToolCard } from "./ToolCard";
 import type { AiTool } from "./ToolCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { FilterBar } from "./FilterBar";
+import { ThisWeeksAiPicksSection } from "./ThisWeeksAiPicksSection";
 
 interface ToolGridProps {
   tools: AiTool[];
@@ -94,7 +95,10 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
   };
 
   return (
-    <section className="py-12 grid-pattern-bg">
+    // pt-2: the category nav is a single-row carousel now, so the old py-12 top
+    // padding (on top of the tab wrapper's py-4) left a dead gap above the
+    // search bar. Bottom padding stays generous.
+    <section className="pt-2 pb-12 grid-pattern-bg">
       {/* max-w-5xl: keep the tools area in a centered middle column like the mockup */}
       <div className="container max-w-5xl">
         <FilterBar
@@ -121,6 +125,9 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
           resultCount={filteredTools.length}
           onReset={handleReset}
         />
+
+        {/* Curated top-5 strip, between the search bar and the main grid. */}
+        <ThisWeeksAiPicksSection />
 
         {filteredTools.length > 0 ? (
           <>

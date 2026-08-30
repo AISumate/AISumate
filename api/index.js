@@ -102,7 +102,12 @@ var ENV = {
   teableAiSitesTableId: process.env.TEABLE_AI_SITES_TABLE_ID ?? "",
   teableAiDiscordTableId: process.env.TEABLE_AI_DISCORD_TABLE_ID ?? "",
   teableAuSeoToolsTableId: process.env.TEABLE_AU_SEO_TOOLS_TABLE_ID ?? "",
-  teableSumateTopRecommendationsTableId: process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? ""
+  teableSumateTopRecommendationsTableId: process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? "",
+  // Table IDs are not secrets (the API key is what grants access), so this one
+  // carries its real default: the front-page "This Week's AI Picks" strip then
+  // works on any deploy without needing a new dashboard env var set first.
+  // Still overridable by the env var if the base ever changes.
+  teableThisWeeksAiPicksTableId: process.env.TEABLE_THIS_WEEKS_AI_PICKS_TABLE_ID ?? "tbloOK3GBpzHHUyVZeW"
 };
 
 // server/_core/notification.ts
@@ -446,7 +451,8 @@ var GENERIC_TABLES = [
   { key: "aiSites", label: "AI Sites", tableId: () => ENV.teableAiSitesTableId },
   { key: "aiDiscord", label: "AI Discord", tableId: () => ENV.teableAiDiscordTableId },
   { key: "auSeoTools", label: "AU SEO Tools", tableId: () => ENV.teableAuSeoToolsTableId },
-  { key: "sumateTopRecommendations", label: "Sumate Top Recommendations", tableId: () => ENV.teableSumateTopRecommendationsTableId }
+  { key: "sumateTopRecommendations", label: "Sumate Top Recommendations", tableId: () => ENV.teableSumateTopRecommendationsTableId },
+  { key: "thisWeeksAiPicks", label: "This Week's AI Picks", tableId: () => ENV.teableThisWeeksAiPicksTableId }
 ];
 async function fetchGenericTools(key) {
   const table = GENERIC_TABLES.find((t2) => t2.key === key);
@@ -478,6 +484,7 @@ var fetchAiSitesTools = () => fetchGenericTools("aiSites");
 var fetchAiDiscordTools = () => fetchGenericTools("aiDiscord");
 var fetchAuSeoTools = () => fetchGenericTools("auSeoTools");
 var fetchSumateTopRecommendations = () => fetchGenericTools("sumateTopRecommendations");
+var fetchThisWeeksAiPicks = () => fetchGenericTools("thisWeeksAiPicks");
 async function fetchAllTools() {
   return withCache("tools", async () => {
     const records = await fetchAllRecords(ENV.teableTableId);
@@ -625,7 +632,12 @@ async function fetchTotalToolCount() {
     () => fetchWeeklyViralGithubRepos(),
     () => fetchLlmModels(),
     // LTDs intentionally excluded — the LTDs tab is hidden from the site for now.
-    ...GENERIC_TABLES.map((t2) => () => fetchGenericTools(t2.key))
+    // "This Week's AI Picks" is also excluded: it re-lists tools that already
+    // live in the other tables (a curated shortlist, not new inventory), so
+    // counting it would inflate the headline "tools indexed" figure.
+    ...GENERIC_TABLES.filter((t2) => t2.key !== "thisWeeksAiPicks").map(
+      (t2) => () => fetchGenericTools(t2.key)
+    )
   ];
   const results = await staggeredAll(tasks, 3, 200);
   return results.reduce((sum, arr) => sum + arr.length, 0);
@@ -821,6 +833,7 @@ var appRouter = router({
   aiDiscord: makeGenericListRouter(fetchAiDiscordTools),
   auSeoTools: makeGenericListRouter(fetchAuSeoTools),
   sumateTopRecommendations: makeGenericListRouter(fetchSumateTopRecommendations),
+  thisWeeksAiPicks: makeGenericListRouter(fetchThisWeeksAiPicks),
   search: router({
     /**
      * Global search across all Teable tables.

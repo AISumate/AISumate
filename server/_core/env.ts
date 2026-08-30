@@ -34,4 +34,10 @@ export const ENV = {
   teableAiDiscordTableId: process.env.TEABLE_AI_DISCORD_TABLE_ID ?? "",
   teableAuSeoToolsTableId: process.env.TEABLE_AU_SEO_TOOLS_TABLE_ID ?? "",
   teableSumateTopRecommendationsTableId: process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? "",
+  // Table IDs are not secrets (the API key is what grants access), so this one
+  // carries its real default: the front-page "This Week's AI Picks" strip then
+  // works on any deploy without needing a new dashboard env var set first.
+  // Still overridable by the env var if the base ever changes.
+  teableThisWeeksAiPicksTableId:
+    process.env.TEABLE_THIS_WEEKS_AI_PICKS_TABLE_ID ?? "tbloOK3GBpzHHUyVZeW",
 };

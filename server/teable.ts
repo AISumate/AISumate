@@ -415,6 +415,7 @@ export const GENERIC_TABLES = [
   { key: "aiDiscord", label: "AI Discord", tableId: () => ENV.teableAiDiscordTableId },
   { key: "auSeoTools", label: "AU SEO Tools", tableId: () => ENV.teableAuSeoToolsTableId },
   { key: "sumateTopRecommendations", label: "Sumate Top Recommendations", tableId: () => ENV.teableSumateTopRecommendationsTableId },
+  { key: "thisWeeksAiPicks", label: "This Week's AI Picks", tableId: () => ENV.teableThisWeeksAiPicksTableId },
 ] as const;
 
 export type GenericTableKey = (typeof GENERIC_TABLES)[number]["key"];
@@ -455,6 +456,7 @@ export const fetchAiSitesTools = () => fetchGenericTools("aiSites");
 export const fetchAiDiscordTools = () => fetchGenericTools("aiDiscord");
 export const fetchAuSeoTools = () => fetchGenericTools("auSeoTools");
 export const fetchSumateTopRecommendations = () => fetchGenericTools("sumateTopRecommendations");
+export const fetchThisWeeksAiPicks = () => fetchGenericTools("thisWeeksAiPicks");
 
 // --- Tools (main table) ---
 
@@ -625,7 +627,12 @@ export async function fetchTotalToolCount(): Promise<number> {
     () => fetchWeeklyViralGithubRepos(),
     () => fetchLlmModels(),
     // LTDs intentionally excluded — the LTDs tab is hidden from the site for now.
-    ...GENERIC_TABLES.map((t) => () => fetchGenericTools(t.key)),
+    // "This Week's AI Picks" is also excluded: it re-lists tools that already
+    // live in the other tables (a curated shortlist, not new inventory), so
+    // counting it would inflate the headline "tools indexed" figure.
+    ...GENERIC_TABLES.filter((t) => t.key !== "thisWeeksAiPicks").map(
+      (t) => () => fetchGenericTools(t.key),
+    ),
   ];
   const results = await staggeredAll(tasks, 3, 200);
   return results.reduce((sum, arr) => sum + arr.length, 0);

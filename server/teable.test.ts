@@ -29,6 +29,7 @@ vi.mock("./teable", () => ({
   fetchAiDiscordTools: vi.fn(),
   fetchAuSeoTools: vi.fn(),
   fetchSumateTopRecommendations: vi.fn(),
+  fetchThisWeeksAiPicks: vi.fn(),
   fetchTotalToolCount: vi.fn(),
 }));
 
@@ -58,6 +59,7 @@ import {
   fetchAiDiscordTools,
   fetchAuSeoTools,
   fetchSumateTopRecommendations,
+  fetchThisWeeksAiPicks,
 } from "./teable";
 
 const mockFetchAllTools = vi.mocked(fetchAllTools);
@@ -85,6 +87,7 @@ const mockFetchAiSitesTools = vi.mocked(fetchAiSitesTools);
 const mockFetchAiDiscordTools = vi.mocked(fetchAiDiscordTools);
 const mockFetchAuSeoTools = vi.mocked(fetchAuSeoTools);
 const mockFetchSumateTopRecommendations = vi.mocked(fetchSumateTopRecommendations);
+const mockFetchThisWeeksAiPicks = vi.mocked(fetchThisWeeksAiPicks);
 
 function createPublicContext(): { ctx: TrpcContext } {
   const ctx: TrpcContext = {
