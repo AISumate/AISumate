@@ -19,7 +19,7 @@
  * the shell untouched so a deploy is never blocked.
  */
 import "dotenv/config";
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import path from "node:path";
 import {
   GENERIC_TABLES,
@@ -31,7 +31,11 @@ import {
 } from "../server/teable";
 
 const SITE_URL = "https://www.aisumate.com/";
+// vite emits index.html; we split it into app.html (humans) + seo.html (bots)
+// and remove index.html so "/" resolves through the vercel.json user-agent
+// rewrite instead of being served straight off the filesystem.
 const INDEX_HTML = path.resolve(process.cwd(), "dist/public/index.html");
+const APP_HTML = path.resolve(process.cwd(), "dist/public/app.html");
 const SEO_HTML = path.resolve(process.cwd(), "dist/public/seo.html");
 const START = "<!--seo-prerender-start-->";
 const END = "<!--seo-prerender-end-->";
@@ -146,6 +150,10 @@ function buildCatalogHtml(entries: Entry[]): string {
 }
 
 function buildJsonLd(count: number): string {
+  const description =
+    count > 0
+      ? `Discover ${count.toLocaleString()} human-curated AI productivity tools, rated and reviewed in English and Spanish.`
+      : "Discover human-curated AI productivity tools, rated and reviewed in English and Spanish.";
   const data = [
     {
       "@context": "https://schema.org",
@@ -153,7 +161,7 @@ function buildJsonLd(count: number): string {
       name: "aisumate",
       alternateName: "AI Productivity Tools Directory",
       url: SITE_URL,
-      description: `Discover ${count.toLocaleString()} human-curated AI productivity tools, rated and reviewed in English and Spanish.`,
+      description,
     },
     {
       "@context": "https://schema.org",
@@ -188,32 +196,35 @@ async function main() {
   shell = strip(shell, START, END);
   shell = strip(shell, LD_START, LD_END);
 
+  // Best-effort catalog: a failure here just means no catalog, never a broken build.
   let entries: Entry[] = [];
   try {
     entries = await collect();
   } catch (err) {
-    console.warn("[prerender] Teable fetch failed — leaving the shell unchanged.", err);
-    return;
-  }
-  if (!entries.length) {
-    console.warn("[prerender] 0 tools fetched — leaving the shell unchanged.");
-    return;
+    console.warn("[prerender] Teable fetch failed — shipping shell without catalog.", err);
   }
 
   const jsonld = buildJsonLd(entries.length);
-  const catalog = buildCatalogHtml(entries);
 
-  // index.html — lean human shell + JSON-LD only.
+  // app.html — lean human shell + JSON-LD. ALWAYS written (it's the "/" target).
   const humanHtml = shell.replace("</head>", `${jsonld}</head>`);
-  writeFileSync(INDEX_HTML, humanHtml, "utf8");
+  writeFileSync(APP_HTML, humanHtml, "utf8");
 
-  // seo.html — shell + JSON-LD + full catalog (bots only, via UA rewrite).
-  const botHtml = humanHtml.replace('<div id="root">', `${catalog}<div id="root">`);
+  // seo.html — same shell + the full catalog when we have it, else identical to
+  // app.html so the bot route never 404s.
+  const botHtml = entries.length
+    ? humanHtml.replace('<div id="root">', `${buildCatalogHtml(entries)}<div id="root">`)
+    : humanHtml;
   writeFileSync(SEO_HTML, botHtml, "utf8");
 
+  // Remove index.html so a request for "/" falls through to the UA rewrite
+  // (Vercel serves a filesystem index.html before rewrites run, which would
+  // otherwise bypass dynamic rendering for the homepage).
+  if (existsSync(INDEX_HTML)) rmSync(INDEX_HTML);
+
   console.log(
-    `[prerender] index.html ${kb(humanHtml)} KB (human) · seo.html ${kb(botHtml)} KB ` +
-      `(${entries.length} tools, bots only).`,
+    `[prerender] app.html ${kb(humanHtml)} KB (human) · seo.html ${kb(botHtml)} KB ` +
+      `(${entries.length} tools, bots only) · removed index.html.`,
   );
 }
 
