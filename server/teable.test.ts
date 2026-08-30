@@ -774,4 +774,37 @@ describe("search.global", () => {
     expect(result.results).toHaveLength(2);
     expect(result.total).toBe(2);
   });
+
+  it("matches a multi-word query when every word appears (not as one contiguous substring)", async () => {
+    mockFetchFreeApisTools.mockResolvedValue([
+      { id: "fa1", name: "OpenRouter", descriptionEn: "A free LLM API gateway for many models", descriptionEs: "Una API LLM gratuita", url: "https://openrouter.ai", affiliateUrl: "", iconUrl: "", category: "Free APIs", isAffiliate: false, rating: 0 },
+    ]);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    // Words appear in a different order and separated — the old whole-phrase
+    // substring matcher returned nothing for this.
+    const result = await caller.search.global({ query: "free api llm" });
+
+    expect(result.results).toHaveLength(1);
+    expect(result.results[0].name).toBe("OpenRouter");
+  });
+
+  it("ranks a name match above a description-only match", async () => {
+    mockFetchAllTools.mockResolvedValue([
+      { id: "d1", name: "Zebra Writer", descriptionEn: "An assistant powered by Claude under the hood", descriptionEs: "", url: "https://zebra.example", affiliateUrl: "", iconUrl: "", category: "Writing", isAffiliate: false, rating: 5 },
+    ]);
+    mockFetchChatbotsTools.mockResolvedValue([
+      { id: "c1", name: "Claude", descriptionEn: "Anthropic's AI assistant", descriptionEs: "El asistente de Anthropic", url: "https://claude.ai", affiliateUrl: "", iconUrl: "", category: "Chatbots", isAffiliate: false, rating: 0 },
+    ]);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.search.global({ query: "claude" });
+
+    expect(result.results).toHaveLength(2);
+    // The tool literally named "Claude" must rank first, ahead of the
+    // higher-rated tool that only mentions Claude in its description.
+    expect(result.results[0].name).toBe("Claude");
+  });
 });

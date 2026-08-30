@@ -36,8 +36,52 @@ import {
 
 const searchInput = z.object({ search: z.string().optional() }).optional();
 
-const matchesTerm = (term: string, ...fields: (string | undefined)[]) =>
-  fields.some((f) => (f ?? "").toLowerCase().includes(term));
+/** Split a query into lowercased word tokens. "Free LLM API" -> ["free","llm","api"]. */
+const searchTokens = (query: string): string[] =>
+  query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+
+/**
+ * An item matches when EVERY query word appears somewhere in its searchable
+ * text. The old matcher required the whole query as one contiguous substring,
+ * so any multi-word query ("free LLM API") matched nothing. Tokenising fixes
+ * that while still narrowing as the user adds words.
+ */
+const matchesQuery = (query: string, ...fields: (string | undefined)[]): boolean => {
+  const tokens = searchTokens(query);
+  if (!tokens.length) return true;
+  const hay = fields.map((f) => (f ?? "").toLowerCase()).join(" ");
+  return tokens.every((t) => hay.includes(t));
+};
+
+/**
+ * Relevance score for global search — higher is better; -1 means no match.
+ * Name matches beat description matches, and exact/prefix name matches beat
+ * partial ones, so "claude" surfaces the Claude entry instead of alphabetically
+ * whatever happens to mention Claude in its description.
+ */
+const searchScore = (
+  query: string,
+  name: string,
+  category: string,
+  ...descriptions: (string | undefined)[]
+): number => {
+  const tokens = searchTokens(query);
+  if (!tokens.length) return 0;
+  const n = name.toLowerCase();
+  const c = category.toLowerCase();
+  const d = descriptions.map((x) => (x ?? "").toLowerCase()).join(" ");
+  const hay = `${n} ${c} ${d}`;
+  if (!tokens.every((t) => hay.includes(t))) return -1;
+  const q = query.toLowerCase().trim();
+  let score = 0;
+  if (n === q) score += 1000;
+  else if (n.startsWith(q)) score += 600;
+  else if (n.includes(q)) score += 400;
+  if (tokens.every((t) => n.includes(t))) score += 200; // all words in the name
+  else if (tokens.some((t) => n.includes(t))) score += 60; // some words in the name
+  if (tokens.every((t) => c.includes(t))) score += 80; // all words in the category
+  return score;
+};
 
 /**
  * All generic tool tables share one list endpoint shape: fetch (cached
@@ -51,7 +95,7 @@ function makeGenericListRouter(fetcher: () => Promise<GenericTool[]>) {
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
         filtered = filtered.filter((t) =>
-          matchesTerm(term, t.name, t.descriptionEn, t.descriptionEs)
+          matchesQuery(term, t.name, t.descriptionEn, t.descriptionEs)
         );
       }
       return { tools: filtered, total: tools.length };
@@ -93,7 +137,7 @@ export const appRouter = router({
         if (input?.search && input.search.trim()) {
           const term = input.search.toLowerCase().trim();
           filtered = filtered.filter((t) =>
-            matchesTerm(term, t.name, t.descriptionEn, t.descriptionEs)
+            matchesQuery(term, t.name, t.descriptionEn, t.descriptionEs)
           );
         }
 
@@ -144,7 +188,7 @@ export const appRouter = router({
         if (input?.search && input.search.trim()) {
           const term = input.search.toLowerCase().trim();
           filtered = filtered.filter((r) =>
-            matchesTerm(term, r.name, r.description, r.owner)
+            matchesQuery(term, r.name, r.description, r.owner)
           );
         }
         return { repos: filtered, total: repos.length };
@@ -165,7 +209,7 @@ export const appRouter = router({
         if (input?.search && input.search.trim()) {
           const term = input.search.toLowerCase().trim();
           filtered = filtered.filter((r) =>
-            matchesTerm(term, r.name, r.description, r.owner, r.whyViral)
+            matchesQuery(term, r.name, r.description, r.owner, r.whyViral)
           );
         }
         return { repos: filtered, total: repos.length };
@@ -184,7 +228,7 @@ export const appRouter = router({
         if (input?.search && input.search.trim()) {
           const term = input.search.toLowerCase().trim();
           filtered = filtered.filter((m) =>
-            matchesTerm(term, m.name, m.summaryEn, m.summaryEs)
+            matchesQuery(term, m.name, m.summaryEn, m.summaryEs)
           );
         }
         return { models: filtered, total: models.length };
@@ -203,7 +247,7 @@ export const appRouter = router({
         if (input?.search && input.search.trim()) {
           const term = input.search.toLowerCase().trim();
           filtered = filtered.filter((d) =>
-            matchesTerm(term, d.name, d.summaryEn, d.summaryEs)
+            matchesQuery(term, d.name, d.summaryEn, d.summaryEs)
           );
         }
         return { deals: filtered, total: deals.length };
@@ -303,27 +347,32 @@ export const appRouter = router({
           tableFetchers.map(({ label, fetch }) => async () => {
             try {
               const items = await fetch();
-              const matched = items.filter((item) => {
-                const name = (item.name || item.title || "").toLowerCase();
-                const descEn = (item.descriptionEn || item.summaryEn || item.summary || "").toLowerCase();
-                const descEs = (item.descriptionEs || item.summaryEs || item.summary || "").toLowerCase();
-                return name.includes(term) || descEn.includes(term) || descEs.includes(term);
-              });
-              return matched.map((item) => ({
-                id: item.id,
-                name: item.name || item.title || "Untitled",
-                descriptionEn: item.descriptionEn || item.summaryEn || item.summary || "",
-                descriptionEs: item.descriptionEs || item.summaryEs || item.summary || "",
-                url: item.url || item.dealUrl || item.repoUrl || "",
-                affiliateUrl: item.affiliateUrl || "",
-                iconUrl: item.iconUrl || "",
-                category: item.category || item.topic || item.platform || "",
-                isAffiliate: item.isAffiliate || false,
-                rating: item.rating || 0,
-                isNew: item.isNew || false,
-                reviewConfidence: item.reviewConfidence || "",
-                sourceTable: label,
-              }));
+              return items
+                .map((item) => {
+                  const name = item.name || item.title || "Untitled";
+                  const category = item.category || item.topic || item.platform || "";
+                  const descEn = item.descriptionEn || item.summaryEn || item.summary || "";
+                  const descEs = item.descriptionEs || item.summaryEs || item.summary || "";
+                  const score = searchScore(term, name, category, descEn, descEs);
+                  return { item, name, category, descEn, descEs, score };
+                })
+                .filter((x) => x.score >= 0)
+                .map(({ item, name, category, descEn, descEs, score }) => ({
+                  id: item.id,
+                  name,
+                  descriptionEn: descEn,
+                  descriptionEs: descEs,
+                  url: item.url || item.dealUrl || item.repoUrl || "",
+                  affiliateUrl: item.affiliateUrl || "",
+                  iconUrl: item.iconUrl || "",
+                  category,
+                  isAffiliate: item.isAffiliate || false,
+                  rating: item.rating || 0,
+                  isNew: item.isNew || false,
+                  reviewConfidence: item.reviewConfidence || "",
+                  sourceTable: label,
+                  score,
+                }));
             } catch (err) {
               console.error(`[GlobalSearch] Error fetching table "${label}":`, err);
               return [];
@@ -341,15 +390,27 @@ export const appRouter = router({
         for (const result of allResults) {
           const key = (result.url || result.name).trim().toLowerCase();
           const existing = deduped.get(key);
-          if (!existing || existing.sourceTable === "AI Tools") {
+          // Keep the higher-scored duplicate; on a tie prefer the specialized
+          // table over the generic "AI Tools" one.
+          if (
+            !existing ||
+            result.score > existing.score ||
+            (result.score === existing.score && existing.sourceTable === "AI Tools")
+          ) {
             deduped.set(key, result);
           }
         }
         const uniqueResults = Array.from(deduped.values());
-        uniqueResults.sort((a, b) => a.name.localeCompare(b.name));
+        // Rank by relevance score (name matches first), then rating, then name.
+        uniqueResults.sort(
+          (a, b) =>
+            b.score - a.score ||
+            (b.rating || 0) - (a.rating || 0) ||
+            a.name.localeCompare(b.name),
+        );
 
         return {
-          results: uniqueResults.slice(0, limit),
+          results: uniqueResults.slice(0, limit).map(({ score, ...r }) => r),
           total: uniqueResults.length,
         };
       }),

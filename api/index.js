@@ -633,7 +633,31 @@ async function fetchTotalToolCount() {
 
 // server/routers.ts
 var searchInput = z2.object({ search: z2.string().optional() }).optional();
-var matchesTerm = (term, ...fields) => fields.some((f) => (f ?? "").toLowerCase().includes(term));
+var searchTokens = (query) => query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+var matchesQuery = (query, ...fields) => {
+  const tokens = searchTokens(query);
+  if (!tokens.length) return true;
+  const hay = fields.map((f) => (f ?? "").toLowerCase()).join(" ");
+  return tokens.every((t2) => hay.includes(t2));
+};
+var searchScore = (query, name, category, ...descriptions) => {
+  const tokens = searchTokens(query);
+  if (!tokens.length) return 0;
+  const n = name.toLowerCase();
+  const c = category.toLowerCase();
+  const d = descriptions.map((x) => (x ?? "").toLowerCase()).join(" ");
+  const hay = `${n} ${c} ${d}`;
+  if (!tokens.every((t2) => hay.includes(t2))) return -1;
+  const q = query.toLowerCase().trim();
+  let score = 0;
+  if (n === q) score += 1e3;
+  else if (n.startsWith(q)) score += 600;
+  else if (n.includes(q)) score += 400;
+  if (tokens.every((t2) => n.includes(t2))) score += 200;
+  else if (tokens.some((t2) => n.includes(t2))) score += 60;
+  if (tokens.every((t2) => c.includes(t2))) score += 80;
+  return score;
+};
 function makeGenericListRouter(fetcher) {
   return router({
     list: publicProcedure.input(searchInput).query(async ({ input }) => {
@@ -642,7 +666,7 @@ function makeGenericListRouter(fetcher) {
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
         filtered = filtered.filter(
-          (t2) => matchesTerm(term, t2.name, t2.descriptionEn, t2.descriptionEs)
+          (t2) => matchesQuery(term, t2.name, t2.descriptionEn, t2.descriptionEs)
         );
       }
       return { tools: filtered, total: tools.length };
@@ -678,7 +702,7 @@ var appRouter = router({
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
         filtered = filtered.filter(
-          (t2) => matchesTerm(term, t2.name, t2.descriptionEn, t2.descriptionEs)
+          (t2) => matchesQuery(term, t2.name, t2.descriptionEn, t2.descriptionEs)
         );
       }
       if (input?.category && input.category !== "all") {
@@ -720,7 +744,7 @@ var appRouter = router({
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
         filtered = filtered.filter(
-          (r) => matchesTerm(term, r.name, r.description, r.owner)
+          (r) => matchesQuery(term, r.name, r.description, r.owner)
         );
       }
       return { repos: filtered, total: repos.length };
@@ -738,7 +762,7 @@ var appRouter = router({
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
         filtered = filtered.filter(
-          (r) => matchesTerm(term, r.name, r.description, r.owner, r.whyViral)
+          (r) => matchesQuery(term, r.name, r.description, r.owner, r.whyViral)
         );
       }
       return { repos: filtered, total: repos.length };
@@ -754,7 +778,7 @@ var appRouter = router({
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
         filtered = filtered.filter(
-          (m) => matchesTerm(term, m.name, m.summaryEn, m.summaryEs)
+          (m) => matchesQuery(term, m.name, m.summaryEn, m.summaryEs)
         );
       }
       return { models: filtered, total: models.length };
@@ -770,7 +794,7 @@ var appRouter = router({
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
         filtered = filtered.filter(
-          (d) => matchesTerm(term, d.name, d.summaryEn, d.summaryEs)
+          (d) => matchesQuery(term, d.name, d.summaryEn, d.summaryEs)
         );
       }
       return { deals: filtered, total: deals.length };
@@ -838,26 +862,28 @@ var appRouter = router({
         tableFetchers.map(({ label, fetch: fetch2 }) => async () => {
           try {
             const items = await fetch2();
-            const matched = items.filter((item) => {
-              const name = (item.name || item.title || "").toLowerCase();
-              const descEn = (item.descriptionEn || item.summaryEn || item.summary || "").toLowerCase();
-              const descEs = (item.descriptionEs || item.summaryEs || item.summary || "").toLowerCase();
-              return name.includes(term) || descEn.includes(term) || descEs.includes(term);
-            });
-            return matched.map((item) => ({
+            return items.map((item) => {
+              const name = item.name || item.title || "Untitled";
+              const category = item.category || item.topic || item.platform || "";
+              const descEn = item.descriptionEn || item.summaryEn || item.summary || "";
+              const descEs = item.descriptionEs || item.summaryEs || item.summary || "";
+              const score = searchScore(term, name, category, descEn, descEs);
+              return { item, name, category, descEn, descEs, score };
+            }).filter((x) => x.score >= 0).map(({ item, name, category, descEn, descEs, score }) => ({
               id: item.id,
-              name: item.name || item.title || "Untitled",
-              descriptionEn: item.descriptionEn || item.summaryEn || item.summary || "",
-              descriptionEs: item.descriptionEs || item.summaryEs || item.summary || "",
+              name,
+              descriptionEn: descEn,
+              descriptionEs: descEs,
               url: item.url || item.dealUrl || item.repoUrl || "",
               affiliateUrl: item.affiliateUrl || "",
               iconUrl: item.iconUrl || "",
-              category: item.category || item.topic || item.platform || "",
+              category,
               isAffiliate: item.isAffiliate || false,
               rating: item.rating || 0,
               isNew: item.isNew || false,
               reviewConfidence: item.reviewConfidence || "",
-              sourceTable: label
+              sourceTable: label,
+              score
             }));
           } catch (err) {
             console.error(`[GlobalSearch] Error fetching table "${label}":`, err);
@@ -870,14 +896,16 @@ var appRouter = router({
       for (const result of allResults) {
         const key = (result.url || result.name).trim().toLowerCase();
         const existing = deduped.get(key);
-        if (!existing || existing.sourceTable === "AI Tools") {
+        if (!existing || result.score > existing.score || result.score === existing.score && existing.sourceTable === "AI Tools") {
           deduped.set(key, result);
         }
       }
       const uniqueResults = Array.from(deduped.values());
-      uniqueResults.sort((a, b) => a.name.localeCompare(b.name));
+      uniqueResults.sort(
+        (a, b) => b.score - a.score || (b.rating || 0) - (a.rating || 0) || a.name.localeCompare(b.name)
+      );
       return {
-        results: uniqueResults.slice(0, limit),
+        results: uniqueResults.slice(0, limit).map(({ score, ...r }) => r),
         total: uniqueResults.length
       };
     })
