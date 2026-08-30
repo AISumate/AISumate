@@ -164,6 +164,18 @@ export function LlmsSection() {
                         </Badge>
                       )}
 
+                      {/* Rating — shown on the tile itself, not just the hover card */}
+                      {(model.rating ?? 0) > 0 && (
+                        <StarRating rating={model.rating} accent="var(--tool-accent)" starClassName="h-3 w-3" />
+                      )}
+
+                      {/* Short summary in the active language */}
+                      {summary && (
+                        <p className="text-xs text-muted-foreground leading-snug line-clamp-3">
+                          {summary}
+                        </p>
+                      )}
+
                       {/* New badge pinned to the corner so it never crowds the title */}
                       {model.isNew && (
                         <Badge className="absolute bottom-2 right-2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">New</Badge>
