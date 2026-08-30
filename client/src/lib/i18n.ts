@@ -216,10 +216,6 @@ export const translations = {
     of: "of",
     sortByName: "Sort by name",
     sortByCategory: "Sort by category",
-    navScrollPrev: "Previous categories",
-    navScrollNext: "Next categories",
-    navScrollPlay: "Auto-scroll categories",
-    navScrollPause: "Stop auto-scroll",
     sortByStars: "Sort by stars",
     sortByPopularity: "Sort by popularity",
     sortBy: "Sort by",
@@ -287,8 +283,8 @@ export const translations = {
     showCategoryBar: "Show category bar",
 
     // Category groups
-    groupAll: "All",
     groupDiscover: "Discover",
+    groupModels: "Models & APIs",
     groupBuild: "Build & Code",
     groupCreate: "Create",
     groupWork: "Work",
@@ -506,10 +502,6 @@ export const translations = {
     of: "de",
     sortByName: "Ordenar por nombre",
     sortByCategory: "Ordenar por categoría",
-    navScrollPrev: "Categorías anteriores",
-    navScrollNext: "Categorías siguientes",
-    navScrollPlay: "Desplazamiento automático",
-    navScrollPause: "Detener desplazamiento",
     sortByStars: "Ordenar por estrellas",
     sortByPopularity: "Ordenar por popularidad",
     sortBy: "Ordenar por",
@@ -577,12 +569,12 @@ export const translations = {
     showCategoryBar: "Mostrar barra de categorías",
 
     // Category groups
-    groupAll: "Todo",
     groupDiscover: "Descubrir",
+    groupModels: "Modelos y APIs",
     groupBuild: "Desarrollo",
     groupCreate: "Crear",
     groupWork: "Trabajo",
-    groupRun: "Infra y Operaciones",
+    groupRun: "Infra y Ops",
   },
 } as const;
 
