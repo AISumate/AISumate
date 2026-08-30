@@ -6,6 +6,17 @@
   "framework": null,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
+    {
+      "source": "/((?!api/).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Bb]ot|[Cc]rawl|[Ss]pider|[Ss]lurp|facebookexternalhit|[Ee]mbedly|Google|[Bb]ing|Baidu|Yandex|DuckDuck|WhatsApp|Slack|Discord|Telegram|Applebot|Pinterest|Twitter|LinkedIn|Quora|Chrome-Lighthouse|HeadlessChrome).*"
+        }
+      ],
+      "destination": "/seo.html"
+    },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "functions": {
