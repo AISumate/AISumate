@@ -89,6 +89,7 @@ export function WeeklyViralGithubSection() {
                 // Positional rank: the list arrives sorted by Weekly Rank, so
                 // this stays a clean 1..N even when the source data has gaps.
                 rank={idx + 1}
+                tableKey="weeklyViralGithub"
                 visitLabel={t("visitRepo")}
                 cornerBadge={
                   repo.starsThisWeek > 0 ? (

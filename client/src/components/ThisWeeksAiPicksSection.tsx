@@ -40,7 +40,7 @@ export function ThisWeeksAiPicksSection() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {picks.slice(0, 5).map((tool, idx) => (
-          <ToolCard key={tool.id} tool={tool} index={idx} />
+          <ToolCard key={tool.id} tool={tool} index={idx} tableKey="thisWeeksAiPicks" />
         ))}
       </div>
 

@@ -22,7 +22,11 @@ function useHeroVideo(): boolean {
 
 export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: boolean }) {
   const { t } = useLanguage();
-  const [chipQuery, setChipQuery] = useState<string | undefined>(undefined);
+  // Shareable searches: /?q=voice+cloning pre-fills and opens the search.
+  const [chipQuery, setChipQuery] = useState<string | undefined>(() => {
+    if (typeof window === "undefined") return undefined;
+    return new URLSearchParams(window.location.search).get("q")?.trim() || undefined;
+  });
   const [searchOpen, setSearchOpen] = useState(false);
   const handleSearchOpenChange = useCallback((open: boolean) => setSearchOpen(open), []);
   const showVideo = useHeroVideo();

@@ -242,6 +242,7 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
                   tool={tool}
                   index={idx}
                   compact={compactCards}
+                  tableKey={queryKey}
                   visitLabel={t(visitLabelKey)}
                   onOpenDetails={canOpenBlogPost ? () => setBlogPostTool(tool) : undefined}
                 />

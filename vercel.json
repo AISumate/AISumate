@@ -17,7 +17,43 @@
       ],
       "destination": "/seo.html"
     },
-    { "source": "/", "destination": "/app.html" }
+    { "source": "/", "destination": "/app.html" },
+    {
+      "source": "/tool/:table/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Bb]ot|[Cc]rawl|[Ss]pider|[Ss]lurp|facebookexternalhit|[Ee]mbedly|Google|[Bb]ing|Baidu|Yandex|DuckDuck|WhatsApp|Slack|Discord|Telegram|Applebot|Pinterest|Twitter|LinkedIn|Quora|Chrome-Lighthouse|HeadlessChrome).*"
+        }
+      ],
+      "destination": "/tools-static/:table/:id.html"
+    },
+    { "source": "/tool/:table/:id", "destination": "/app.html" },
+    {
+      "source": "/privacy",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Bb]ot|[Cc]rawl|[Ss]pider|[Ss]lurp|facebookexternalhit|[Ee]mbedly|Google|[Bb]ing|Baidu|Yandex|DuckDuck|WhatsApp|Slack|Discord|Telegram|Applebot|Pinterest|Twitter|LinkedIn|Quora|Chrome-Lighthouse|HeadlessChrome).*"
+        }
+      ],
+      "destination": "/privacy.html"
+    },
+    { "source": "/privacy", "destination": "/app.html" },
+    {
+      "source": "/terms",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Bb]ot|[Cc]rawl|[Ss]pider|[Ss]lurp|facebookexternalhit|[Ee]mbedly|Google|[Bb]ing|Baidu|Yandex|DuckDuck|WhatsApp|Slack|Discord|Telegram|Applebot|Pinterest|Twitter|LinkedIn|Quora|Chrome-Lighthouse|HeadlessChrome).*"
+        }
+      ],
+      "destination": "/terms.html"
+    },
+    { "source": "/terms", "destination": "/app.html" }
   ],
   "functions": {
     "api/index.js": {

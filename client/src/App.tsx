@@ -6,13 +6,18 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
+import ToolPage from "./pages/ToolPage";
+import { LegalPage } from "./pages/LegalPage";
+import { PRIVACY, TERMS } from "@shared/legalContent";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
+      {/* Shareable per-listing pages; crawlers get static twins (vercel.json). */}
+      <Route path={"/tool/:table/:id"} component={ToolPage} />
+      <Route path={"/privacy"}>{() => <LegalPage doc={PRIVACY} />}</Route>
+      <Route path={"/terms"}>{() => <LegalPage doc={TERMS} />}</Route>
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>

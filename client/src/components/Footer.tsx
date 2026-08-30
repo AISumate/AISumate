@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Footer() {
@@ -27,6 +28,16 @@ export function Footer() {
           <p>{t("footerRatingsDisclaimer")}</p>
           <p>{t("footerAffiliateDisclaimer")}</p>
         </div>
+
+        {/* Standalone legal pages */}
+        <p className="mt-4 flex items-center justify-center gap-4 text-xs font-semibold">
+          <Link href="/privacy" className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline">
+            {t("privacyLink")}
+          </Link>
+          <Link href="/terms" className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline">
+            {t("termsLink")}
+          </Link>
+        </p>
 
         <p className="text-xs text-muted-foreground/70 mt-4">
           © {year} {t("brandName")}. {t("footerRights")}.

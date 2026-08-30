@@ -53,6 +53,17 @@ export const translations = {
     footerText: "Your gateway to AI productivity",
     footerRights: "All rights reserved",
     footerContactLabel: "Contact us:",
+    privacyLink: "Privacy",
+    termsLink: "Terms",
+    legalUpdated: "Last updated",
+    backHome: "Back to the directory",
+    notFoundTitle: "Page not found",
+    notFoundBody: "That page doesn't exist — the whole directory lives on the home page.",
+    goHome: "Go to the directory",
+    openToolPage: "Open page",
+    copyLink: "Copy link",
+    linkCopied: "Link copied",
+    toolNotFound: "Listing not found — it may have been removed from the directory.",
     // Deliberately precise: the site loads Google Fonts and falls back to Google's
     // favicon service for tool logos, so a blanket "we collect nothing" would be
     // untrue. Revisit this wording if those third-party calls are ever removed.
@@ -342,6 +353,17 @@ export const translations = {
     footerText: "Tu puerta de entrada a la productividad con IA",
     footerRights: "Todos los derechos reservados",
     footerContactLabel: "Contáctanos:",
+    privacyLink: "Privacidad",
+    termsLink: "Términos",
+    legalUpdated: "Última actualización",
+    backHome: "Volver al directorio",
+    notFoundTitle: "Página no encontrada",
+    notFoundBody: "Esa página no existe — todo el directorio vive en la página de inicio.",
+    goHome: "Ir al directorio",
+    openToolPage: "Abrir página",
+    copyLink: "Copiar enlace",
+    linkCopied: "Enlace copiado",
+    toolNotFound: "Ficha no encontrada — puede haber sido retirada del directorio.",
     footerPrivacy:
       "No usamos analíticas ni cookies de rastreo o publicidad, y no recopilamos, almacenamos ni vendemos tus datos personales. Tus preferencias de idioma y tema se guardan solo en tu propio navegador. Las fuentes y algunos logos de herramientas se cargan desde Google, por lo que tu dirección IP es visible para ellos.",
     footerRatingsDisclaimer:

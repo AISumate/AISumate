@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "wouter";
+import { Check, Link2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,6 +47,7 @@ export function ToolCard({
   cornerBadge,
   detailExtra,
   compact = false,
+  tableKey,
 }: {
   tool: AiTool;
   index?: number;
@@ -58,6 +61,12 @@ export function ToolCard({
   /** Extra content rendered inside the detail dialog, under the description. */
   detailExtra?: React.ReactNode;
   /**
+   * Which table this listing lives in (e.g. "llms", "freeApis"). When set, the
+   * detail dialog offers "Open page" / "Copy link" for the shareable URL
+   * /tool/<tableKey>/<id>.
+   */
+  tableKey?: string;
+  /**
    * Denser card: drops the description teaser and shrinks the tile, so pages
    * with many entries (AI Influencers) fit more per screen. The full
    * description is still one click away via the Description button.
@@ -66,6 +75,19 @@ export function ToolCard({
 }) {
   const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const pageHref = tableKey ? `/tool/${tableKey}/${tool.id}` : undefined;
+
+  const copyPageLink = async () => {
+    if (!pageHref) return;
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${pageHref}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard unavailable (permissions/iframe) — quietly do nothing */
+    }
+  };
   const accentClass = accentClassFor(index);
 
   const description = language === "es" ? tool.descriptionEs : tool.descriptionEn;
@@ -234,6 +256,26 @@ export function ToolCard({
           <ReviewDetails review={tool} />
 
           <VisitButton url={visitUrl} label={label} />
+
+          {/* Shareable URL for this listing — a real page, so links survive. */}
+          {pageHref && (
+            <div className="flex items-center justify-center gap-4 text-xs font-semibold">
+              <Link
+                href={pageHref}
+                className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+              >
+                {t("openToolPage")}
+              </Link>
+              <button
+                type="button"
+                onClick={copyPageLink}
+                className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-primary"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
+                {copied ? t("linkCopied") : t("copyLink")}
+              </button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>

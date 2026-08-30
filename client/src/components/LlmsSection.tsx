@@ -111,6 +111,7 @@ export function LlmsSection() {
               <ToolCard
                 key={model.id}
                 index={idx}
+                tableKey="llms"
                 visitLabel={t("visitModel")}
                 tool={{
                   ...model,

@@ -51,6 +51,7 @@ export function SumateTopRecommendationsSection() {
               key={item.id}
               index={idx}
               compact
+              tableKey="sumateTopRecommendations"
               visitLabel={t("visitChannel")}
               tool={{ ...item, affiliateUrl: "" } as AiTool}
             />
