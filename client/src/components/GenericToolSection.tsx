@@ -135,60 +135,8 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
     <div className="py-6 max-w-5xl mx-auto">
       <SectionHeading title={t(titleKey)} subtitle={t(subtitleKey)} />
 
-      <FilterBar
-        searchTerm={search}
-        onSearchChange={handleSearchChange}
-        filters={[
-          ...(categoryOptions.length > 0
-            ? [{
-                key: "category",
-                value: categoryFilter,
-                onChange: (v: string) => { setCategoryFilter(v); setDisplayCount(100); },
-                options: categoryOptions,
-                placeholderKey: "filterByCategory",
-              }]
-            : []),
-        ]}
-        sort={{
-          field: sortField,
-          direction: sortDirection,
-          onFieldChange: (f: string) => { setSortField(f); setDisplayCount(100); },
-          onDirectionChange: (d: "asc" | "desc") => { setSortDirection(d); setDisplayCount(100); },
-          options: [
-            { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
-            { value: "category", labelKey: "filterByCategory", defaultDirection: "asc" },
-            { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
-            ...(hasPopularitySort
-              ? [{ value: "popularity", labelKey: "sortByPopularity", defaultDirection: "desc" as const }]
-              : []),
-          ],
-        }}
-        resultCount={filteredTools.length}
-        onReset={handleReset}
-      />
-
-      {hasLanguageFilter && (
-        <RadioGroup
-          value={languageFilter}
-          onValueChange={(v) => { setLanguageFilter(v as ContentLanguageFilter); setDisplayCount(100); }}
-          className="mb-6 -mt-3 flex flex-row flex-wrap items-center gap-5"
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="en" id={`${queryKey}-lang-en`} />
-            <Label htmlFor={`${queryKey}-lang-en`} className="font-normal cursor-pointer">{t("languageFilterEnglish")}</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="es" id={`${queryKey}-lang-es`} />
-            <Label htmlFor={`${queryKey}-lang-es`} className="font-normal cursor-pointer">{t("languageFilterSpanish")}</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="all" id={`${queryKey}-lang-both`} />
-            <Label htmlFor={`${queryKey}-lang-both`} className="font-normal cursor-pointer">{t("languageFilterBoth")}</Label>
-          </div>
-        </RadioGroup>
-      )}
-
-      {/* Loading state */}
+      {/* Loading state — show ONLY the spinner. Rendering the FilterBar here
+          would flash "0 results" (and the filters) before the data arrives. */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -202,11 +150,70 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
         </div>
       )}
 
-      {/* Empty state */}
-      {!isLoading && !isError && filteredTools.length === 0 && (
-        <div className="text-center py-20">
-          <p className="text-lg text-muted-foreground">{t("noResultsGeneric")}</p>
-        </div>
+      {/* Loaded: filters + grid (or a real empty state). Only mounted once the
+          query has resolved, so the count and empty message are never premature. */}
+      {!isLoading && !isError && (
+        <>
+          <FilterBar
+            searchTerm={search}
+            onSearchChange={handleSearchChange}
+            filters={[
+              ...(categoryOptions.length > 0
+                ? [{
+                    key: "category",
+                    value: categoryFilter,
+                    onChange: (v: string) => { setCategoryFilter(v); setDisplayCount(100); },
+                    options: categoryOptions,
+                    placeholderKey: "filterByCategory",
+                  }]
+                : []),
+            ]}
+            sort={{
+              field: sortField,
+              direction: sortDirection,
+              onFieldChange: (f: string) => { setSortField(f); setDisplayCount(100); },
+              onDirectionChange: (d: "asc" | "desc") => { setSortDirection(d); setDisplayCount(100); },
+              options: [
+                { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
+                { value: "category", labelKey: "sortByCategory", defaultDirection: "asc" },
+                { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
+                ...(hasPopularitySort
+                  ? [{ value: "popularity", labelKey: "sortByPopularity", defaultDirection: "desc" as const }]
+                  : []),
+              ],
+            }}
+            resultCount={filteredTools.length}
+            onReset={handleReset}
+          />
+
+          {hasLanguageFilter && (
+            <RadioGroup
+              value={languageFilter}
+              onValueChange={(v) => { setLanguageFilter(v as ContentLanguageFilter); setDisplayCount(100); }}
+              className="mb-6 -mt-3 flex flex-row flex-wrap items-center gap-5"
+            >
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="en" id={`${queryKey}-lang-en`} />
+                <Label htmlFor={`${queryKey}-lang-en`} className="font-normal cursor-pointer">{t("languageFilterEnglish")}</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="es" id={`${queryKey}-lang-es`} />
+                <Label htmlFor={`${queryKey}-lang-es`} className="font-normal cursor-pointer">{t("languageFilterSpanish")}</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="all" id={`${queryKey}-lang-both`} />
+                <Label htmlFor={`${queryKey}-lang-both`} className="font-normal cursor-pointer">{t("languageFilterBoth")}</Label>
+              </div>
+            </RadioGroup>
+          )}
+
+          {/* Empty state */}
+          {filteredTools.length === 0 && (
+            <div className="text-center py-20">
+              <p className="text-lg text-muted-foreground">{t("noResultsGeneric")}</p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Tools grid */}

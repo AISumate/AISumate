@@ -226,6 +226,82 @@
     background-size: 32px 32px;
   }
 
+  /* Animated terracotta dot field behind section headings. Theme-aware (the
+     dot colour is mixed from --primary, which swaps in dark mode) and masked so
+     it fades in from the left, keeping the heading text crisp while adding
+     gentle motion to the right of the title. */
+  @keyframes heading-dots-drift {
+    from { background-position: 0 0; }
+    to   { background-position: 26px 13px; }
+  }
+  .heading-dots {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(
+      color-mix(in oklch, var(--primary) 34%, transparent) 1.4px,
+      transparent 1.6px
+    );
+    background-size: 13px 13px;
+    opacity: 0.55;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%, #000 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 55%, #000 100%);
+    animation: heading-dots-drift 6s linear infinite alternate;
+  }
+  .dark .heading-dots {
+    opacity: 0.7;
+    background-image: radial-gradient(
+      color-mix(in oklch, var(--primary) 45%, transparent) 1.4px,
+      transparent 1.6px
+    );
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .heading-dots { animation: none; }
+  }
+
+  /* --- Scrolling polish --- */
+  /* Smooth in-page scrolling (hash/tab jumps, "back to top"), disabled for
+     users who prefer reduced motion. */
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  /* Thin, theme-aware scrollbars for the page and any overflow container
+     (e.g. the review hover cards). `.no-scrollbar` still wins for the pill nav
+     because a class selector out-specifies `*`, and both live in this layer. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--muted-foreground) 40%, transparent) transparent;
+  }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--muted-foreground) 38%, transparent);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklch, var(--primary) 55%, transparent);
+    background-clip: content-box;
+  }
+
+  /* --- Hover polish --- */
+  /* Consistent keyboard focus ring on all interactive controls, matching the
+     hover accent so tab-navigation is as legible as mouse hover. */
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  [role="tab"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid color-mix(in oklch, var(--primary) 70%, transparent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
   /* Hero entrance — content rises gently as the video starts */
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(16px); }

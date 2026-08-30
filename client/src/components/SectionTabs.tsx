@@ -49,12 +49,14 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
     <div className="flex-1">
       {!navHidden && <GroupedCategoryNav activeTab={activeTab} onChange={setActiveTab} />}
 
-      {/* Floating show/hide toggle for the category bar — persisted in localStorage */}
+      {/* Floating show/hide toggle for the category bar — persisted in
+          localStorage. Anchored bottom-LEFT so it never overlaps the MindPal
+          chat widget, which sits in the bottom-right corner. */}
       <button
         onClick={toggleNav}
         title={navHidden ? t("showCategoryBar") : t("hideCategoryBar")}
         aria-label={navHidden ? t("showCategoryBar") : t("hideCategoryBar")}
-        className="fixed bottom-4 right-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/90 backdrop-blur-md shadow-lg text-muted-foreground transition-colors hover:text-primary hover:border-primary/50"
+        className="fixed bottom-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/90 backdrop-blur-md shadow-lg text-muted-foreground transition-colors hover:text-primary hover:border-primary/50"
       >
         {navHidden ? <PanelTopOpen className="h-4 w-4" /> : <PanelTopClose className="h-4 w-4" />}
       </button>

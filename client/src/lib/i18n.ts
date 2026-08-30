@@ -13,6 +13,7 @@ export const translations = {
     allCategories: "All Categories",
     filterByCategory: "Filter by category",
     results: "results",
+    result: "result",
     noResults: "No tools found",
     noResultsDesc: "Try adjusting your search or filter",
 
@@ -212,6 +213,7 @@ export const translations = {
     nextSlide: "Next slide",
     of: "of",
     sortByName: "Sort by name",
+    sortByCategory: "Sort by category",
     sortByStars: "Sort by stars",
     sortByPopularity: "Sort by popularity",
     sortBy: "Sort by",
@@ -298,6 +300,7 @@ export const translations = {
     allCategories: "Todas las Categorías",
     filterByCategory: "Filtrar por categoría",
     results: "resultados",
+    result: "resultado",
     noResults: "No se encontraron herramientas",
     noResultsDesc: "Intenta ajustar tu búsqueda o filtro",
 
@@ -494,6 +497,7 @@ export const translations = {
     nextSlide: "Diapositiva siguiente",
     of: "de",
     sortByName: "Ordenar por nombre",
+    sortByCategory: "Ordenar por categoría",
     sortByStars: "Ordenar por estrellas",
     sortByPopularity: "Ordenar por popularidad",
     sortBy: "Ordenar por",

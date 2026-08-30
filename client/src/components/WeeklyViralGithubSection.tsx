@@ -95,7 +95,11 @@ export function WeeklyViralGithubSection() {
                   <div
                     className={`group relative flex flex-col gap-3 rounded-xl border border-border bg-card p-4 pt-9 transition-all duration-200 hover:shadow-xl hover:-translate-y-1 cursor-pointer overflow-hidden ${accentClass}`}
                   >
-                    {/* Rank badge */}
+                    {/* Rank badge — positional (1-based) within this week's
+                        strip. The list arrives already sorted by Weekly Rank
+                        (most viral first), so position is the true display rank
+                        and stays a clean 1..N even when the source data has
+                        gaps or ties (e.g. two rows both entered as rank 5). */}
                     <div
                       className="absolute top-3 left-3 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold shrink-0"
                       style={{
@@ -103,7 +107,7 @@ export function WeeklyViralGithubSection() {
                         color: "oklch(0.96 0.01 60)",
                       }}
                     >
-                      {repo.weeklyRank || idx + 1}
+                      {idx + 1}
                     </div>
 
                     {/* Trending-this-week badge */}

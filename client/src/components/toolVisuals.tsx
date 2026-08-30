@@ -96,20 +96,25 @@ export function StarRating({
  */
 export function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="mb-6 border-l-4 border-primary pl-4">
-      <p
-        className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground mb-1"
-        style={{ fontFamily: "var(--font-mono)" }}
-      >
-        aisumate / index
-      </p>
-      <h2
-        className="text-2xl font-bold tracking-tight text-foreground"
-        style={{ fontFamily: "var(--font-heading)" }}
-      >
-        {title}
-      </h2>
-      {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+    <div className="relative mb-6 overflow-hidden">
+      {/* Animated theme-aware dot field, masked to fade in from the left so the
+          title stays legible. Purely decorative. */}
+      <div className="heading-dots" aria-hidden="true" />
+      <div className="relative border-l-4 border-primary pl-4 py-1">
+        <p
+          className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground mb-1"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          aisumate / index
+        </p>
+        <h2
+          className="text-2xl font-bold tracking-tight text-foreground"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
+          {title}
+        </h2>
+        {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+      </div>
     </div>
   );
 }
@@ -192,10 +197,17 @@ export function hasReviewContent(review: ReviewInfo): boolean {
   );
 }
 
-/** Hover-card sizing: wide two-column layout when review data exists, compact otherwise. */
+/**
+ * Hover-card sizing: two-column layout when review data exists, compact
+ * otherwise. Kept deliberately modest (≈440×420) — an oversized card is still
+ * correctly anchored to its tile, but it's tall enough to reach the top of the
+ * viewport, which reads as a detached box floating in the corner. This size sits
+ * neatly above/below the hovered tile and lets Radix's collision handling flip
+ * it cleanly on edge rows.
+ */
 export function reviewHoverCardClass(review: ReviewInfo, padding = "p-5"): string {
   return hasReviewContent(review)
-    ? `w-[580px] max-w-[92vw] ${padding} max-h-[80vh] overflow-y-auto`
+    ? `w-[440px] max-w-[90vw] ${padding} max-h-[380px] overflow-y-auto`
     : `w-80 ${padding}`;
 }
 

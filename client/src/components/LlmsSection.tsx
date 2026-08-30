@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Cpu } from "lucide-react";
+import { Cpu, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
@@ -67,6 +67,8 @@ export function LlmsSection() {
       <div className="container">
         <SectionHeading title={t("llmTitle")} subtitle={t("llmSubtitle")} />
 
+        {/* Hide the filter bar until data loads so it doesn't flash "0 results". */}
+        {!isLoading && (
         <FilterBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -95,10 +97,13 @@ export function LlmsSection() {
           resultCount={filteredModels.length}
           onReset={handleReset}
         />
+        )}
 
         {/* Models grid */}
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">{t("loading")}</p>
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
         ) : filteredModels.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {filteredModels.map((model, idx) => {

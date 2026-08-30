@@ -171,9 +171,9 @@ export function FilterBar({
         </div>
       )}
 
-      {/* Results count */}
+      {/* Results count — singular/plural aware ("1 result" not "1 results") */}
       <p className="text-sm text-muted-foreground">
-        {resultCount} {t("results")}
+        {resultCount} {resultCount === 1 ? t("result") : t("results")}
       </p>
     </div>
   );

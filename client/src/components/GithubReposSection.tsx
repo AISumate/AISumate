@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Star, ExternalLink, GitBranch, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Star, ExternalLink, GitBranch, ArrowUp, ArrowDown, ArrowUpDown, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
@@ -103,6 +103,8 @@ export function GithubReposSection() {
       <div className="container">
         <SectionHeading title={t("githubTitle")} subtitle={t("githubSubtitle")} />
 
+        {/* Hide the filter bar until data loads so it doesn't flash "0 results". */}
+        {!isLoading && (
         <FilterBar
           searchTerm={searchTerm}
           onSearchChange={(v: string) => { setSearchTerm(v); setDisplayCount(100); }}
@@ -130,10 +132,13 @@ export function GithubReposSection() {
           resultCount={processedRepos.length}
           onReset={handleReset}
         />
+        )}
 
         {/* Repos table */}
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">{t("loading")}</p>
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
         ) : processedRepos.length > 0 ? (
           <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
