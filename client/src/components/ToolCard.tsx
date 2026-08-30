@@ -41,12 +41,21 @@ export function ToolCard({
   index = 0,
   visitLabel,
   onOpenDetails,
+  rank,
+  cornerBadge,
+  detailExtra,
 }: {
   tool: AiTool;
   index?: number;
   visitLabel?: string;
   /** Override the built-in detail dialog (e.g. AI Media opens a blog post instead). */
   onOpenDetails?: () => void;
+  /** Show a numbered rank badge in the top-left (Weekly Viral GitHub). */
+  rank?: number;
+  /** Small badge for the top-right corner, e.g. a trending delta pill. */
+  cornerBadge?: React.ReactNode;
+  /** Extra content rendered inside the detail dialog, under the description. */
+  detailExtra?: React.ReactNode;
 }) {
   const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -66,8 +75,23 @@ export function ToolCard({
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") openDetails();
         }}
-        className={`group relative flex flex-col gap-2.5 min-h-[220px] rounded-xl border border-border bg-card p-4 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:z-20 focus-within:z-20 hover:border-[color-mix(in_oklch,var(--tool-accent)_45%,var(--border))] hover:shadow-xl ${accentClass}`}
+        className={`group relative flex flex-col gap-2.5 min-h-[220px] rounded-xl border border-border bg-card p-4 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:z-20 focus-within:z-20 hover:border-[color-mix(in_oklch,var(--tool-accent)_45%,var(--border))] hover:shadow-xl ${
+          rank != null || cornerBadge ? "pt-9" : ""
+        } ${accentClass}`}
       >
+        {/* Rank badge (top-left) — used by the Weekly Viral GitHub strip. */}
+        {rank != null && (
+          <div
+            className="absolute top-3 left-3 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold shrink-0"
+            style={{ backgroundColor: "var(--tool-accent)", color: "oklch(0.96 0.01 60)" }}
+          >
+            {rank}
+          </div>
+        )}
+
+        {/* Corner badge (top-right), e.g. "+8.8k this week". */}
+        {cornerBadge && <div className="absolute top-3 right-3">{cornerBadge}</div>}
+
         {/* Header: icon + title/category only. The rating sits on its own row below —
             sharing this row with it cost ~92px, which at 5-up (218px cards) left the
             title just ~31px and truncated nearly every name. */}
@@ -101,7 +125,8 @@ export function ToolCard({
           </div>
         )}
 
-        {tool.isNew && (
+        {/* The corner badge owns the top-right slot when present, so they can't collide. */}
+        {tool.isNew && !cornerBadge && (
           <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">
             New
           </Badge>
@@ -187,6 +212,8 @@ export function ToolCard({
           {tool.isAffiliate && tool.affiliateUrl && (
             <p className="text-xs text-muted-foreground italic -mt-2">{t("affiliateDisclosure")}</p>
           )}
+
+          {detailExtra}
 
           <ReviewDetails review={tool} />
 
