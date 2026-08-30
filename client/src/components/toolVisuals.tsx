@@ -301,7 +301,10 @@ export function VisitButton({
         color: "oklch(0.96 0.01 60)",
       }}
     >
-      <a href={url} target="_blank" rel="noopener noreferrer">
+      {/* sponsored+nofollow: this is a directory whose outbound links may become
+          affiliate links — Google requires rel=sponsored on paid links, and
+          blanket-applying it keeps us compliant the day AffiliateUrls land. */}
+      <a href={url} target="_blank" rel="sponsored nofollow noopener noreferrer">
         {label}
         <ExternalLink className={compact ? "ml-1.5 h-3 w-3" : "ml-2 h-3.5 w-3.5"} />
       </a>

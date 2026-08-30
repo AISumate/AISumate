@@ -7,7 +7,7 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     {
-      "source": "/((?!api/).*)",
+      "source": "/",
       "has": [
         {
           "type": "header",
@@ -17,7 +17,7 @@
       ],
       "destination": "/seo.html"
     },
-    { "source": "/((?!api/).*)", "destination": "/app.html" }
+    { "source": "/", "destination": "/app.html" }
   ],
   "functions": {
     "api/index.js": {

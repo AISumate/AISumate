@@ -194,7 +194,7 @@ export function GithubReposSection() {
                     <td className="px-4 py-3 text-center">
                       {repo.repoUrl && (
                         <Button asChild size="sm" variant="outline" style={{ borderColor: "color-mix(in oklch, var(--tool-accent) 30%, transparent)", color: "var(--tool-accent)" }}>
-                          <a href={repo.repoUrl} target="_blank" rel="noopener noreferrer">
+                          <a href={repo.repoUrl} target="_blank" rel="nofollow noopener noreferrer">
                             <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                         </Button>

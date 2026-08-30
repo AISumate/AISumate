@@ -150,10 +150,21 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
-
-export default defineConfig({
-  plugins,
+export default defineConfig(({ command }) => ({
+  // Dev-only Manus scaffold tooling, excluded from production builds:
+  // - jsxLocPlugin stamps `data-loc="client/src/…"` source paths on every element
+  //   (click-to-source in the Manus editor; leaks source layout when shipped);
+  // - vitePluginManusRuntime inlines a ~360KB host-preview script into index.html
+  //   (dialog controller / preview chrome for the Manus host — dead weight on the
+  //   public site and most of the page's size);
+  // - the debug collector is a dev-server log middleware.
+  plugins: [
+    react(),
+    tailwindcss(),
+    ...(command === "serve"
+      ? [jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()]
+      : []),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -184,4 +195,4 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
-});
+}));

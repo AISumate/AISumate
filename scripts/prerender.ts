@@ -142,17 +142,24 @@ function buildCatalogHtml(entries: Entry[]): string {
     `${START}` +
     `<div id="seo" hidden>` +
     `<h1>aisumate — AI Productivity Tools Directory</h1>` +
-    `<p>Browse ${entries.length.toLocaleString()} human-curated AI tools, rated and reviewed in English and Spanish.</p>` +
+    `<p>Browse ${roundedCount(entries.length)} human-curated AI tools, rated and reviewed in English and Spanish.</p>` +
     sections +
     `</div>` +
     `${END}`
   );
 }
 
+/** Rounded-down "3,500+" style figure: the exact count drifts daily (and the
+ *  hero shows a different live denominator — all listings vs deduped tools),
+ *  so baked metadata states a floor instead of a number that goes stale. */
+function roundedCount(count: number): string {
+  return `${(Math.floor(count / 100) * 100).toLocaleString()}+`;
+}
+
 function buildJsonLd(count: number): string {
   const description =
     count > 0
-      ? `Discover ${count.toLocaleString()} human-curated AI productivity tools, rated and reviewed in English and Spanish.`
+      ? `Discover ${roundedCount(count)} human-curated AI productivity tools, rated and reviewed in English and Spanish.`
       : "Discover human-curated AI productivity tools, rated and reviewed in English and Spanish.";
   const data = [
     {
