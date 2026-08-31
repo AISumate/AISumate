@@ -276,29 +276,21 @@ export function ToolLanding({
         </div>
       )}
 
-      {/* From the maker — provider-extensible slot */}
-      <div className="mt-6 flex flex-col items-start gap-4 rounded-xl border-2 border-dashed border-primary/35 bg-card/55 p-6 sm:flex-row sm:items-center">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-          <Pencil className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <div className="text-sm font-bold text-foreground">{t("fromTheMaker")}</div>
-          <div className="text-[13px] leading-relaxed text-muted-foreground">
-            {providerNote || t("makerReserved").replace("{name}", name)}
+      {/* From the maker — renders ONLY when a real provider note exists in
+          Teable (Provider Note column). No empty placeholder, no claim pill:
+          Duncan's call — the slot stays invisible until a maker actually
+          supplies content. */}
+      {providerNote && (
+        <div className="mt-6 flex items-start gap-4 rounded-xl border border-border bg-card p-6">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <Pencil className="h-5 w-5 text-primary" />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <div className="text-sm font-bold text-foreground">{t("fromTheMaker")}</div>
+            <div className="text-[13px] leading-relaxed text-muted-foreground">{providerNote}</div>
           </div>
         </div>
-        {!providerNote && (
-          <>
-            <div className="hidden flex-1 sm:block" />
-            <a
-              href={`mailto:hello@aisumate.com?subject=${encodeURIComponent(`Claim tool page: ${name}`)}`}
-              className="shrink-0 rounded-full border border-primary/30 px-4 py-1.5 text-xs font-bold text-primary transition-colors hover:bg-primary/5"
-            >
-              {t("claimPage")}
-            </a>
-          </>
-        )}
-      </div>
+      )}
 
       {/* Related tools */}
       {related.length > 0 && (
