@@ -102,8 +102,8 @@ export function ToolLanding({
   return (
     <article>
       {/* Hero: identity + CTA left, screenshot card right */}
-      <div className="mt-3 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12">
-        <div className="flex flex-col gap-4">
+      <div className="mt-3 flex flex-col items-start gap-8 lg:flex-row lg:gap-14">
+        <div className="flex w-full flex-col gap-4 lg:w-auto lg:max-w-[600px]">
           <div className="flex items-center gap-4">
             <div
               className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-border bg-card shadow-sm"
@@ -154,7 +154,7 @@ export function ToolLanding({
               <VisitButton
                 url={visitUrl}
                 label={t("visitToolGeneric")}
-                className="h-11 w-auto rounded-full px-8 text-[14px] font-bold"
+                className="h-11 w-auto min-w-[230px] justify-center rounded-full px-10 text-[14px] font-bold"
               />
             )}
             <button
