@@ -30,6 +30,8 @@ import {
   fetchWeeklyViralGithubRepos,
 } from "../server/teable";
 import { PRIVACY, TERMS, type LegalDoc } from "../shared/legalContent";
+import { isLandingTable } from "../shared/simpleTables";
+import { mshotsUrl } from "../shared/screenshot";
 
 const SITE_URL = "https://www.aisumate.com";
 const OUT = path.resolve(process.cwd(), "dist/public");
@@ -53,6 +55,9 @@ interface Entry {
   cons: string;
   cost: string;
   verdict: string;
+  /** Curated gallery from the Teable "Images" column (may be empty). */
+  images: string[];
+  iconUrl: string;
 }
 
 function esc(s: string): string {
@@ -90,6 +95,8 @@ function normalize(item: any, tableKey: string, fallbackCategory: string): Entry
     cons: item.consEn || "",
     cost: item.costEn || "",
     verdict: item.verdictEn || "",
+    images: Array.isArray(item.images) ? item.images.filter(Boolean) : [],
+    iconUrl: item.iconUrl || "",
   };
 }
 
@@ -133,6 +140,7 @@ h2{font-size:18px;margin:24px 0 8px}
 .pill{display:inline-block;border:1px solid var(--terracotta);color:var(--terracotta);border-radius:999px;padding:1px 10px;font-size:12px;font-weight:600}
 ul{padding-left:20px}li{margin:4px 0}
 .visit{display:inline-block;background:var(--terracotta);color:#F4EFE6;font-weight:700;padding:10px 22px;border-radius:999px;text-decoration:none;margin-top:16px}
+.shot{display:block;width:100%;max-width:560px;height:auto;margin:20px 0;border-radius:12px;border:1px solid rgba(26,26,26,.12)}
 footer{margin-top:48px;font-size:12px;color:var(--tobacco)}footer a{color:var(--tobacco)}
 `.trim();
 
@@ -141,6 +149,8 @@ function staticShell(opts: {
   metaDesc: string;
   canonicalPath: string;
   body: string;
+  /** Extra <head> markup (og:/twitter: cards on tool pages). */
+  head?: string;
 }): string {
   return `<!doctype html>
 <html lang="en">
@@ -151,7 +161,7 @@ function staticShell(opts: {
 <meta name="description" content="${esc(truncate(opts.metaDesc, 160))}" />
 <link rel="canonical" href="${SITE_URL}${opts.canonicalPath}" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
-<style>${STATIC_CSS}</style>
+${opts.head ?? ""}<style>${STATIC_CSS}</style>
 </head>
 <body>
 <div class="wrap">
@@ -174,12 +184,51 @@ function reviewList(label: string, raw: string): string {
   return `<h2>${esc(label)}</h2><ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
 }
 
+/**
+ * Share card + hero image for a listing.
+ *
+ * Curated images (Teable "Images" column) win; landing tables otherwise fall
+ * back to the automatic homepage screenshot, mirroring what ToolLanding.tsx
+ * shows humans. Simple tables (channels, Discord servers, repos) get no
+ * screenshot — a shot of a discord.gg invite is noise — so their card falls
+ * back to the tool's icon and a small summary card.
+ */
+function toolImage(e: Entry): { shot: string; ogImage: string } {
+  const curated = e.images.map(safeUrl).filter(Boolean);
+  const href = safeUrl(e.url);
+  const shot = curated[0] || (isLandingTable(e.tableKey) && href ? mshotsUrl(href, 1200) : "");
+  return { shot, ogImage: shot || safeUrl(e.iconUrl) };
+}
+
 function toolPageHtml(e: Entry): string {
   const href = safeUrl(e.url);
   const stars = e.rating > 0 ? `★ ${e.rating}/5 · ` : "";
+  const { shot, ogImage } = toolImage(e);
+  const title = `${e.name} — aisumate`;
+  const metaDesc = e.desc || `${e.name} on aisumate, the human-curated AI tools directory.`;
+  const canonicalPath = `/tool/${e.tableKey}/${e.id}`;
+
+  // Per-listing share card, so a pasted link previews as the tool rather than
+  // as the site. esc() does not escape "'", so every value sits in "quotes".
+  const head =
+    `<meta property="og:type" content="website" />` +
+    `<meta property="og:site_name" content="aisumate" />` +
+    `<meta property="og:title" content="${esc(title)}" />` +
+    `<meta property="og:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    `<meta property="og:url" content="${SITE_URL}${esc(canonicalPath)}" />` +
+    (ogImage ? `<meta property="og:image" content="${esc(ogImage)}" />` : "") +
+    `<meta name="twitter:card" content="${shot ? "summary_large_image" : "summary"}" />` +
+    `<meta name="twitter:title" content="${esc(title)}" />` +
+    `<meta name="twitter:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    (ogImage ? `<meta name="twitter:image" content="${esc(ogImage)}" />` : "") +
+    "\n";
+
   const body =
     `<h1>${esc(e.name)}</h1>` +
     `<p class="meta">${stars}${e.category ? `<span class="pill">${esc(e.category)}</span>` : ""}</p>` +
+    (shot
+      ? `<img class="shot" src="${esc(shot)}" alt="${esc(e.name)} homepage" loading="lazy" />`
+      : "") +
     (e.desc ? `<p>${esc(e.desc)}</p>` : "") +
     reviewList("Pros", e.pros) +
     reviewList("Cons", e.cons) +
@@ -190,12 +239,8 @@ function toolPageHtml(e: Entry): string {
     (href
       ? `<a class="visit" href="${esc(href)}" rel="sponsored nofollow noopener noreferrer">Visit ${esc(e.name)}</a>`
       : "");
-  return staticShell({
-    title: `${e.name} — aisumate`,
-    metaDesc: e.desc || `${e.name} on aisumate, the human-curated AI tools directory.`,
-    canonicalPath: `/tool/${e.tableKey}/${e.id}`,
-    body,
-  });
+
+  return staticShell({ title, metaDesc, canonicalPath, body, head });
 }
 
 function writeToolPages(entries: Entry[]): number {

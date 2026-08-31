@@ -293,6 +293,9 @@ function cleanStr(f, key) {
   return isPlaceholderValue(v) ? "" : v;
 }
 var validUrl = validHttpUrl;
+function imageUrls(f) {
+  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean);
+}
 function num(f, key) {
   const v = f[key];
   if (v === null || v === void 0) return 0;
@@ -417,7 +420,7 @@ function mapGenericTool(record) {
     isAffiliate: bool(f, "Affiliate"),
     rating: num(f, "Rating 1-5"),
     isNew: isNewRecord(record),
-    images: str(f, "Images").split(/s+/).map(validUrl).filter(Boolean),
+    images: imageUrls(f),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
     popularity: num(f, "Subscribers"),
@@ -504,6 +507,7 @@ async function fetchAllTools() {
         isAffiliate: bool(f, "Affiliate"),
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
+        images: imageUrls(f),
         ...reviewFields(f)
       };
     });
@@ -587,6 +591,7 @@ async function fetchLlmModels() {
         isAffiliate: bool(f, "Affiliate"),
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
+        images: imageUrls(f),
         ...reviewFields(f)
       };
     });

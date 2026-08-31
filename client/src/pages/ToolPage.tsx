@@ -13,6 +13,7 @@ import {
   VisitButton,
   type ReviewInfo,
 } from "@/components/toolVisuals";
+import { isLandingTable } from "@shared/simpleTables";
 import { ToolLanding } from "./ToolLanding";
 
 /**
@@ -55,10 +56,8 @@ const TABLE_SOURCES: Record<string, { router: string; field: "tools" | "models" 
   thisWeeksAiPicks: { router: "thisWeeksAiPicks", field: "tools" },
 };
 
-// PILOT: the rich landing layout ships on ONE page first for Duncan's live
-// review (the ElevenLabs record the design canvas was built from). Rollout to
-// every landing table = replace this check with `!DISCOVER_TABLES.has(table)`.
-const PILOT_LANDING = new Set(["freeApis/recNpKsNvdihOwtENhx"]);
+// Which tables get the rich landing layout lives in shared/simpleTables.ts so
+// the crawler twins in scripts/prerender.ts stay in step with this page.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AnyListing extends ReviewInfo {
@@ -103,7 +102,7 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
   }
   if (!item) return <NotFoundBlock />;
 
-  if (PILOT_LANDING.has(`${table}/${id}`)) {
+  if (isLandingTable(table)) {
     return <ToolLanding table={table} id={id} item={item} rows={rows} />;
   }
 

@@ -49,6 +49,8 @@ export interface AiTool extends ReviewFields {
   isAffiliate: boolean;
   rating: number;
   isNew: boolean;
+  /** Curated landing-page gallery — see GenericTool.images. */
+  images?: string[];
 }
 
 export interface GithubRepo {
@@ -96,6 +98,8 @@ export interface LlmModel extends ReviewFields {
   isAffiliate: boolean;
   rating: number;
   isNew: boolean;
+  /** Curated landing-page gallery — see GenericTool.images. */
+  images?: string[];
 }
 
 export interface LtdDeal extends ReviewFields {
@@ -204,6 +208,15 @@ function cleanStr(f: Record<string, unknown>, key: string): string {
 
 /** Only real http(s) URLs pass — "Unknown"/"N/A" in a URL cell must not become a link. */
 const validUrl = validHttpUrl;
+
+/**
+ * Curated gallery URLs from the optional "Images" column — one URL per line
+ * (any whitespace separates). Shared by every mapper so the three tables that
+ * support a gallery can't drift apart.
+ */
+function imageUrls(f: Record<string, unknown>): string[] {
+  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean);
+}
 
 function num(f: Record<string, unknown>, key: string): number {
   const v = f[key];
@@ -381,7 +394,7 @@ function mapGenericTool(record: TeableRecord): GenericTool {
     isAffiliate: bool(f, "Affiliate"),
     rating: num(f, "Rating 1-5"),
     isNew: isNewRecord(record),
-    images: str(f, "Images").split(/s+/).map(validUrl).filter(Boolean),
+    images: imageUrls(f),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
     popularity: num(f, "Subscribers"),
@@ -486,6 +499,7 @@ export async function fetchAllTools(): Promise<AiTool[]> {
         isAffiliate: bool(f, "Affiliate"),
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
+        images: imageUrls(f),
         ...reviewFields(f),
       };
     });
@@ -579,6 +593,7 @@ export async function fetchLlmModels(): Promise<LlmModel[]> {
         isAffiliate: bool(f, "Affiliate"),
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
+        images: imageUrls(f),
         ...reviewFields(f),
       };
     });
