@@ -1,6 +1,7 @@
 import { ENV } from "./_core/env";
 import { delay, staggeredAll } from "./_core/batch";
 import { isPlaceholderValue, validHttpUrl } from "@shared/reviewSanitize";
+import { proxyImg } from "./imgProxy";
 
 /**
  * Teable API integration module.
@@ -217,7 +218,8 @@ const validUrl = validHttpUrl;
 function imageUrls(f: Record<string, unknown>): string[] {
   // Capped so one over-filled cell can't bloat the table's JSON for every
   // client — the landing page shows 6, the crawler twin uses the first.
-  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12);
+  // Proxied so visitors load them from our own origin (CDN-cached, private).
+  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12).map(proxyImg);
 }
 
 function num(f: Record<string, unknown>, key: string): number {
@@ -266,7 +268,8 @@ export function deriveFaviconUrl(siteUrl: string): string {
 
 /** Manually curated logo wins; otherwise fall back to the site's favicon. */
 function iconUrlFor(f: Record<string, unknown>, siteUrl: string): string {
-  return logoUrl(f) || deriveFaviconUrl(siteUrl);
+  // Proxied so visitors load icons from our own origin (CDN-cached, private).
+  return proxyImg(logoUrl(f) || deriveFaviconUrl(siteUrl));
 }
 
 /** Map the verified review columns. Data Flags stay server-side by design. */

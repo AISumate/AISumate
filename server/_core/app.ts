@@ -1,8 +1,10 @@
 import express from "express";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { registerRateLimits } from "./rateLimit";
+import { imgProxyHandler } from "../imgProxy";
 
 /**
  * Build the Express app with all API routes. Shared by the standalone server
@@ -22,6 +24,20 @@ export function createApp() {
   // to whatever URL came back — a path-traversal and open-redirect surface that
   // would have gone live the moment those env vars were set. Removed rather than
   // left dormant. Session verification (server/_core/sdk.ts) is untouched.
+  // Same-origin image proxy (signed URLs only — see server/imgProxy.ts).
+  // Own generous limiter: a cold grid page can fetch dozens of icons at once,
+  // and Vercel's CDN absorbs repeats, so the origin only sees cache misses.
+  app.get(
+    "/api/img",
+    rateLimit({
+      windowMs: 60_000,
+      limit: 120,
+      standardHeaders: "draft-7",
+      legacyHeaders: false,
+      keyGenerator: (req: { ip?: string }) => ipKeyGenerator(req.ip ?? ""),
+    }),
+    imgProxyHandler,
+  );
   // tRPC API
   app.use(
     "/api/trpc",

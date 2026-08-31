@@ -193,11 +193,23 @@ function reviewList(label: string, raw: string): string {
  * screenshot — a shot of a discord.gg invite is noise — so their card falls
  * back to the tool's icon and a small summary card.
  */
+/**
+ * The server hands out images/iconUrl as same-origin "/api/img?..." proxy
+ * paths (see server/imgProxy.ts). Absolutize those for og: tags (crawlers
+ * need absolute URLs); still refuse anything that is neither our proxy nor
+ * a plain http(s) URL.
+ */
+function safeImgUrl(u: string): string {
+  const t = String(u ?? "").trim();
+  if (t.startsWith("/api/img?")) return `${SITE_URL}${t}`;
+  return safeUrl(t);
+}
+
 function toolImage(e: Entry): { shot: string; ogImage: string } {
-  const curated = e.images.map(safeUrl).filter(Boolean);
+  const curated = e.images.map(safeImgUrl).filter(Boolean);
   const href = safeUrl(e.url);
   const shot = curated[0] || (isLandingTable(e.tableKey) && href ? mshotsUrl(href, 1200) : "");
-  return { shot, ogImage: shot || safeUrl(e.iconUrl) };
+  return { shot, ogImage: shot || safeImgUrl(e.iconUrl) };
 }
 
 function toolPageHtml(e: Entry): string {

@@ -1,5 +1,6 @@
 // server/_core/app.ts
 import express from "express";
+import rateLimit2, { ipKeyGenerator as ipKeyGenerator2 } from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
 // shared/const.ts
@@ -263,6 +264,126 @@ function validHttpUrl(v) {
   return /^https?:\/\//i.test(t2) ? t2 : "";
 }
 
+// server/imgProxy.ts
+import { createHmac, timingSafeEqual } from "node:crypto";
+var SIG_BYTES = 16;
+function secret() {
+  return ENV.teableApiKey ? `img-proxy:${ENV.teableApiKey}` : "";
+}
+function sign(src) {
+  return createHmac("sha256", secret()).update(src).digest("hex").slice(0, SIG_BYTES * 2);
+}
+function proxyImg(src) {
+  if (!src || !secret() || src.startsWith("/api/img?")) return src;
+  if (!/^https?:\/\//i.test(src)) return src;
+  return `/api/img?src=${encodeURIComponent(src)}&sig=${sign(src)}`;
+}
+function verifySig(src, sig) {
+  if (!secret() || !sig || sig.length !== SIG_BYTES * 2) return false;
+  const expect = Buffer.from(sign(src), "utf8");
+  const got = Buffer.from(sig, "utf8");
+  return expect.length === got.length && timingSafeEqual(expect, got);
+}
+function isBlockedHost(hostname) {
+  const h = hostname.toLowerCase();
+  if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal")) return true;
+  if (h.includes(":")) return true;
+  const m = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(h);
+  if (m) {
+    const [a, b] = [Number(m[1]), Number(m[2])];
+    if (a === 10 || a === 127 || a === 0) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    if (a === 192 && (b === 168 || b === 0)) return true;
+    if (a === 169 && b === 254) return true;
+    if (a === 100 && b >= 64 && b <= 127) return true;
+    if (a === 198 && (b === 18 || b === 19)) return true;
+  }
+  return false;
+}
+function isBlockedUrl(url) {
+  return !/^https?:$/.test(url.protocol) || isBlockedHost(url.hostname);
+}
+var MAX_BYTES = 4 * 1024 * 1024;
+var FETCH_TIMEOUT_MS = 15e3;
+var OK_CACHE = "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
+var ERR_CACHE = "public, max-age=60, s-maxage=120";
+function fail(res, status) {
+  res.status(status).set("Cache-Control", ERR_CACHE).end();
+}
+var MAX_REDIRECTS = 5;
+async function fetchImage(url, signal) {
+  let current = url;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    if (isBlockedUrl(current)) return null;
+    const r = await fetch(current, {
+      signal,
+      redirect: "manual",
+      headers: {
+        "User-Agent": "aisumate-img-proxy/1.0 (+https://www.aisumate.com)",
+        Accept: "image/*,*/*;q=0.5"
+      }
+    });
+    if (r.status >= 300 && r.status < 400) {
+      const loc = r.headers.get("location");
+      if (!loc) return null;
+      try {
+        current = new URL(loc, current);
+      } catch {
+        return null;
+      }
+      continue;
+    }
+    return r;
+  }
+  return null;
+}
+async function imgProxyHandler(req, res) {
+  const keys = Object.keys(req.query);
+  const src = typeof req.query.src === "string" ? req.query.src : "";
+  const sig = typeof req.query.sig === "string" ? req.query.sig : "";
+  if (keys.length !== 2 || !src || !verifySig(src, sig)) {
+    res.status(403).set("Cache-Control", "no-store").end();
+    return;
+  }
+  let url;
+  try {
+    url = new URL(src);
+  } catch {
+    return fail(res, 400);
+  }
+  if (isBlockedUrl(url)) return fail(res, 403);
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const upstream = await fetchImage(url, ctrl.signal);
+    if (!upstream || !upstream.ok || !upstream.body) return fail(res, 502);
+    const type = (upstream.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+    if (!type.startsWith("image/")) return fail(res, 502);
+    const declared = Number(upstream.headers.get("content-length") || 0);
+    if (declared > MAX_BYTES) return fail(res, 502);
+    const chunks = [];
+    let total = 0;
+    const reader = upstream.body.getReader();
+    for (; ; ) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_BYTES) {
+        ctrl.abort();
+        return fail(res, 502);
+      }
+      chunks.push(value);
+    }
+    const buf = Buffer.concat(chunks);
+    if (buf.length === 0) return fail(res, 502);
+    res.status(200).set("Content-Type", type).set("Cache-Control", OK_CACHE).set("X-Content-Type-Options", "nosniff").set("Content-Security-Policy", "default-src 'none'; sandbox").send(buf);
+  } catch {
+    fail(res, 502);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // server/teable.ts
 var CACHE_TTL_MS = 5 * 60 * 1e3;
 var caches = /* @__PURE__ */ new Map();
@@ -294,7 +415,7 @@ function cleanStr(f, key) {
 }
 var validUrl = validHttpUrl;
 function imageUrls(f) {
-  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12);
+  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12).map(proxyImg);
 }
 function num(f, key) {
   const v = f[key];
@@ -328,7 +449,7 @@ function deriveFaviconUrl(siteUrl) {
   }
 }
 function iconUrlFor(f, siteUrl) {
-  return logoUrl(f) || deriveFaviconUrl(siteUrl);
+  return proxyImg(logoUrl(f) || deriveFaviconUrl(siteUrl));
 }
 function reviewFields(f) {
   return {
@@ -1142,8 +1263,8 @@ var SDKServer = class {
     return new Map(Object.entries(parsed));
   }
   getSessionSecret() {
-    const secret = ENV.cookieSecret;
-    return new TextEncoder().encode(secret);
+    const secret2 = ENV.cookieSecret;
+    return new TextEncoder().encode(secret2);
   }
   /**
    * Create a session token for a Manus user openId
@@ -1338,6 +1459,17 @@ function createApp() {
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ limit: "1mb", extended: true }));
   registerRateLimits(app);
+  app.get(
+    "/api/img",
+    rateLimit2({
+      windowMs: 6e4,
+      limit: 120,
+      standardHeaders: "draft-7",
+      legacyHeaders: false,
+      keyGenerator: (req) => ipKeyGenerator2(req.ip ?? "")
+    }),
+    imgProxyHandler
+  );
   app.use(
     "/api/trpc",
     createExpressMiddleware({
