@@ -196,7 +196,7 @@ export default function ToolPage() {
       <Header />
       <main className="container flex-1 py-7">
         <Link
-          href="/"
+          href={`/#${params.table}`}
           className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />

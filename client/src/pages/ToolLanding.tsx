@@ -49,6 +49,7 @@ export function ToolLanding({
   const { t, language } = useLanguage();
   const [failedShots, setFailedShots] = useState<Set<string>>(new Set());
   const [activeShot, setActiveShot] = useState(0);
+  const [mshotsTry, setMshotsTry] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -77,15 +78,35 @@ export function ToolLanding({
   // the rest as click-to-select thumbnails; clicking the main image opens a
   // full-size lightbox. Broken URLs drop out silently.
   const curated: string[] = Array.isArray(item.images) ? item.images : [];
-  const autoShot = url ? [mshotsUrl(url, 1200)] : [];
+  const autoShotBase = url ? mshotsUrl(url, 1200) : "";
   const liveCurated = curated.slice(0, 6).filter((s) => !failedShots.has(s));
   // A curated image that 404s falls back to the auto screenshot rather than
   // leaving a gap; if that fails too, `mainShot` is undefined and the whole
   // card (browser frame included) never renders — no empty box.
-  const shots = (liveCurated.length > 0 ? liveCurated : autoShot).filter(
-    (s) => !failedShots.has(s),
-  );
+  const usingAutoShot =
+    liveCurated.length === 0 && !!autoShotBase && !failedShots.has(autoShotBase);
+  const shots = usingAutoShot
+    ? [mshotsTry ? `${autoShotBase}&retry=${mshotsTry}` : autoShotBase]
+    : liveCurated;
   const mainShot = shots[Math.min(activeShot, Math.max(shots.length - 1, 0))];
+  // failedShots is keyed on the un-busted URL so a failure sticks across retries.
+  const mainShotKey = usingAutoShot ? autoShotBase : mainShot;
+
+  /**
+   * mShots serves a 400x300 "Generating Preview" placeholder until it has
+   * rendered the site (real shots come back at the requested 1200px). Poll a
+   * few times while it generates; if the placeholder never resolves (some
+   * sites block the renderer) give up so the card hides instead of promising
+   * a screenshot forever.
+   */
+  const handleShotLoad = (img: HTMLImageElement) => {
+    if (!usingAutoShot || img.naturalWidth > 420) return;
+    if (mshotsTry >= 4) {
+      setFailedShots((prev) => new Set(prev).add(autoShotBase));
+      return;
+    }
+    window.setTimeout(() => setMshotsTry((n) => n + 1), 3500);
+  };
 
   // Same-category neighbours from the already-cached table list — internal
   // links, zero extra fetches. Rating-first so the strongest tools show.
@@ -205,8 +226,9 @@ export function ToolLanding({
                   alt={`${name} website`}
                   loading="lazy"
                   referrerPolicy="no-referrer"
+                  onLoad={(e) => handleShotLoad(e.currentTarget)}
                   onError={() =>
-                    setFailedShots((prev) => new Set(prev).add(mainShot))
+                    setFailedShots((prev) => new Set(prev).add(mainShotKey))
                   }
                   className="block w-full rounded-xl"
                 />
