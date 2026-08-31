@@ -1,0 +1,345 @@
+import { useState } from "react";
+import { Link } from "wouter";
+import {
+  ArrowRight,
+  Bot,
+  Check,
+  Coins,
+  Link2,
+  Pencil,
+  Quote,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  ConfidenceBadge,
+  StarRating,
+  ToolIcon,
+  VisitButton,
+} from "@/components/toolVisuals";
+import {
+  cleanReviewText,
+  cleanVerdict,
+  hostnameOf,
+  splitReviewItems,
+} from "@shared/reviewSanitize";
+import { mshotsUrl } from "@shared/screenshot";
+import type { AnyListing } from "./ToolPage";
+
+/**
+ * The rich landing layout for a listing — built to match the approved design
+ * canvas (hero + screenshot card, pros/cons cards, cost chips, dark verdict
+ * pull-quote, "From the maker" slot, related tools). Rendered by ToolPage for
+ * landing-enabled tables; the screenshot is an automatic homepage shot until
+ * curated images exist in Teable.
+ */
+export function ToolLanding({
+  table,
+  id,
+  item,
+  rows,
+}: {
+  table: string;
+  id: string;
+  item: AnyListing;
+  rows: AnyListing[];
+}) {
+  const { t, language } = useLanguage();
+  const [shotFailed, setShotFailed] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const name = item.name || item.title || "";
+  const description =
+    (language === "es"
+      ? item.descriptionEs || item.summaryEs
+      : item.descriptionEn || item.summaryEn) ||
+    item.description ||
+    "";
+  const category = item.category || item.providerType || item.topic || item.platform || "";
+  const url = item.url || item.repoUrl || item.dealUrl || item.website || "";
+  const visitUrl = item.isAffiliate && item.affiliateUrl ? item.affiliateUrl : url;
+  const domain = hostnameOf(url);
+
+  const pros = splitReviewItems(language === "es" ? item.prosEs : item.prosEn);
+  const cons = splitReviewItems(language === "es" ? item.consEs : item.consEn);
+  const costChips = splitReviewItems(language === "es" ? item.costEs : item.costEn);
+  const verdict = cleanVerdict(language === "es" ? item.verdictEs : item.verdictEn);
+  const providerNote = cleanReviewText(
+    language === "es" ? item.providerNoteEs : item.providerNoteEn,
+  );
+
+  // Curated images (future Teable `Images` column) win; otherwise the
+  // auto homepage screenshot. onError hides the card entirely.
+  const images: string[] = Array.isArray(item.images) ? item.images : [];
+  const shotSrc = images[0] || (url ? mshotsUrl(url, 1200) : "");
+
+  // Same-category neighbours from the already-cached table list — internal
+  // links, zero extra fetches. Rating-first so the strongest tools show.
+  const related = rows
+    .filter((r) => r.id !== id && (r.category || r.providerType) === (item.category || item.providerType))
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0) || String(a.name).localeCompare(String(b.name)))
+    .slice(0, 3);
+
+  const copyPageLink = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/tool/${table}/${id}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard unavailable — quietly do nothing */
+    }
+  };
+
+  return (
+    <article>
+      {/* Hero: identity + CTA left, screenshot card right */}
+      <div className="mt-7 grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-12">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <div
+              className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-border bg-card shadow-sm"
+            >
+              <ToolIcon
+                iconUrl={item.iconUrl}
+                siteUrl={url}
+                alt={name}
+                className="h-11 w-11 rounded-lg object-contain"
+                fallback={<Bot className="h-8 w-8 text-primary" />}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <div
+                className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                aisumate / tool
+              </div>
+              <h1
+                className="text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-[44px]"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                {name}
+              </h1>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {(item.rating ?? 0) > 0 && (
+              <>
+                <StarRating rating={item.rating!} accent="var(--primary)" />
+                <span className="text-[13px] font-bold text-foreground">
+                  {Number(item.rating).toFixed(1)}
+                </span>
+                <span className="h-3.5 w-px bg-border" />
+              </>
+            )}
+            <ConfidenceBadge level={item.reviewConfidence} />
+          </div>
+
+          {description && (
+            <p className="max-w-[520px] text-lg leading-relaxed text-foreground">{description}</p>
+          )}
+
+          <div className="mt-1 flex flex-wrap items-center gap-3">
+            {visitUrl && <VisitButton url={visitUrl} label={`${t("visitToolGeneric")}`} />}
+            <button
+              type="button"
+              onClick={copyPageLink}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+            >
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
+              {copied ? t("linkCopied") : t("copyLink")}
+            </button>
+          </div>
+          {item.isAffiliate && item.affiliateUrl && (
+            <p className="text-xs italic text-muted-foreground">{t("affiliateDisclosure")}</p>
+          )}
+        </div>
+
+        {/* Screenshot card (browser chrome frame) */}
+        {shotSrc && !shotFailed && (
+          <div className="rounded-2xl border border-border bg-card p-2.5 shadow-[0_12px_32px_rgba(26,26,26,0.10)]">
+            <div className="flex items-center gap-1.5 px-1 pb-2.5 pt-0.5">
+              <span className="h-2 w-2 rounded-full bg-border" />
+              <span className="h-2 w-2 rounded-full bg-border" />
+              <span className="h-2 w-2 rounded-full bg-border" />
+              <span className="flex-1" />
+              {domain && (
+                <span
+                  className="text-[10px] text-muted-foreground"
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  {domain}
+                </span>
+              )}
+            </div>
+            <img
+              src={shotSrc}
+              alt={`${name} website`}
+              loading="lazy"
+              onError={() => setShotFailed(true)}
+              className="block w-full rounded-xl"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Pros / Cons */}
+      {(pros.length > 0 || cons.length > 0) && (
+        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {pros.length > 0 && (
+            <div className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-7">
+              <div
+                className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em]"
+                style={{ color: "#4E7A4E" }}
+              >
+                <ThumbsUp className="h-4 w-4" />
+                {t("reviewPros")}
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {pros.map((p, i) => (
+                  <div key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground">
+                    <span className="font-bold" style={{ color: "#4E7A4E" }}>
+                      +
+                    </span>
+                    {p}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {cons.length > 0 && (
+            <div className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-7">
+              <div
+                className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em]"
+                style={{ color: "#A03D12" }}
+              >
+                <ThumbsDown className="h-4 w-4" />
+                {t("reviewCons")}
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {cons.map((c, i) => (
+                  <div key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground">
+                    <span className="font-bold" style={{ color: "#A03D12" }}>
+                      −
+                    </span>
+                    {c}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Cost + Verdict */}
+      {(costChips.length > 0 || verdict) && (
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {costChips.length > 0 && (
+            <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-7">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
+                <Coins className="h-4 w-4" />
+                {t("reviewCost")}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {costChips.map((c, i) => (
+                  <span
+                    key={i}
+                    className="rounded-full bg-secondary px-3.5 py-1.5 text-xs font-semibold text-foreground"
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">{t("costVerifyNote")}</p>
+            </div>
+          )}
+          {verdict && (
+            <div className="flex flex-col gap-3 rounded-xl bg-foreground p-7">
+              <div
+                className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em]"
+                style={{ color: "#CFA45E" }}
+              >
+                <Quote className="h-4 w-4" />
+                {t("ourVerdict")}
+              </div>
+              <p className="text-[17px] italic leading-relaxed text-background">"{verdict}"</p>
+              <div
+                className="text-[11px]"
+                style={{ fontFamily: "var(--font-mono)", color: "#A08B72" }}
+              >
+                {t("verdictSignature")}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* From the maker — provider-extensible slot */}
+      <div className="mt-6 flex flex-col items-start gap-4 rounded-xl border-2 border-dashed border-primary/35 bg-card/55 p-6 sm:flex-row sm:items-center">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <Pencil className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <div className="text-sm font-bold text-foreground">{t("fromTheMaker")}</div>
+          <div className="text-[13px] leading-relaxed text-muted-foreground">
+            {providerNote || t("makerReserved").replace("{name}", name)}
+          </div>
+        </div>
+        {!providerNote && (
+          <>
+            <div className="hidden flex-1 sm:block" />
+            <a
+              href={`mailto:hello@aisumate.com?subject=${encodeURIComponent(`Claim tool page: ${name}`)}`}
+              className="shrink-0 rounded-full border border-primary/30 px-4 py-1.5 text-xs font-bold text-primary transition-colors hover:bg-primary/5"
+            >
+              {t("claimPage")}
+            </a>
+          </>
+        )}
+      </div>
+
+      {/* Related tools */}
+      {related.length > 0 && (
+        <div className="mt-12 flex flex-col gap-4">
+          <div className="border-l-4 border-primary pl-4">
+            <div
+              className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              aisumate / index
+            </div>
+            <div className="text-[22px] font-extrabold text-foreground">
+              {t("relatedIn")} {category}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {related.map((r) => {
+              const rDesc =
+                (language === "es"
+                  ? r.descriptionEs || r.summaryEs
+                  : r.descriptionEn || r.summaryEn) || "";
+              return (
+                <Link
+                  key={r.id}
+                  href={`/tool/${table}/${r.id}`}
+                  className="group flex flex-col gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+                >
+                  <div className="text-[15px] font-bold text-foreground">{r.name}</div>
+                  <div className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                    {rDesc}
+                  </div>
+                  <div className="mt-1 inline-flex items-center gap-1.5 text-xs font-bold text-primary">
+                    {t("viewTool")}
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </article>
+  );
+}

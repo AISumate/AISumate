@@ -64,6 +64,14 @@ export const translations = {
     copyLink: "Copy link",
     linkCopied: "Link copied",
     toolNotFound: "Listing not found — it may have been removed from the directory.",
+    relatedIn: "Related in",
+    fromTheMaker: "From the maker",
+    makerReserved: "This space is reserved for {name} — makers can add their own note, screenshots and a video here.",
+    claimPage: "Claim this page",
+    ourVerdict: "Our verdict",
+    verdictSignature: "— aisumate editors",
+    viewTool: "View tool",
+    costVerifyNote: "Verify current pricing on the tool's site.",
     // Deliberately precise: the site loads Google Fonts and falls back to Google's
     // favicon service for tool logos, so a blanket "we collect nothing" would be
     // untrue. Revisit this wording if those third-party calls are ever removed.
@@ -364,6 +372,14 @@ export const translations = {
     copyLink: "Copiar enlace",
     linkCopied: "Enlace copiado",
     toolNotFound: "Ficha no encontrada — puede haber sido retirada del directorio.",
+    relatedIn: "Relacionados en",
+    fromTheMaker: "Del creador",
+    makerReserved: "Este espacio está reservado para {name} — los creadores pueden añadir aquí su propia nota, capturas y un vídeo.",
+    claimPage: "Reclamar esta página",
+    ourVerdict: "Nuestro veredicto",
+    verdictSignature: "— editores de aisumate",
+    viewTool: "Ver herramienta",
+    costVerifyNote: "Verifica el precio actual en el sitio de la herramienta.",
     footerPrivacy:
       "No usamos analíticas ni cookies de rastreo o publicidad, y no recopilamos, almacenamos ni vendemos tus datos personales. Tus preferencias de idioma y tema se guardan solo en tu propio navegador. Las fuentes y algunos logos de herramientas se cargan desde Google, por lo que tu dirección IP es visible para ellos.",
     footerRatingsDisclaimer:

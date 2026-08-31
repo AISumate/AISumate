@@ -48,6 +48,7 @@ export const PRIVACY: { en: LegalDoc; es: LegalDoc } = {
         heading: "Third-party services you may notice",
         paragraphs: [
           "Tool logos: when a tool has not provided its own logo, we fall back to Google's public favicon service to display one. Your browser fetches that image directly from Google, which means Google sees the request (including your IP address), as it would on most sites.",
+          "Tool screenshots: tool pages show an automatic screenshot of the tool's own website, served by WordPress.com's public mShots service. Your browser fetches that image directly from WordPress.com, which therefore sees the request (including your IP address).",
           "Chat assistant: the site includes an optional chat widget provided by MindPal. It answers questions from our public catalogue only. If you use it, your messages are processed by MindPal to generate answers; we do not use it to collect personal data.",
           "Fonts are self-hosted — no font request leaves this site.",
         ],
@@ -97,6 +98,7 @@ export const PRIVACY: { en: LegalDoc; es: LegalDoc } = {
         heading: "Servicios de terceros que podrías notar",
         paragraphs: [
           "Logos de herramientas: cuando una herramienta no aporta su propio logo, usamos el servicio público de favicons de Google para mostrarlo. Tu navegador solicita esa imagen directamente a Google, por lo que Google ve la petición (incluida tu IP), como en la mayoría de sitios.",
+          "Capturas de herramientas: las páginas de herramienta muestran una captura automática del sitio web de la propia herramienta, servida por el servicio público mShots de WordPress.com. Tu navegador solicita esa imagen directamente a WordPress.com, que por tanto ve la petición (incluida tu IP).",
           "Asistente de chat: el sitio incluye un widget opcional de chat de MindPal. Responde solo con información de nuestro catálogo público. Si lo usas, tus mensajes son procesados por MindPal para generar respuestas; no lo usamos para recopilar datos personales.",
           "Las fuentes están auto-alojadas — ninguna petición de fuentes sale de este sitio.",
         ],

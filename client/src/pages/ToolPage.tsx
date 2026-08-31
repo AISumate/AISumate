@@ -13,6 +13,7 @@ import {
   VisitButton,
   type ReviewInfo,
 } from "@/components/toolVisuals";
+import { ToolLanding } from "./ToolLanding";
 
 /**
  * Shareable per-listing page: /tool/:table/:id
@@ -54,8 +55,13 @@ const TABLE_SOURCES: Record<string, { router: string; field: "tools" | "models" 
   thisWeeksAiPicks: { router: "thisWeeksAiPicks", field: "tools" },
 };
 
+// PILOT: the rich landing layout ships on ONE page first for Duncan's live
+// review (the ElevenLabs record the design canvas was built from). Rollout to
+// every landing table = replace this check with `!DISCOVER_TABLES.has(table)`.
+const PILOT_LANDING = new Set(["freeApis/recNpKsNvdihOwtENhx"]);
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-interface AnyListing extends ReviewInfo {
+export interface AnyListing extends ReviewInfo {
   id: string;
   [k: string]: any;
 }
@@ -70,11 +76,14 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
     ? (trpc as any)[source.router].list.useQuery(undefined, { refetchOnWindowFocus: false })
     : null;
 
-  const item: AnyListing | undefined = useMemo(() => {
-    if (!source || !query?.data) return undefined;
-    const rows = (query.data as any)[source.field] ?? [];
-    return rows.find((r: AnyListing) => r.id === id);
-  }, [source, query?.data, id]);
+  const rows: AnyListing[] = useMemo(
+    () => (source && query?.data ? ((query.data as any)[source.field] ?? []) : []),
+    [source, query?.data],
+  );
+  const item: AnyListing | undefined = useMemo(
+    () => rows.find((r: AnyListing) => r.id === id),
+    [rows, id],
+  );
 
   const name = item ? item.name || item.title || "" : "";
   useEffect(() => {
@@ -93,6 +102,10 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
     );
   }
   if (!item) return <NotFoundBlock />;
+
+  if (PILOT_LANDING.has(`${table}/${id}`)) {
+    return <ToolLanding table={table} id={id} item={item} rows={rows} />;
+  }
 
   const description =
     (language === "es"
