@@ -227,7 +227,7 @@ function toolPageHtml(e: Entry): string {
     `<h1>${esc(e.name)}</h1>` +
     `<p class="meta">${stars}${e.category ? `<span class="pill">${esc(e.category)}</span>` : ""}</p>` +
     (shot
-      ? `<img class="shot" src="${esc(shot)}" alt="${esc(e.name)} homepage" loading="lazy" />`
+      ? `<img class="shot" src="${esc(shot)}" alt="${esc(e.name)} homepage" loading="lazy" referrerpolicy="no-referrer" />`
       : "") +
     (e.desc ? `<p>${esc(e.desc)}</p>` : "") +
     reviewList("Pros", e.pros) +

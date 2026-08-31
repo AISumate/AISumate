@@ -294,7 +294,7 @@ function cleanStr(f, key) {
 }
 var validUrl = validHttpUrl;
 function imageUrls(f) {
-  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean);
+  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12);
 }
 function num(f, key) {
   const v = f[key];

@@ -215,7 +215,9 @@ const validUrl = validHttpUrl;
  * support a gallery can't drift apart.
  */
 function imageUrls(f: Record<string, unknown>): string[] {
-  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean);
+  // Capped so one over-filled cell can't bloat the table's JSON for every
+  // client — the landing page shows 6, the crawler twin uses the first.
+  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12);
 }
 
 function num(f: Record<string, unknown>, key: string): number {

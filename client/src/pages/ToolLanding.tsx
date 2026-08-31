@@ -199,6 +199,7 @@ export function ToolLanding({
                   src={mainShot}
                   alt={`${name} website`}
                   loading="lazy"
+                  referrerPolicy="no-referrer"
                   onError={() =>
                     setFailedShots((prev) => new Set(prev).add(mainShot))
                   }
@@ -224,6 +225,7 @@ export function ToolLanding({
                       src={s}
                       alt=""
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                       onError={() => setFailedShots((prev) => new Set(prev).add(s))}
                       className="h-full w-full object-cover"
                     />
@@ -236,7 +238,12 @@ export function ToolLanding({
             <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
               <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-none">
                 <DialogTitle className="sr-only">{name}</DialogTitle>
-                <img src={mainShot} alt={`${name} website`} className="w-full rounded-2xl" />
+                <img
+                  src={mainShot}
+                  alt={`${name} website`}
+                  referrerPolicy="no-referrer"
+                  className="w-full rounded-2xl"
+                />
               </DialogContent>
             </Dialog>
           </div>
