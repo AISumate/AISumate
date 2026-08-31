@@ -185,6 +185,12 @@ export default function ToolPage() {
   const params = useParams<{ table: string; id: string }>();
   const { t } = useLanguage();
 
+  // Cards navigate here from anywhere in a long grid — without this the new
+  // page opens at the old scroll position.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [params.table, params.id]);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />

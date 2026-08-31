@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { isLandingTable } from "@shared/simpleTables";
 import { Check, Link2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -76,7 +77,12 @@ export function ToolCard({
   const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [, navigate] = useLocation();
   const pageHref = tableKey ? `/tool/${tableKey}/${tool.id}` : undefined;
+  // Landing tables go straight to the tool's landing page on click; excluded
+  // tables (channels, sites, blog...) keep the quick detail dialog, as does
+  // any caller that overrides onOpenDetails (AI Media's blog post).
+  const goesToPage = Boolean(pageHref && !onOpenDetails && tableKey && isLandingTable(tableKey));
 
   const copyPageLink = async () => {
     if (!pageHref) return;
@@ -93,7 +99,8 @@ export function ToolCard({
   const description = language === "es" ? tool.descriptionEs : tool.descriptionEn;
   const visitUrl = tool.isAffiliate && tool.affiliateUrl ? tool.affiliateUrl : tool.url;
   const label = visitLabel ?? t("visitTool");
-  const openDetails = onOpenDetails ?? (() => setOpen(true));
+  const openDetails =
+    onOpenDetails ?? (goesToPage ? () => navigate(pageHref!) : () => setOpen(true));
 
   return (
     <>
@@ -191,7 +198,7 @@ export function ToolCard({
               openDetails();
             }}
           >
-            {t("description")}
+            {goesToPage ? t("openToolPage") : t("description")}
           </Button>
           <div onClick={(e) => e.stopPropagation()} className="flex justify-center">
             <VisitButton url={visitUrl} label={label} compact />
