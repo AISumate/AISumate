@@ -102,7 +102,7 @@ export function ToolLanding({
   return (
     <article>
       {/* Hero: identity + CTA left, screenshot card right */}
-      <div className="mt-7 grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-12">
+      <div className="mt-3 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
             <div
@@ -167,8 +167,8 @@ export function ToolLanding({
 
         {/* Screenshot / gallery card (browser chrome frame) */}
         {mainShot && (
-          <div className="flex flex-col gap-2.5">
-            <div className="rounded-2xl border border-border bg-card p-2.5 shadow-[0_12px_32px_rgba(26,26,26,0.10)]">
+          <div className="flex w-full max-w-[400px] flex-col gap-2.5">
+            <div className="rounded-2xl border border-border bg-card p-2 shadow-[0_10px_24px_rgba(26,26,26,0.10)]">
               <div className="flex items-center gap-1.5 px-1 pb-2.5 pt-0.5">
                 <span className="h-2 w-2 rounded-full bg-border" />
                 <span className="h-2 w-2 rounded-full bg-border" />
@@ -239,7 +239,7 @@ export function ToolLanding({
 
       {/* Pros / Cons */}
       {(pros.length > 0 || cons.length > 0) && (
-        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {pros.length > 0 && (
             <div className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-7">
               <div
@@ -346,7 +346,7 @@ export function ToolLanding({
 
       {/* Related tools */}
       {related.length > 0 && (
-        <div className="mt-12 flex flex-col gap-4">
+        <div className="mt-10 flex flex-col gap-4">
           <div className="border-l-4 border-primary pl-4">
             <div
               className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground"

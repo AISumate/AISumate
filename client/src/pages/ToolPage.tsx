@@ -189,10 +189,10 @@ export default function ToolPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <main className="container flex-1 py-12">
+      <main className="container flex-1 py-7">
         <Link
           href="/"
-          className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
+          className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("backHome")}
