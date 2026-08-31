@@ -285,17 +285,20 @@ export function VisitButton({
   url,
   label,
   compact = false,
+  className,
 }: {
   url: string;
   label: string;
   compact?: boolean;
+  /** Overrides the default full-width sizing (used by the landing page CTA). */
+  className?: string;
 }) {
   if (!url) return null;
   return (
     <Button
       asChild
       size="sm"
-      className={compact ? "h-7 px-3 text-xs" : "w-full"}
+      className={compact ? "h-7 px-3 text-xs" : className ?? "w-full"}
       style={{
         backgroundColor: "var(--tool-accent, var(--primary))",
         color: "oklch(0.96 0.01 60)",

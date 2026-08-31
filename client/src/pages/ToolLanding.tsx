@@ -150,7 +150,13 @@ export function ToolLanding({
           )}
 
           <div className="mt-1 flex flex-wrap items-center gap-3">
-            {visitUrl && <VisitButton url={visitUrl} label={`${t("visitToolGeneric")}`} />}
+            {visitUrl && (
+              <VisitButton
+                url={visitUrl}
+                label={t("visitToolGeneric")}
+                className="h-11 w-auto rounded-full px-8 text-[14px] font-bold"
+              />
+            )}
             <button
               type="button"
               onClick={copyPageLink}
