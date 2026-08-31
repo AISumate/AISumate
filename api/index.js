@@ -417,6 +417,7 @@ function mapGenericTool(record) {
     isAffiliate: bool(f, "Affiliate"),
     rating: num(f, "Rating 1-5"),
     isNew: isNewRecord(record),
+    images: str(f, "Images").split(/s+/).map(validUrl).filter(Boolean),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
     popularity: num(f, "Subscribers"),

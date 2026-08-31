@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowRight,
   Bot,
@@ -46,7 +47,9 @@ export function ToolLanding({
   rows: AnyListing[];
 }) {
   const { t, language } = useLanguage();
-  const [shotFailed, setShotFailed] = useState(false);
+  const [failedShots, setFailedShots] = useState<Set<string>>(new Set());
+  const [activeShot, setActiveShot] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const name = item.name || item.title || "";
@@ -69,10 +72,15 @@ export function ToolLanding({
     language === "es" ? item.providerNoteEs : item.providerNoteEn,
   );
 
-  // Curated images (future Teable `Images` column) win; otherwise the
-  // auto homepage screenshot. onError hides the card entirely.
-  const images: string[] = Array.isArray(item.images) ? item.images : [];
-  const shotSrc = images[0] || (url ? mshotsUrl(url, 1200) : "");
+  // Curated images (Teable `Images` column, one URL per line) win; otherwise
+  // the auto homepage screenshot. Up to 6 shown: the first as the main image,
+  // the rest as click-to-select thumbnails; clicking the main image opens a
+  // full-size lightbox. Broken URLs drop out silently.
+  const curated: string[] = Array.isArray(item.images) ? item.images : [];
+  const shots = (curated.length > 0 ? curated : url ? [mshotsUrl(url, 1200)] : [])
+    .slice(0, 6)
+    .filter((s) => !failedShots.has(s));
+  const mainShot = shots[Math.min(activeShot, Math.max(shots.length - 1, 0))];
 
   // Same-category neighbours from the already-cached table list — internal
   // links, zero extra fetches. Rating-first so the strongest tools show.
@@ -157,30 +165,74 @@ export function ToolLanding({
           )}
         </div>
 
-        {/* Screenshot card (browser chrome frame) */}
-        {shotSrc && !shotFailed && (
-          <div className="rounded-2xl border border-border bg-card p-2.5 shadow-[0_12px_32px_rgba(26,26,26,0.10)]">
-            <div className="flex items-center gap-1.5 px-1 pb-2.5 pt-0.5">
-              <span className="h-2 w-2 rounded-full bg-border" />
-              <span className="h-2 w-2 rounded-full bg-border" />
-              <span className="h-2 w-2 rounded-full bg-border" />
-              <span className="flex-1" />
-              {domain && (
-                <span
-                  className="text-[10px] text-muted-foreground"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  {domain}
-                </span>
-              )}
+        {/* Screenshot / gallery card (browser chrome frame) */}
+        {mainShot && (
+          <div className="flex flex-col gap-2.5">
+            <div className="rounded-2xl border border-border bg-card p-2.5 shadow-[0_12px_32px_rgba(26,26,26,0.10)]">
+              <div className="flex items-center gap-1.5 px-1 pb-2.5 pt-0.5">
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="h-2 w-2 rounded-full bg-border" />
+                <span className="flex-1" />
+                {domain && (
+                  <span
+                    className="text-[10px] text-muted-foreground"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {domain}
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                className="block w-full cursor-zoom-in"
+                aria-label={`${name} — enlarge image`}
+              >
+                <img
+                  src={mainShot}
+                  alt={`${name} website`}
+                  loading="lazy"
+                  onError={() =>
+                    setFailedShots((prev) => new Set(prev).add(mainShot))
+                  }
+                  className="block w-full rounded-xl"
+                />
+              </button>
             </div>
-            <img
-              src={shotSrc}
-              alt={`${name} website`}
-              loading="lazy"
-              onError={() => setShotFailed(true)}
-              className="block w-full rounded-xl"
-            />
+
+            {/* Thumbnail selector — only when the maker supplied several images */}
+            {shots.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {shots.map((s, i) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setActiveShot(i)}
+                    className={`h-14 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+                      s === mainShot ? "border-primary" : "border-border hover:border-primary/50"
+                    }`}
+                    aria-label={`${name} image ${i + 1}`}
+                  >
+                    <img
+                      src={s}
+                      alt=""
+                      loading="lazy"
+                      onError={() => setFailedShots((prev) => new Set(prev).add(s))}
+                      className="h-full w-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Lightbox */}
+            <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+              <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-none">
+                <DialogTitle className="sr-only">{name}</DialogTitle>
+                <img src={mainShot} alt={`${name} website`} className="w-full rounded-2xl" />
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>

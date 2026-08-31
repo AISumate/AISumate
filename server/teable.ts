@@ -132,6 +132,13 @@ export interface GenericTool extends ReviewFields {
    */
   isEnglishContent: boolean;
   isSpanishContent: boolean;
+  /**
+   * Curated gallery for the tool landing page - from an optional Images
+   * column (one image URL per line; whitespace-separated also accepted).
+   * Empty until the column exists in Teable; the landing page then prefers
+   * these over the automatic homepage screenshot.
+   */
+  images?: string[];
   /** Popularity metric (currently only populated on AI Influencers via its "Subscribers" column). */
   popularity: number;
   /** Curated rank (currently only populated on AI Influencers and Sumate Top Recommendations via their "Rank" column). */
@@ -374,6 +381,7 @@ function mapGenericTool(record: TeableRecord): GenericTool {
     isAffiliate: bool(f, "Affiliate"),
     rating: num(f, "Rating 1-5"),
     isNew: isNewRecord(record),
+    images: str(f, "Images").split(/s+/).map(validUrl).filter(Boolean),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
     popularity: num(f, "Subscribers"),
