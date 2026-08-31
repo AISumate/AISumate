@@ -77,9 +77,14 @@ export function ToolLanding({
   // the rest as click-to-select thumbnails; clicking the main image opens a
   // full-size lightbox. Broken URLs drop out silently.
   const curated: string[] = Array.isArray(item.images) ? item.images : [];
-  const shots = (curated.length > 0 ? curated : url ? [mshotsUrl(url, 1200)] : [])
-    .slice(0, 6)
-    .filter((s) => !failedShots.has(s));
+  const autoShot = url ? [mshotsUrl(url, 1200)] : [];
+  const liveCurated = curated.slice(0, 6).filter((s) => !failedShots.has(s));
+  // A curated image that 404s falls back to the auto screenshot rather than
+  // leaving a gap; if that fails too, `mainShot` is undefined and the whole
+  // card (browser frame included) never renders — no empty box.
+  const shots = (liveCurated.length > 0 ? liveCurated : autoShot).filter(
+    (s) => !failedShots.has(s),
+  );
   const mainShot = shots[Math.min(activeShot, Math.max(shots.length - 1, 0))];
 
   // Same-category neighbours from the already-cached table list — internal
