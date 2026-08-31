@@ -128,7 +128,9 @@ export function ToolLanding({
   return (
     <article>
       {/* Hero: identity + CTA left, screenshot card right */}
-      <div className="mt-3 flex flex-col items-start gap-8 lg:flex-row lg:gap-14">
+      {/* Same two-column grid as the pros/cons row below, so the image card's
+          edges line up exactly with the box underneath it. */}
+      <div className="mt-3 grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-6">
         <div className="flex w-full flex-col gap-4 lg:w-auto lg:max-w-[600px]">
           <div className="flex items-center gap-4">
             <div
@@ -199,7 +201,7 @@ export function ToolLanding({
 
         {/* Screenshot / gallery card (browser chrome frame) */}
         {mainShot && (
-          <div className="flex w-full max-w-[400px] flex-col gap-2.5">
+          <div className="flex w-full flex-col gap-2.5">
             <div className="rounded-2xl border border-border bg-card p-2 shadow-[0_10px_24px_rgba(26,26,26,0.10)]">
               <div className="flex items-center gap-1.5 px-1 pb-2.5 pt-0.5">
                 <span className="h-2 w-2 rounded-full bg-border" />
