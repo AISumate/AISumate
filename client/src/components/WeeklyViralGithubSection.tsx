@@ -61,7 +61,7 @@ export function WeeklyViralGithubSection() {
 
   return (
     <section className="pt-10 pb-2">
-      <div className="container">
+      <div>
         <div className="flex flex-wrap items-end justify-between gap-2">
           <SectionHeading
             title={t("weeklyViralGithubTitle")}

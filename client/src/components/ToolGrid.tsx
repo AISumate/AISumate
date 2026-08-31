@@ -99,8 +99,10 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
     // padding (on top of the tab wrapper's py-4) left a dead gap above the
     // search bar. Bottom padding stays generous.
     <section className="pt-2 pb-12 grid-pattern-bg">
-      {/* max-w-5xl: keep the tools area in a centered middle column like the mockup */}
-      <div className="container max-w-5xl">
+      {/* SectionTabs already wraps every tab panel in .container — nesting
+          another one here (or capping with max-w-5xl, as this once did) eats
+          64px of width and gives tabs mismatched page widths. */}
+      <div>
         <FilterBar
           searchTerm={searchTerm}
           onSearchChange={handleSearchChange}

@@ -63,7 +63,7 @@ export function LlmsSection() {
 
   return (
     <section className="py-12">
-      <div className="container">
+      <div>
         <SectionHeading title={t("llmTitle")} subtitle={t("llmSubtitle")} />
 
         {/* Hide the filter bar until data loads so it doesn't flash "0 results". */}

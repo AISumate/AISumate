@@ -100,7 +100,7 @@ export function GithubReposSection() {
 
   return (
     <section className="py-12">
-      <div className="container">
+      <div>
         <SectionHeading title={t("githubTitle")} subtitle={t("githubSubtitle")} />
 
         {/* Hide the filter bar until data loads so it doesn't flash "0 results". */}

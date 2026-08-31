@@ -76,7 +76,7 @@ export function LtdsSection() {
 
   return (
     <section className="py-12">
-      <div className="container">
+      <div>
         <SectionHeading title={t("ltdTitle")} subtitle={t("ltdSubtitle")} />
 
         {/* Hide the filter bar until data loads so it doesn't flash "0 results". */}

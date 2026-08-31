@@ -136,8 +136,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
   };
 
   return (
-    // max-w-5xl: keep the tools area in a centered middle column like the mockup
-    <div className="py-6 max-w-5xl mx-auto">
+    // Full width of the surrounding container, matching the LLMs/GitHub tabs —
+    // the old max-w-5xl cap gave these tabs a narrower page than the rest.
+    <div className="py-6">
       <SectionHeading title={t(titleKey)} subtitle={t(subtitleKey)} />
 
       {/* Loading state — show ONLY the spinner. Rendering the FilterBar here

@@ -38,7 +38,7 @@ export function SumateTopRecommendationsSection() {
 
   return (
     <section className="pt-10 pb-2">
-      <div className="container">
+      <div>
         <SectionHeading
           title={t("sumateTopRecommendationsTitle")}
           subtitle={t("sumateTopRecommendationsSubtitle")}
