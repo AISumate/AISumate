@@ -31,18 +31,25 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
     });
   };
 
-  // Sync with URL hash so icon links (and direct links) can switch tabs
+  // Sync with URL hash so icon links (and direct links) can switch tabs.
+  // Only hashes that name a real tab count — an unknown hash (a strip table
+  // like #thisWeeksAiPicks, or junk) would select a tab that doesn't exist
+  // and render an empty page.
   useEffect(() => {
-    const hash = window.location.hash.replace("#", "");
-    if (hash) {
-      setActiveTab(hash);
-    }
-    const onHashChange = () => {
+    const VALID_TABS = new Set([
+      "tools", "aiMedia", "github", "llms", "videoImage", "musicVoice",
+      "chatbots", "freeApis", "freeLlmIde", "vibeCoding", "designerTools",
+      "aiInfra", "hardware", "testingTools", "aiSecurity",
+      "businessProductivity", "mcpProviders", "vpsCloud", "aiInfluencers",
+      "aiSites", "aiDiscord", "auSeoTools",
+    ]);
+    const apply = () => {
       const h = window.location.hash.replace("#", "");
-      if (h) setActiveTab(h);
+      if (h && VALID_TABS.has(h)) setActiveTab(h);
     };
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
   }, []);
 
   return (

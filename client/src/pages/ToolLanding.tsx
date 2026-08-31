@@ -230,7 +230,11 @@ export function ToolLanding({
                   onError={() =>
                     setFailedShots((prev) => new Set(prev).add(mainShotKey))
                   }
-                  className="block w-full rounded-xl"
+                  // Fixed 16:10 frame so every tool page's image card is the
+                  // same size — source images range from wide og banners to
+                  // square icons, and object-contain letterboxes rather than
+                  // zoom-cropping the odd shapes.
+                  className="block w-full aspect-[16/10] object-contain bg-muted rounded-xl"
                 />
               </button>
             </div>

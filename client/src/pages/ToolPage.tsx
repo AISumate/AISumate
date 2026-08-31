@@ -59,6 +59,15 @@ const TABLE_SOURCES: Record<string, { router: string; field: "tools" | "models" 
 // Which tables get the rich landing layout lives in shared/simpleTables.ts so
 // the crawler twins in scripts/prerender.ts stay in step with this page.
 
+// Some tables render as a strip INSIDE another tab rather than as their own
+// tab — the back link must target the host tab or SectionTabs shows nothing.
+const HOME_TAB: Record<string, string> = {
+  thisWeeksAiPicks: "tools",
+  weeklyViralGithub: "github",
+  sumateTopRecommendations: "aiInfluencers",
+  ltds: "tools",
+};
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AnyListing extends ReviewInfo {
   id: string;
@@ -196,7 +205,7 @@ export default function ToolPage() {
       <Header />
       <main className="container flex-1 py-7">
         <Link
-          href={`/#${params.table}`}
+          href={`/#${HOME_TAB[params.table] ?? params.table}`}
           className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />
