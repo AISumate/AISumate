@@ -45,7 +45,13 @@ interface FilterBarProps {
     onDirectionChange: (direction: "asc" | "desc") => void;
     options: SortOption[];
   };
-  resultCount: number;
+  /** Placeholder i18n key for the search input. Defaults to the section
+   *  filter wording; the home page passes its own, because that bar searches
+   *  the whole catalogue rather than filtering one tab. */
+  searchPlaceholderKey?: string;
+  /** Omit to hide the count entirely — the home page has no result set until
+   *  something is searched, and "0 results" over a full page reads as broken. */
+  resultCount?: number;
   onReset?: () => void;
 }
 
@@ -56,6 +62,7 @@ export function FilterBar({
   sort,
   resultCount,
   onReset,
+  searchPlaceholderKey = "searchPlaceholder",
 }: FilterBarProps) {
   const { t } = useLanguage();
 
@@ -72,11 +79,11 @@ export function FilterBar({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             type="text"
-            placeholder={t("searchPlaceholder")}
+            placeholder={t(searchPlaceholderKey as never)}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 pr-10 h-11"
-            aria-label={t("searchPlaceholder")}
+            aria-label={t(searchPlaceholderKey as never)}
           />
           {searchTerm && (
             <button
@@ -179,9 +186,11 @@ export function FilterBar({
       )}
 
       {/* Results count — singular/plural aware ("1 result" not "1 results") */}
-      <p className="text-sm text-muted-foreground">
-        {resultCount} {resultCount === 1 ? t("result") : t("results")}
-      </p>
+      {resultCount !== undefined && (
+        <p className="text-sm text-muted-foreground">
+          {resultCount} {resultCount === 1 ? t("result") : t("results")}
+        </p>
+      )}
     </div>
   );
 }

@@ -9,7 +9,9 @@ export const translations = {
     ctaExplore: "Explore Tools",
 
     // Search & Filter
-    searchPlaceholder: "Search tools by name...",
+    searchPlaceholder: "Filter this section by name...",
+    homeSearchPlaceholder: "Search every tool, model and repo…",
+    sortByRelevance: "Sort by relevance",
     allCategories: "All Categories",
     filterByCategory: "Filter by category",
     aiRelevanceFilter: "AI relevance",
@@ -333,7 +335,9 @@ export const translations = {
     ctaExplore: "Explorar Herramientas",
 
     // Search & Filter
-    searchPlaceholder: "Buscar herramientas por nombre...",
+    searchPlaceholder: "Filtrar esta sección por nombre...",
+    homeSearchPlaceholder: "Busca en todas las herramientas, modelos y repos…",
+    sortByRelevance: "Ordenar por relevancia",
     allCategories: "Todas las Categorías",
     filterByCategory: "Filtrar por categoría",
     aiRelevanceFilter: "Relevancia de IA",

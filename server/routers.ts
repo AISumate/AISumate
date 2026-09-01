@@ -316,37 +316,39 @@ export const appRouter = router({
           reviewConfidence?: string;
         };
 
-        const tableFetchers: Array<{ label: string; fetch: () => Promise<SearchSourceItem[]> }> = [
-          { label: "AI Tools", fetch: () => fetchAllTools() },
-          { label: "GitHub Repos", fetch: () => fetchGithubRepos() },
-          { label: "Weekly Viral GitHub", fetch: () => fetchWeeklyViralGithubRepos() },
-          { label: "LLMs", fetch: () => fetchLlmModels() },
-          { label: "Video & Image", fetch: () => fetchVideoImageTools() },
-          { label: "Music & Voice", fetch: () => fetchMusicVoiceTools() },
-          { label: "Chatbots & Agents", fetch: () => fetchChatbotsTools() },
-          { label: "Free APIs", fetch: () => fetchFreeApisTools() },
-          { label: "Free LLM & IDE", fetch: () => fetchFreeLlmIdeTools() },
-          { label: "Vibe Coding", fetch: () => fetchVibeCodingTools() },
-          { label: "Designer Tools", fetch: () => fetchDesignerTools() },
-          { label: "AI Infrastructure", fetch: () => fetchAiInfraTools() },
-          { label: "Hardware & Computers", fetch: () => fetchHardwareTools() },
-          { label: "Testing Tools", fetch: () => fetchTestingTools() },
-          { label: "AI Security", fetch: () => fetchAiSecurityTools() },
-          { label: "Business Productivity", fetch: () => fetchBusinessProductivityTools() },
-          { label: "MCP Providers", fetch: () => fetchMcpProvidersTools() },
-          { label: "VPS & Cloud", fetch: () => fetchVpsCloudTools() },
-          { label: "AI Media", fetch: () => fetchAiMediaTools() },
-          { label: "AI Influencers", fetch: () => fetchAiInfluencersTools() },
-          { label: "AI Sites", fetch: () => fetchAiSitesTools() },
-          { label: "AI Discord", fetch: () => fetchAiDiscordTools() },
-          { label: "AU SEO Tools", fetch: () => fetchAuSeoTools() },
-          { label: "Sumate Top Recommendations", fetch: () => fetchSumateTopRecommendations() },
+        // key is the /tool/<key>/<id> route segment, carried into each result so a
+        // search hit can link to the listing's own page.
+        const tableFetchers: Array<{ label: string; key: string; fetch: () => Promise<SearchSourceItem[]> }> = [
+          { label: "AI Tools", key: "tools", fetch: () => fetchAllTools() },
+          { label: "GitHub Repos", key: "github", fetch: () => fetchGithubRepos() },
+          { label: "Weekly Viral GitHub", key: "weeklyViralGithub", fetch: () => fetchWeeklyViralGithubRepos() },
+          { label: "LLMs", key: "llms", fetch: () => fetchLlmModels() },
+          { label: "Video & Image", key: "videoImage", fetch: () => fetchVideoImageTools() },
+          { label: "Music & Voice", key: "musicVoice", fetch: () => fetchMusicVoiceTools() },
+          { label: "Chatbots & Agents", key: "chatbots", fetch: () => fetchChatbotsTools() },
+          { label: "Free APIs", key: "freeApis", fetch: () => fetchFreeApisTools() },
+          { label: "Free LLM & IDE", key: "freeLlmIde", fetch: () => fetchFreeLlmIdeTools() },
+          { label: "Vibe Coding", key: "vibeCoding", fetch: () => fetchVibeCodingTools() },
+          { label: "Designer Tools", key: "designerTools", fetch: () => fetchDesignerTools() },
+          { label: "AI Infrastructure", key: "aiInfra", fetch: () => fetchAiInfraTools() },
+          { label: "Hardware & Computers", key: "hardware", fetch: () => fetchHardwareTools() },
+          { label: "Testing Tools", key: "testingTools", fetch: () => fetchTestingTools() },
+          { label: "AI Security", key: "aiSecurity", fetch: () => fetchAiSecurityTools() },
+          { label: "Business Productivity", key: "businessProductivity", fetch: () => fetchBusinessProductivityTools() },
+          { label: "MCP Providers", key: "mcpProviders", fetch: () => fetchMcpProvidersTools() },
+          { label: "VPS & Cloud", key: "vpsCloud", fetch: () => fetchVpsCloudTools() },
+          { label: "AI Media", key: "aiMedia", fetch: () => fetchAiMediaTools() },
+          { label: "AI Influencers", key: "aiInfluencers", fetch: () => fetchAiInfluencersTools() },
+          { label: "AI Sites", key: "aiSites", fetch: () => fetchAiSitesTools() },
+          { label: "AI Discord", key: "aiDiscord", fetch: () => fetchAiDiscordTools() },
+          { label: "AU SEO Tools", key: "auSeoTools", fetch: () => fetchAuSeoTools() },
+          { label: "Sumate Top Recommendations", key: "sumateTopRecommendations", fetch: () => fetchSumateTopRecommendations() },
         ];
 
         // Staggered fetch: the cache serves most of these instantly, but on a
         // cold cache 23 concurrent requests would trip Teable's rate limit.
         const results = await staggeredAll(
-          tableFetchers.map(({ label, fetch }) => async () => {
+          tableFetchers.map(({ label, key, fetch }) => async () => {
             try {
               const items = await fetch();
               return items
@@ -378,6 +380,7 @@ export const appRouter = router({
                   isNew: item.isNew || false,
                   reviewConfidence: item.reviewConfidence || "",
                   sourceTable: label,
+                  sourceTableKey: key,
                   score,
                 }));
             } catch (err) {

@@ -1,8 +1,11 @@
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
+import { FilterBar } from "./FilterBar";
 import { SectionHeading } from "./toolVisuals";
+import { ToolCard, type AiTool } from "./ToolCard";
 import { ThisWeeksAiPicksSection } from "./ThisWeeksAiPicksSection";
 import { SumateTopRecommendationsSection } from "./SumateTopRecommendationsSection";
 import { WeeklyViralGithubSection } from "./WeeklyViralGithubSection";
@@ -100,22 +103,131 @@ function BlogRowSection() {
   );
 }
 
+/** A hit from search.global, shaped for ToolCard. */
+interface SearchHit extends AiTool {
+  sourceTable: string;
+  sourceTableKey: string;
+}
+
 /**
- * The front page. Four curated rows that answer "what's worth knowing this
- * week" — the picks, the channels we rate, the repos that went viral, and our
- * own long-form pieces. The full AI Tools catalogue stays one tab away.
+ * The front page: a catalogue-wide search, and four curated rows that answer
+ * "what's worth knowing this week" — the picks, the channels we rate, the repos
+ * that went viral, and our own long-form pieces.
  *
- * Every row is an existing section component reused as-is, so the home page
- * can't drift from the tab each row also appears on. Each hides itself when
- * its table is empty, so a Teable outage thins the page instead of breaking it.
+ * The search covers EVERY table (the per-tab bars only filter their own tab),
+ * so results replace the rows while a query is active rather than sitting under
+ * them. Each row is an existing section component reused as-is, so the home
+ * page can't drift from the tab it mirrors, and each hides itself when its
+ * table is empty — a Teable outage thins the page instead of breaking it.
  */
 export function HomeSection() {
+  const { t } = useLanguage();
+  // Shareable searches: /?q=voice+cloning arrives pre-filled.
+  const [search, setSearch] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
+  });
+  const [sortField, setSortField] = useState("relevance");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const term = search.trim();
+  const searching = term.length > 0;
+
+  // Searches every table, not just this page — the reason it lives here rather
+  // than inside one section. Skipped entirely until something is typed.
+  const query = trpc.search.global.useQuery(
+    { query: term, limit: 100 },
+    { enabled: searching, refetchOnWindowFocus: false },
+  );
+
+  const results = useMemo(() => {
+    const rows = (query.data?.results ?? []) as SearchHit[];
+    if (sortField === "relevance") return rows; // server order is by score
+    const sorted = [...rows].sort((a, b) =>
+      sortField === "rating"
+        ? (b.rating ?? 0) - (a.rating ?? 0) || a.name.localeCompare(b.name)
+        : a.name.localeCompare(b.name),
+    );
+    return sortDirection === "asc" ? sorted : sorted.reverse();
+  }, [query.data, sortField, sortDirection]);
+
+  const chips = [
+    { label: t("heroChipVoiceCloning"), value: "voice cloning" },
+    { label: t("heroChipFreeLlmApi"), value: "free LLM API" },
+    { label: t("heroChipImageUpscaler"), value: "image upscaler" },
+  ];
+
   return (
-    <div>
-      <ThisWeeksAiPicksSection divider={false} />
-      <SumateTopRecommendationsSection limit={6} />
-      <WeeklyViralGithubSection />
-      <BlogRowSection />
+    <div className="py-6">
+      <FilterBar
+        searchTerm={search}
+        onSearchChange={setSearch}
+        filters={[]}
+        sort={{
+          field: sortField,
+          direction: sortDirection,
+          onFieldChange: setSortField,
+          onDirectionChange: setSortDirection,
+          options: [
+            { value: "relevance", labelKey: "sortByRelevance" },
+            { value: "name", labelKey: "sortByName" },
+            { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
+          ],
+        }}
+        resultCount={searching ? results.length : undefined}
+        searchPlaceholderKey="homeSearchPlaceholder"
+      />
+
+      {!searching && (
+        <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-medium text-muted-foreground">{t("heroTryLabel")}</span>
+          {chips.map((chip) => (
+            <button
+              key={chip.value}
+              type="button"
+              onClick={() => setSearch(chip.value)}
+              className="rounded-full border border-border px-3 py-1 font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {searching ? (
+        query.isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : results.length === 0 ? (
+          <p className="py-20 text-center text-sm text-muted-foreground">
+            {t("globalSearchNoResults")}
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+            {results.map((hit, idx) => (
+              <ToolCard
+                key={`${hit.sourceTableKey}/${hit.id}`}
+                tool={hit}
+                index={idx}
+                tableKey={hit.sourceTableKey}
+                cornerBadge={
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                    {hit.sourceTable}
+                  </span>
+                }
+              />
+            ))}
+          </div>
+        )
+      ) : (
+        <>
+          <ThisWeeksAiPicksSection divider={false} />
+          <SumateTopRecommendationsSection limit={6} />
+          <WeeklyViralGithubSection />
+          <BlogRowSection />
+        </>
+      )}
     </div>
   );
 }

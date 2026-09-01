@@ -995,33 +995,33 @@ var appRouter = router({
       const term = input.query.toLowerCase().trim();
       const limit = input.limit;
       const tableFetchers = [
-        { label: "AI Tools", fetch: () => fetchAllTools() },
-        { label: "GitHub Repos", fetch: () => fetchGithubRepos() },
-        { label: "Weekly Viral GitHub", fetch: () => fetchWeeklyViralGithubRepos() },
-        { label: "LLMs", fetch: () => fetchLlmModels() },
-        { label: "Video & Image", fetch: () => fetchVideoImageTools() },
-        { label: "Music & Voice", fetch: () => fetchMusicVoiceTools() },
-        { label: "Chatbots & Agents", fetch: () => fetchChatbotsTools() },
-        { label: "Free APIs", fetch: () => fetchFreeApisTools() },
-        { label: "Free LLM & IDE", fetch: () => fetchFreeLlmIdeTools() },
-        { label: "Vibe Coding", fetch: () => fetchVibeCodingTools() },
-        { label: "Designer Tools", fetch: () => fetchDesignerTools() },
-        { label: "AI Infrastructure", fetch: () => fetchAiInfraTools() },
-        { label: "Hardware & Computers", fetch: () => fetchHardwareTools() },
-        { label: "Testing Tools", fetch: () => fetchTestingTools() },
-        { label: "AI Security", fetch: () => fetchAiSecurityTools() },
-        { label: "Business Productivity", fetch: () => fetchBusinessProductivityTools() },
-        { label: "MCP Providers", fetch: () => fetchMcpProvidersTools() },
-        { label: "VPS & Cloud", fetch: () => fetchVpsCloudTools() },
-        { label: "AI Media", fetch: () => fetchAiMediaTools() },
-        { label: "AI Influencers", fetch: () => fetchAiInfluencersTools() },
-        { label: "AI Sites", fetch: () => fetchAiSitesTools() },
-        { label: "AI Discord", fetch: () => fetchAiDiscordTools() },
-        { label: "AU SEO Tools", fetch: () => fetchAuSeoTools() },
-        { label: "Sumate Top Recommendations", fetch: () => fetchSumateTopRecommendations() }
+        { label: "AI Tools", key: "tools", fetch: () => fetchAllTools() },
+        { label: "GitHub Repos", key: "github", fetch: () => fetchGithubRepos() },
+        { label: "Weekly Viral GitHub", key: "weeklyViralGithub", fetch: () => fetchWeeklyViralGithubRepos() },
+        { label: "LLMs", key: "llms", fetch: () => fetchLlmModels() },
+        { label: "Video & Image", key: "videoImage", fetch: () => fetchVideoImageTools() },
+        { label: "Music & Voice", key: "musicVoice", fetch: () => fetchMusicVoiceTools() },
+        { label: "Chatbots & Agents", key: "chatbots", fetch: () => fetchChatbotsTools() },
+        { label: "Free APIs", key: "freeApis", fetch: () => fetchFreeApisTools() },
+        { label: "Free LLM & IDE", key: "freeLlmIde", fetch: () => fetchFreeLlmIdeTools() },
+        { label: "Vibe Coding", key: "vibeCoding", fetch: () => fetchVibeCodingTools() },
+        { label: "Designer Tools", key: "designerTools", fetch: () => fetchDesignerTools() },
+        { label: "AI Infrastructure", key: "aiInfra", fetch: () => fetchAiInfraTools() },
+        { label: "Hardware & Computers", key: "hardware", fetch: () => fetchHardwareTools() },
+        { label: "Testing Tools", key: "testingTools", fetch: () => fetchTestingTools() },
+        { label: "AI Security", key: "aiSecurity", fetch: () => fetchAiSecurityTools() },
+        { label: "Business Productivity", key: "businessProductivity", fetch: () => fetchBusinessProductivityTools() },
+        { label: "MCP Providers", key: "mcpProviders", fetch: () => fetchMcpProvidersTools() },
+        { label: "VPS & Cloud", key: "vpsCloud", fetch: () => fetchVpsCloudTools() },
+        { label: "AI Media", key: "aiMedia", fetch: () => fetchAiMediaTools() },
+        { label: "AI Influencers", key: "aiInfluencers", fetch: () => fetchAiInfluencersTools() },
+        { label: "AI Sites", key: "aiSites", fetch: () => fetchAiSitesTools() },
+        { label: "AI Discord", key: "aiDiscord", fetch: () => fetchAiDiscordTools() },
+        { label: "AU SEO Tools", key: "auSeoTools", fetch: () => fetchAuSeoTools() },
+        { label: "Sumate Top Recommendations", key: "sumateTopRecommendations", fetch: () => fetchSumateTopRecommendations() }
       ];
       const results = await staggeredAll(
-        tableFetchers.map(({ label, fetch: fetch2 }) => async () => {
+        tableFetchers.map(({ label, key, fetch: fetch2 }) => async () => {
           try {
             const items = await fetch2();
             return items.map((item) => {
@@ -1047,6 +1047,7 @@ var appRouter = router({
               isNew: item.isNew || false,
               reviewConfidence: item.reviewConfidence || "",
               sourceTable: label,
+              sourceTableKey: key,
               score
             }));
           } catch (err) {
