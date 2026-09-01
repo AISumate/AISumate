@@ -10,7 +10,7 @@ export const translations = {
 
     // Search & Filter
     searchPlaceholder: "Filter this section by name...",
-    homeSearchPlaceholder: "Search every tool, model and repo…",
+    homeSearchPlaceholder: "Search the whole directory…",
     sortByRelevance: "Sort by relevance",
     allCategories: "All Categories",
     filterByCategory: "Filter by category",
@@ -336,7 +336,7 @@ export const translations = {
 
     // Search & Filter
     searchPlaceholder: "Filtrar esta sección por nombre...",
-    homeSearchPlaceholder: "Busca en todas las herramientas, modelos y repos…",
+    homeSearchPlaceholder: "Buscar en todo el directorio…",
     sortByRelevance: "Ordenar por relevancia",
     allCategories: "Todas las Categorías",
     filterByCategory: "Filtrar por categoría",

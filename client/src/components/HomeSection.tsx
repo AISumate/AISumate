@@ -186,7 +186,7 @@ export function HomeSection() {
               key={chip.value}
               type="button"
               onClick={() => setSearch(chip.value)}
-              className="rounded-full border border-border px-3 py-1 font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex items-center rounded-full border border-border px-4 min-h-11 sm:min-h-0 sm:px-3 sm:py-1 font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
             >
               {chip.label}
             </button>
