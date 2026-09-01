@@ -34,7 +34,14 @@ interface NavGroup {
  * other tab lives in exactly one group. The group labels reuse the bilingual
  * group* i18n keys shipped with the original design.
  */
-const DIRECT_TAB: NavTab = { tabValue: "tools", labelKey: "tabTools" };
+/**
+ * Home (the default tab) and AI Tools (the main catalogue) are direct buttons.
+ * AI Tools keeps the slot it has always had, immediately before the groups.
+ */
+const DIRECT_TABS: NavTab[] = [
+  { tabValue: "home", labelKey: "tabHome" },
+  { tabValue: "tools", labelKey: "tabTools" },
+];
 
 const NAV_GROUPS: NavGroup[] = [
   {
@@ -51,7 +58,6 @@ const NAV_GROUPS: NavGroup[] = [
       { tabValue: "videoImage", labelKey: "tabVideoImage" },
       { tabValue: "musicVoice", labelKey: "tabMusicVoice" },
       { tabValue: "designerTools", labelKey: "tabDesignerTools" },
-      { tabValue: "aiMedia", labelKey: "iconAiMedia" },
     ],
   },
   {
@@ -82,6 +88,8 @@ const NAV_GROUPS: NavGroup[] = [
   {
     labelKey: "groupDiscover",
     tabs: [
+      // Our own writing — reads as something to discover, not something to create.
+      { tabValue: "aiMedia", labelKey: "iconAiMedia" },
       { tabValue: "github", labelKey: "tabGithub" },
       { tabValue: "aiInfluencers", labelKey: "iconAiInfluencers" },
       { tabValue: "aiSites", labelKey: "iconAiSites" },
@@ -90,9 +98,11 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-// Smaller pills below `sm` so all 7 level-1 buttons fit two rows on a phone.
-// The group ORDER is also part of that: lighter labels are interleaved so the
-// greedy flex-wrap packs 4 + 3 buttons into two 343px rows at 375px wide.
+// Smaller pills below `sm` so the level-1 buttons stay compact on a phone.
+// With the Home button added there are 8, which wrap to three 343px rows at
+// 375px wide (measured 2026-08-31, in Spanish — the longer of the two label
+// sets). Two rows is not reachable without truncating real labels: the second
+// row overflows by ~25px whatever the order, so don't re-tune the order for it.
 const pillBase =
   "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm font-semibold transition-all cursor-pointer";
 const pillActive =
@@ -107,14 +117,17 @@ export function GroupedCategoryNav({ activeTab, onChange }: GroupedCategoryNavPr
     // top-20 must track the header's h-20, or this bar overlaps it or floats below it.
     <div className="sticky top-20 z-30 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="container flex flex-wrap items-center justify-center gap-1 py-2 sm:gap-1.5 sm:py-2.5">
-        {/* Direct button for the main catalogue (also the default tab). */}
-        <button
-          type="button"
-          onClick={() => onChange(DIRECT_TAB.tabValue)}
-          className={`${pillBase} ${activeTab === DIRECT_TAB.tabValue ? pillActive : pillInactive}`}
-        >
-          {t(DIRECT_TAB.labelKey)}
-        </button>
+        {/* Direct buttons: the home page and the main catalogue. */}
+        {DIRECT_TABS.map((tab) => (
+          <button
+            key={tab.tabValue}
+            type="button"
+            onClick={() => onChange(tab.tabValue)}
+            className={`${pillBase} ${activeTab === tab.tabValue ? pillActive : pillInactive}`}
+          >
+            {t(tab.labelKey)}
+          </button>
+        ))}
 
         {NAV_GROUPS.map((group) => {
           const containsActive = group.tabs.some((tab) => tab.tabValue === activeTab);

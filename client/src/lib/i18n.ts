@@ -12,6 +12,12 @@ export const translations = {
     searchPlaceholder: "Search tools by name...",
     allCategories: "All Categories",
     filterByCategory: "Filter by category",
+    aiRelevanceFilter: "AI relevance",
+    aiRelevanceAll: "All tools",
+    aiRelevanceAiOnly: "AI only",
+    aiRelevanceAiFirstOnly: "AI-first only",
+    badgeAiFirst: "AI-first",
+    badgeAiEnabled: "AI-enabled",
     results: "results",
     result: "result",
     noResults: "No tools found",
@@ -101,7 +107,8 @@ export const translations = {
     tabBusinessProductivity: "Business Productivity",
     tabMcpProviders: "MCP Providers",
     tabVpsCloud: "VPS & Cloud",
-    iconAiMedia: "Sumate Media",
+    // Tab key stays `aiMedia` (and the #aiMedia hash with it) — label only.
+    iconAiMedia: "Blog",
     iconAiInfluencers: "AI Influencers",
     iconAiSites: "AI Sites",
     iconAiDiscord: "AI Discord",
@@ -202,8 +209,8 @@ export const translations = {
     vpsCloudSubtitle: "Cloud hosting and VPS providers optimized for AI workloads",
 
     // AI Media section
-    aiMediaTitle: "Sumate Media",
-    aiMediaSubtitle: "AI-powered media platforms, channels, and content creators",
+    aiMediaTitle: "Blog",
+    aiMediaSubtitle: "Long-form comparisons and reports on the AI models and tools we test",
 
     // AI Influencers section
     aiInfluencersTitle: "AI Influencers",
@@ -267,6 +274,15 @@ export const translations = {
     blogByAuthor: "By",
     blogReadingTime: "{minutes} min read",
 
+    // Home tab
+    tabHome: "Home",
+    readPost: "Read post",
+
+    // Hand-written personal review on a tool ("Blog Post" columns in Teable)
+    reviewButton: "Read our review",
+    reviewSectionTitle: "Our review",
+    hasReviewTooltip: "We've written a hands-on review of this tool",
+
     // Global search
     globalSearchPlaceholder: "Search across all tools...",
     globalSearchResults: "results found across all categories",
@@ -320,6 +336,12 @@ export const translations = {
     searchPlaceholder: "Buscar herramientas por nombre...",
     allCategories: "Todas las Categorías",
     filterByCategory: "Filtrar por categoría",
+    aiRelevanceFilter: "Relevancia de IA",
+    aiRelevanceAll: "Todas las herramientas",
+    aiRelevanceAiOnly: "Solo IA",
+    aiRelevanceAiFirstOnly: "Solo IA nativa",
+    badgeAiFirst: "IA nativa",
+    badgeAiEnabled: "Con IA",
     results: "resultados",
     result: "resultado",
     noResults: "No se encontraron herramientas",
@@ -406,7 +428,7 @@ export const translations = {
     tabBusinessProductivity: "Productividad Empresarial",
     tabMcpProviders: "Proveedores MCP",
     tabVpsCloud: "VPS y Nube",
-    iconAiMedia: "Sumate Media",
+    iconAiMedia: "Blog",
     iconAiInfluencers: "IA Influencers",
     iconAiSites: "Sitios IA",
     iconAiDiscord: "IA Discord",
@@ -507,8 +529,8 @@ export const translations = {
     vpsCloudSubtitle: "Proveedores de hosting en la nube y VPS optimizados para cargas de trabajo de IA",
 
     // AI Media section
-    aiMediaTitle: "Sumate Media",
-    aiMediaSubtitle: "Plataformas, canales y creadores de contenido con IA",
+    aiMediaTitle: "Blog",
+    aiMediaSubtitle: "Comparativas e informes a fondo sobre los modelos y herramientas de IA que probamos",
 
     // AI Influencers section
     aiInfluencersTitle: "IA Influencers",
@@ -571,6 +593,15 @@ export const translations = {
     languageFilterBoth: "Ambos",
     blogByAuthor: "Por",
     blogReadingTime: "{minutes} min de lectura",
+
+    // Pestaña de inicio
+    tabHome: "Inicio",
+    readPost: "Leer artículo",
+
+    // Reseña personal escrita a mano sobre una herramienta
+    reviewButton: "Leer nuestra reseña",
+    reviewSectionTitle: "Nuestra reseña",
+    hasReviewTooltip: "Hemos escrito una reseña práctica de esta herramienta",
 
     // Global search
     globalSearchPlaceholder: "Buscar en todas las herramientas...",

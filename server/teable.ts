@@ -38,7 +38,21 @@ export interface ReviewFields {
   reviewConfidence: string;
 }
 
-export interface AiTool extends ReviewFields {
+/**
+ * Duncan's hand-written personal review of one tool — the "Blog Title/Post"
+ * columns added to the 18 product tables on 2026-08-31. Distinct from
+ * ReviewFields, which is the generated Pros/Cons/Cost/Verdict: this is first-
+ * person context on a tool he has actually used. Empty on almost every record.
+ */
+export interface ToolReviewPost {
+  blogTitleEn: string;
+  blogTitleEs: string;
+  blogPostEn: string;
+  /** Empty until a Spanish review is written — the client falls back to blogPostEn. */
+  blogPostEs: string;
+}
+
+export interface AiTool extends ReviewFields, ToolReviewPost {
   id: string;
   name: string;
   descriptionEn: string;
@@ -52,6 +66,8 @@ export interface AiTool extends ReviewFields {
   isNew: boolean;
   /** Curated landing-page gallery — see GenericTool.images. */
   images?: string[];
+  /** "AI-first" | "AI-enabled" | "General" | "Resource" | "" — see GenericTool.aiRelevance. */
+  aiRelevance: string;
 }
 
 export interface GithubRepo {
@@ -87,7 +103,7 @@ export interface WeeklyViralRepo extends ReviewFields {
   rating: number;
 }
 
-export interface LlmModel extends ReviewFields {
+export interface LlmModel extends ReviewFields, ToolReviewPost {
   id: string;
   name: string;
   summaryEn: string;
@@ -101,6 +117,8 @@ export interface LlmModel extends ReviewFields {
   isNew: boolean;
   /** Curated landing-page gallery — see GenericTool.images. */
   images?: string[];
+  /** "AI-first" | "AI-enabled" | "General" | "Resource" | "" — see GenericTool.aiRelevance. */
+  aiRelevance: string;
 }
 
 export interface LtdDeal extends ReviewFields {
@@ -117,7 +135,7 @@ export interface LtdDeal extends ReviewFields {
   isNew: boolean;
 }
 
-export interface GenericTool extends ReviewFields {
+export interface GenericTool extends ReviewFields, ToolReviewPost {
   id: string;
   name: string;
   descriptionEn: string;
@@ -144,6 +162,12 @@ export interface GenericTool extends ReviewFields {
    * these over the automatic homepage screenshot.
    */
   images?: string[];
+  /**
+   * Honest AI-relevance label from the classification audit (2026-08-31):
+   * "AI-first" | "AI-enabled" | "General" | "Resource" | "" (unclassified).
+   * The client shows a badge for the first two and an "AI only" filter.
+   */
+  aiRelevance: string;
   /** Popularity metric (currently only populated on AI Influencers via its "Subscribers" column). */
   popularity: number;
   /** Curated rank (currently only populated on AI Influencers and Sumate Top Recommendations via their "Rank" column). */
@@ -222,6 +246,19 @@ function imageUrls(f: Record<string, unknown>): string[] {
   return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12).map(proxyImg);
 }
 
+/**
+ * The personal-review columns. Shared by every mapper so the tables can't
+ * drift; cleanStr keeps "N/A"-style placeholders from becoming a review.
+ */
+function blogPostFields(f: Record<string, unknown>): ToolReviewPost {
+  return {
+    blogTitleEn: cleanStr(f, "Blog Title - EN"),
+    blogTitleEs: cleanStr(f, "Blog Title - ES"),
+    blogPostEn: cleanStr(f, "Blog Post - EN"),
+    blogPostEs: cleanStr(f, "Blog Post - ES"),
+  };
+}
+
 function num(f: Record<string, unknown>, key: string): number {
   const v = f[key];
   if (v === null || v === undefined) return 0;
@@ -270,6 +307,14 @@ export function deriveFaviconUrl(siteUrl: string): string {
 function iconUrlFor(f: Record<string, unknown>, siteUrl: string): string {
   // Proxied so visitors load icons from our own origin (CDN-cached, private).
   return proxyImg(logoUrl(f) || deriveFaviconUrl(siteUrl));
+}
+
+/**
+ * Records flagged `Review Status = Quarantine` (identity/URL under review)
+ * never reach the public site — same idea as the AI Media "Published" gate.
+ */
+function notQuarantined(r: TeableRecord): boolean {
+  return str(r.fields ?? {}, "Review Status") !== "Quarantine";
 }
 
 /** Map the verified review columns. Data Flags stay server-side by design. */
@@ -400,6 +445,8 @@ function mapGenericTool(record: TeableRecord): GenericTool {
     rating: num(f, "Rating 1-5"),
     isNew: isNewRecord(record),
     images: imageUrls(f),
+    aiRelevance: cleanStr(f, "AI Relevance"),
+    ...blogPostFields(f),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
     popularity: num(f, "Subscribers"),
@@ -455,6 +502,7 @@ export async function fetchGenericTools(key: GenericTableKey): Promise<GenericTo
     // a no-op filter on every other table, which never has this column.
     const tools = records
       .filter((r) => r.fields["Published"] === undefined || bool(r.fields, "Published"))
+      .filter(notQuarantined)
       .map(mapGenericTool);
     tools.sort((a, b) => a.name.localeCompare(b.name));
     return tools;
@@ -489,7 +537,7 @@ export const fetchThisWeeksAiPicks = () => fetchGenericTools("thisWeeksAiPicks")
 export async function fetchAllTools(): Promise<AiTool[]> {
   return withCache("tools", async () => {
     const records = await fetchAllRecords(ENV.teableTableId);
-    const tools = records.map((record) => {
+    const tools = records.filter(notQuarantined).map((record) => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -505,6 +553,8 @@ export async function fetchAllTools(): Promise<AiTool[]> {
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
         images: imageUrls(f),
+        aiRelevance: cleanStr(f, "AI Relevance"),
+        ...blogPostFields(f),
         ...reviewFields(f),
       };
     });
@@ -583,7 +633,7 @@ export async function fetchWeeklyViralGithubRepos(): Promise<WeeklyViralRepo[]> 
 export async function fetchLlmModels(): Promise<LlmModel[]> {
   return withCache("llms", async () => {
     const records = await fetchAllRecords(ENV.teableLlmTableId);
-    const models = records.map((record) => {
+    const models = records.filter(notQuarantined).map((record) => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -599,6 +649,8 @@ export async function fetchLlmModels(): Promise<LlmModel[]> {
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
         images: imageUrls(f),
+        aiRelevance: cleanStr(f, "AI Relevance"),
+        ...blogPostFields(f),
         ...reviewFields(f),
       };
     });

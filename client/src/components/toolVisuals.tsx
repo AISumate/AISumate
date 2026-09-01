@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Star, ThumbsUp, ThumbsDown, Coins, Scale, ExternalLink } from "lucide-react";
+import { Star, ThumbsUp, ThumbsDown, Coins, Scale, ExternalLink, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -143,6 +143,56 @@ const CONFIDENCE_STYLES: Record<string, { dot: string; labelKey: "confidenceHigh
   medium: { dot: "#B8863B", labelKey: "confidenceMedium" },
   low: { dot: "#A03D12", labelKey: "confidenceLow" },
 };
+
+/**
+ * Honest AI-relevance chip: filled for AI-first products, outline for
+ * conventional products with real AI features. General/Resource records (and
+ * unclassified ones) get nothing — no badge is the honest default.
+ */
+export function AiRelevanceBadge({ relevance }: { relevance?: string }) {
+  const { t } = useLanguage();
+  const rel = (relevance ?? "").trim();
+  if (rel === "AI-first") {
+    return (
+      <span
+        className="inline-flex items-center rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-primary-foreground"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {t("badgeAiFirst")}
+      </span>
+    );
+  }
+  if (rel === "AI-enabled") {
+    return (
+      <span
+        className="inline-flex items-center rounded-full border border-primary/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-primary"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        {t("badgeAiEnabled")}
+      </span>
+    );
+  }
+  return null;
+}
+
+/**
+ * Marks a tool that carries a hand-written personal review. Sits beside the
+ * star rating so the rating and "there's more behind this" read together;
+ * renders nothing for the ~3,000 tools without one.
+ */
+export function ReviewMark({ hasReview }: { hasReview?: boolean }) {
+  const { t } = useLanguage();
+  if (!hasReview) return null;
+  return (
+    <span
+      title={t("hasReviewTooltip")}
+      aria-label={t("hasReviewTooltip")}
+      className="inline-flex items-center text-primary"
+    >
+      <PenLine className="h-3.5 w-3.5" />
+    </span>
+  );
+}
 
 /** Compact high/medium/low review-confidence pill. */
 export function ConfidenceBadge({ level }: { level?: string }) {

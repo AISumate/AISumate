@@ -355,7 +355,12 @@ export const appRouter = router({
                   const category = item.category || item.topic || item.platform || "";
                   const descEn = item.descriptionEn || item.summaryEn || item.summary || "";
                   const descEs = item.descriptionEs || item.summaryEs || item.summary || "";
-                  const score = searchScore(term, name, category, descEn, descEs);
+                  const base = searchScore(term, name, category, descEn, descEs);
+                  // Genuinely-AI products outrank same-relevance general tools
+                  // (a tiebreak nudge — never enough to beat a name match).
+                  const rel = (item as { aiRelevance?: string }).aiRelevance;
+                  const score =
+                    base < 0 ? base : base + (rel === "AI-first" ? 50 : rel === "AI-enabled" ? 15 : 0);
                   return { item, name, category, descEn, descEs, score };
                 })
                 .filter((x) => x.score >= 0)

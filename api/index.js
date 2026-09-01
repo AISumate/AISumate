@@ -417,6 +417,14 @@ var validUrl = validHttpUrl;
 function imageUrls(f) {
   return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12).map(proxyImg);
 }
+function blogPostFields(f) {
+  return {
+    blogTitleEn: cleanStr(f, "Blog Title - EN"),
+    blogTitleEs: cleanStr(f, "Blog Title - ES"),
+    blogPostEn: cleanStr(f, "Blog Post - EN"),
+    blogPostEs: cleanStr(f, "Blog Post - ES")
+  };
+}
 function num(f, key) {
   const v = f[key];
   if (v === null || v === void 0) return 0;
@@ -450,6 +458,9 @@ function deriveFaviconUrl(siteUrl) {
 }
 function iconUrlFor(f, siteUrl) {
   return proxyImg(logoUrl(f) || deriveFaviconUrl(siteUrl));
+}
+function notQuarantined(r) {
+  return str(r.fields ?? {}, "Review Status") !== "Quarantine";
 }
 function reviewFields(f) {
   return {
@@ -542,6 +553,8 @@ function mapGenericTool(record) {
     rating: num(f, "Rating 1-5"),
     isNew: isNewRecord(record),
     images: imageUrls(f),
+    aiRelevance: cleanStr(f, "AI Relevance"),
+    ...blogPostFields(f),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
     popularity: num(f, "Subscribers"),
@@ -584,7 +597,7 @@ async function fetchGenericTools(key) {
   if (!table) return [];
   return withCache(key, async () => {
     const records = await fetchAllRecords(table.tableId());
-    const tools = records.filter((r) => r.fields["Published"] === void 0 || bool(r.fields, "Published")).map(mapGenericTool);
+    const tools = records.filter((r) => r.fields["Published"] === void 0 || bool(r.fields, "Published")).filter(notQuarantined).map(mapGenericTool);
     tools.sort((a, b) => a.name.localeCompare(b.name));
     return tools;
   });
@@ -613,7 +626,7 @@ var fetchThisWeeksAiPicks = () => fetchGenericTools("thisWeeksAiPicks");
 async function fetchAllTools() {
   return withCache("tools", async () => {
     const records = await fetchAllRecords(ENV.teableTableId);
-    const tools = records.map((record) => {
+    const tools = records.filter(notQuarantined).map((record) => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -629,6 +642,8 @@ async function fetchAllTools() {
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
         images: imageUrls(f),
+        aiRelevance: cleanStr(f, "AI Relevance"),
+        ...blogPostFields(f),
         ...reviewFields(f)
       };
     });
@@ -697,7 +712,7 @@ async function fetchWeeklyViralGithubRepos() {
 async function fetchLlmModels() {
   return withCache("llms", async () => {
     const records = await fetchAllRecords(ENV.teableLlmTableId);
-    const models = records.map((record) => {
+    const models = records.filter(notQuarantined).map((record) => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -713,6 +728,8 @@ async function fetchLlmModels() {
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
         images: imageUrls(f),
+        aiRelevance: cleanStr(f, "AI Relevance"),
+        ...blogPostFields(f),
         ...reviewFields(f)
       };
     });
@@ -1007,7 +1024,9 @@ var appRouter = router({
               const category = item.category || item.topic || item.platform || "";
               const descEn = item.descriptionEn || item.summaryEn || item.summary || "";
               const descEs = item.descriptionEs || item.summaryEs || item.summary || "";
-              const score = searchScore(term, name, category, descEn, descEs);
+              const base = searchScore(term, name, category, descEn, descEs);
+              const rel = item.aiRelevance;
+              const score = base < 0 ? base : base + (rel === "AI-first" ? 50 : rel === "AI-enabled" ? 15 : 0);
               return { item, name, category, descEn, descEs, score };
             }).filter((x) => x.score >= 0).map(({ item, name, category, descEn, descEs, score }) => ({
               id: item.id,

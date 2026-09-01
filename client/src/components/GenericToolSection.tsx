@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
 import { SectionHeading, type ReviewInfo } from "./toolVisuals";
 import { ToolCard } from "./ToolCard";
-import { BlogPostDialog } from "./BlogPostDialog";
 
 interface GenericTool extends ReviewInfo {
   id: string;
@@ -24,6 +24,7 @@ interface GenericTool extends ReviewInfo {
   isNew?: boolean;
   isEnglishContent?: boolean;
   isSpanishContent?: boolean;
+  aiRelevance?: string;
   popularity?: number;
   slug?: string;
   bodyEn?: string;
@@ -62,11 +63,12 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
   const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [aiFilter, setAiFilter] = useState("all");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [languageFilter, setLanguageFilter] = useState<ContentLanguageFilter>("all");
-  const [blogPostTool, setBlogPostTool] = useState<GenericTool | null>(null);
   const [displayCount, setDisplayCount] = useState(100);
+  const [, navigate] = useLocation();
 
   // Fetch the full (server-cached) list once; search/filter/sort client-side
   // so typing doesn't fire a request per keystroke.
@@ -95,6 +97,13 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
     if (categoryFilter !== "all") {
       result = result.filter((tool) => tool.category === categoryFilter);
     }
+    if (aiFilter === "ai") {
+      result = result.filter(
+        (tool) => tool.aiRelevance === "AI-first" || tool.aiRelevance === "AI-enabled",
+      );
+    } else if (aiFilter === "aiFirst") {
+      result = result.filter((tool) => tool.aiRelevance === "AI-first");
+    }
     if (hasLanguageFilter && languageFilter !== "all") {
       result = result.filter((tool) =>
         languageFilter === "en" ? tool.isEnglishContent : tool.isSpanishContent,
@@ -117,7 +126,7 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
       return sortDirection === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [tools, search, categoryFilter, sortField, sortDirection, hasLanguageFilter, languageFilter]);
+  }, [tools, search, categoryFilter, aiFilter, sortField, sortDirection, hasLanguageFilter, languageFilter]);
 
   const displayedTools = useMemo(() => filteredTools.slice(0, displayCount), [filteredTools, displayCount]);
 
@@ -129,6 +138,7 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
   const handleReset = () => {
     setSearch("");
     setCategoryFilter("all");
+    setAiFilter("all");
     setSortField("name");
     setSortDirection("asc");
     setLanguageFilter("all");
@@ -173,6 +183,17 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
                     placeholderKey: "filterByCategory",
                   }]
                 : []),
+              {
+                key: "aiRelevance",
+                value: aiFilter,
+                onChange: (v: string) => { setAiFilter(v); setDisplayCount(100); },
+                options: [
+                  { value: "all", label: t("aiRelevanceAll") },
+                  { value: "ai", label: t("aiRelevanceAiOnly") },
+                  { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
+                ],
+                placeholderKey: "aiRelevanceFilter",
+              },
             ]}
             sort={{
               field: sortField,
@@ -236,7 +257,10 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
             }`}
           >
             {displayedTools.map((tool, idx) => {
-              const canOpenBlogPost = hasBlogView && Boolean(tool.bodyEn);
+              // Blog posts have their own page at /blog/<slug>; everything else
+              // keeps the card default (landing page, or the detail dialog).
+              const blogHref =
+                hasBlogView && tool.bodyEn ? `/blog/${tool.slug || tool.id}` : "";
               return (
                 <ToolCard
                   key={tool.id}
@@ -245,7 +269,7 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
                   compact={compactCards}
                   tableKey={queryKey}
                   visitLabel={t(visitLabelKey)}
-                  onOpenDetails={canOpenBlogPost ? () => setBlogPostTool(tool) : undefined}
+                  onOpenDetails={blogHref ? () => navigate(blogHref) : undefined}
                 />
               );
             })}
@@ -271,13 +295,6 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
         </>
       )}
 
-      {hasBlogView && (
-        <BlogPostDialog
-          tool={blogPostTool}
-          open={blogPostTool !== null}
-          onOpenChange={(open) => { if (!open) setBlogPostTool(null); }}
-        />
-      )}
     </div>
   );
 }

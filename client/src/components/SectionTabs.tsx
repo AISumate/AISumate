@@ -10,6 +10,7 @@ import { SumateTopRecommendationsSection } from "./SumateTopRecommendationsSecti
 import { LlmsSection } from "./LlmsSection";
 import { GenericToolSection } from "./GenericToolSection";
 import { GroupedCategoryNav } from "./GroupedCategoryNav";
+import { HomeSection } from "./HomeSection";
 
 interface SectionTabsProps {
   tools: AiTool[];
@@ -20,7 +21,7 @@ interface SectionTabsProps {
 
 export function SectionTabs({ tools, categories, toolsLoading, toolsError }: SectionTabsProps) {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState("tools");
+  const [activeTab, setActiveTab] = useState("home");
   // The 3-row category bar can feel bulky — a floating toggle hides it, remembered per browser.
   const [navHidden, setNavHidden] = useState(() => localStorage.getItem("hideCategoryBar") === "true");
 
@@ -37,7 +38,7 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
   // and render an empty page.
   useEffect(() => {
     const VALID_TABS = new Set([
-      "tools", "aiMedia", "github", "llms", "videoImage", "musicVoice",
+      "home", "tools", "aiMedia", "github", "llms", "videoImage", "musicVoice",
       "chatbots", "freeApis", "freeLlmIde", "vibeCoding", "designerTools",
       "aiInfra", "hardware", "testingTools", "aiSecurity",
       "businessProductivity", "mcpProviders", "vpsCloud", "aiInfluencers",
@@ -70,6 +71,10 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
 
       <div className="container py-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsContent value="home" className="mt-0 grid-pattern-bg">
+            <HomeSection />
+          </TabsContent>
+
           <TabsContent value="tools" className="mt-0 grid-pattern-bg">
             {toolsLoading ? (
               <div className="flex items-center justify-center py-20">

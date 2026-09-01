@@ -18,6 +18,7 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [displayCount, setDisplayCount] = useState(100);
+  const [aiFilter, setAiFilter] = useState("all");
 
   const categoryOptions = useMemo(
     () => categories.map((cat) => ({ value: cat, label: cat })),
@@ -49,6 +50,14 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
       );
     }
 
+    if (aiFilter === "ai") {
+      result = result.filter(
+        (tool) => tool.aiRelevance === "AI-first" || tool.aiRelevance === "AI-enabled",
+      );
+    } else if (aiFilter === "aiFirst") {
+      result = result.filter((tool) => tool.aiRelevance === "AI-first");
+    }
+
     const sorted = [...result].sort((a, b) => {
       let cmp = 0;
       if (sortField === "name") {
@@ -64,7 +73,7 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
     });
 
     return sorted;
-  }, [tools, searchTerm, activeCategory, sortField, sortDirection]);
+  }, [tools, searchTerm, activeCategory, aiFilter, sortField, sortDirection]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -89,6 +98,7 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
   const handleReset = () => {
     setSearchTerm("");
     setActiveCategory("all");
+    setAiFilter("all");
     setSortField("name");
     setSortDirection("asc");
     setDisplayCount(100);
@@ -116,6 +126,17 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
                   placeholderKey: "filterByCategory",
                 }]
               : []),
+            {
+              key: "aiRelevance",
+              value: aiFilter,
+              onChange: (v: string) => { setAiFilter(v); setDisplayCount(100); },
+              options: [
+                { value: "all", label: t("aiRelevanceAll") },
+                { value: "ai", label: t("aiRelevanceAiOnly") },
+                { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
+              ],
+              placeholderKey: "aiRelevanceFilter",
+            },
           ]}
           sort={{
             field: sortField,

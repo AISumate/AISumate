@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowRight,
@@ -8,12 +10,14 @@ import {
   Coins,
   Link2,
   Pencil,
+  PenLine,
   Quote,
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
+  AiRelevanceBadge,
   ConfidenceBadge,
   StarRating,
   ToolIcon,
@@ -72,6 +76,15 @@ export function ToolLanding({
   const providerNote = cleanReviewText(
     language === "es" ? item.providerNoteEs : item.providerNoteEn,
   );
+
+  // Hand-written personal review (Teable "Blog Post" columns). Falls back to
+  // the English text when no Spanish one has been written yet — same rule as
+  // BlogPostDialog uses for the Sumate Media posts.
+  const reviewBody =
+    (language === "es" && item.blogPostEs?.trim() ? item.blogPostEs : item.blogPostEn) ?? "";
+  const reviewTitle =
+    (language === "es" && item.blogTitleEs?.trim() ? item.blogTitleEs : item.blogTitleEn) ?? "";
+  const hasReview = Boolean(item.blogPostEn?.trim());
 
   // Curated images (Teable `Images` column, one URL per line) win; otherwise
   // the auto homepage screenshot. Up to 6 shown: the first as the main image,
@@ -171,6 +184,7 @@ export function ToolLanding({
               </>
             )}
             <ConfidenceBadge level={item.reviewConfidence} />
+            <AiRelevanceBadge relevance={item.aiRelevance} />
           </div>
 
           {description && (
@@ -194,6 +208,19 @@ export function ToolLanding({
               {copied ? t("linkCopied") : t("copyLink")}
             </button>
           </div>
+          {/* Sits under the Visit button, on its own line. A plain anchor, so it
+              still jumps to the review in the crawler's static twin. */}
+          {hasReview && (
+            <div>
+              <a
+                href="#our-review"
+                className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 px-5 py-2.5 text-[13px] font-semibold text-primary transition-colors hover:bg-primary/10"
+              >
+                <PenLine className="h-3.5 w-3.5" />
+                {t("reviewButton")}
+              </a>
+            </div>
+          )}
           {item.isAffiliate && item.affiliateUrl && (
             <p className="text-xs italic text-muted-foreground">{t("affiliateDisclosure")}</p>
           )}
@@ -372,6 +399,26 @@ export function ToolLanding({
             </div>
           )}
         </div>
+      )}
+
+      {/* Our review — Duncan's own hands-on write-up, rendered inline (not in a
+          dialog) so it is real page content the crawler twin can index. */}
+      {hasReview && (
+        <section
+          id="our-review"
+          className="mt-6 scroll-mt-6 rounded-xl border border-border bg-card p-7"
+        >
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
+            <PenLine className="h-4 w-4" />
+            {t("reviewSectionTitle")}
+          </div>
+          {reviewTitle && (
+            <h2 className="mt-3 text-xl font-bold leading-snug text-foreground">{reviewTitle}</h2>
+          )}
+          <article className="prose prose-sm sm:prose-base dark:prose-invert mt-4 max-w-none">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{reviewBody}</ReactMarkdown>
+          </article>
+        </section>
       )}
 
       {/* From the maker — renders ONLY when a real provider note exists in

@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
 import ToolPage from "./pages/ToolPage";
+import BlogPost from "./pages/BlogPost";
 import { LegalPage } from "./pages/LegalPage";
 import { PRIVACY, TERMS } from "@shared/legalContent";
 
@@ -16,6 +17,8 @@ function Router() {
       <Route path={"/"} component={Home} />
       {/* Shareable per-listing pages; crawlers get static twins (vercel.json). */}
       <Route path={"/tool/:table/:id"} component={ToolPage} />
+      {/* Blog posts by slug — /tool/aiMedia/:id still resolves, for old links. */}
+      <Route path={"/blog/:slug"} component={BlogPost} />
       <Route path={"/privacy"}>{() => <LegalPage doc={PRIVACY} />}</Route>
       <Route path={"/terms"}>{() => <LegalPage doc={TERMS} />}</Route>
       {/* Final fallback route */}

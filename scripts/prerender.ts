@@ -31,6 +31,7 @@ import {
 } from "../server/teable";
 import { PRIVACY, TERMS, type LegalDoc } from "../shared/legalContent";
 import { isLandingTable } from "../shared/simpleTables";
+import { blogSlug } from "../shared/blogSlug";
 import { mshotsUrl } from "../shared/screenshot";
 
 const SITE_URL = "https://www.aisumate.com";
@@ -58,6 +59,9 @@ interface Entry {
   /** Curated gallery from the Teable "Images" column (may be empty). */
   images: string[];
   iconUrl: string;
+  /** Hand-written personal review (Teable "Blog Post - EN"); usually empty. */
+  review: string;
+  reviewTitle: string;
 }
 
 function esc(s: string): string {
@@ -97,7 +101,26 @@ function normalize(item: any, tableKey: string, fallbackCategory: string): Entry
     verdict: item.verdictEn || "",
     images: Array.isArray(item.images) ? item.images.filter(Boolean) : [],
     iconUrl: item.iconUrl || "",
+    review: item.blogPostEn || "",
+    reviewTitle: item.blogTitleEn || "",
   };
+}
+
+/**
+ * The review is Markdown in Teable. The static twin is crawler-only plain
+ * HTML, so strip the markers and emit paragraphs rather than pull in a
+ * renderer — the words are what needs to be indexed, not the formatting.
+ */
+function reviewHtml(title: string, body: string): string {
+  const text = String(body ?? "").trim();
+  if (!text) return "";
+  const paras = text
+    .split(/\n{2,}/)
+    .map((p) => p.replace(/^[#>\-*\s]+/, "").replace(/\*\*/g, "").replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .map((p) => `<p>${esc(p)}</p>`)
+    .join("");
+  return `<h2>Our review</h2>${title ? `<h3>${esc(title)}</h3>` : ""}${paras}`;
 }
 
 async function collect(): Promise<Entry[]> {
@@ -248,6 +271,7 @@ function toolPageHtml(e: Entry): string {
       ? `<h2>Cost</h2><p>${esc(e.cost)}</p>`
       : "") +
     (e.verdict ? `<h2>Verdict</h2><p><em>${esc(e.verdict)}</em></p>` : "") +
+    reviewHtml(e.reviewTitle, e.review) +
     (href
       ? `<a class="visit" href="${esc(href)}" rel="sponsored nofollow noopener noreferrer">Visit ${esc(e.name)}</a>`
       : "");
@@ -264,6 +288,98 @@ function writeToolPages(entries: Entry[]): number {
     written++;
   }
   return written;
+}
+
+/* -------------------------------- blog posts ------------------------------- */
+
+interface BlogEntry {
+  slug: string;
+  name: string;
+  desc: string;
+  body: string;
+  author: string;
+  category: string;
+  publishedDate: string;
+  iconUrl: string;
+}
+
+/**
+ * The long-form posts in the AI Media table. Their bodies never reached the
+ * crawler before — normalize() only carries the summary — so search engines
+ * saw a 40-word teaser of a 12,000-word article. These twins carry the text.
+ */
+async function collectBlog(): Promise<BlogEntry[]> {
+  let rows: Awaited<ReturnType<typeof fetchGenericTools>> = [];
+  try {
+    rows = await fetchGenericTools("aiMedia");
+  } catch {
+    return [];
+  }
+  return rows
+    .filter((r) => String(r.bodyEn ?? "").trim())
+    .map((r) => ({
+      slug: blogSlug(r.slug, r.id),
+      name: r.name,
+      desc: r.descriptionEn || "",
+      body: String(r.bodyEn ?? ""),
+      author: r.author || "",
+      category: r.category || "",
+      publishedDate: r.publishedDate || "",
+      iconUrl: r.iconUrl || "",
+    }));
+}
+
+function blogPageHtml(e: BlogEntry): string {
+  const title = `${e.name} — aisumate`;
+  const metaDesc = e.desc || e.name;
+  const canonicalPath = `/blog/${e.slug}`;
+  const ogImage = safeUrl(e.iconUrl);
+
+  const head =
+    `<meta property="og:type" content="article" />` +
+    `<meta property="og:site_name" content="aisumate" />` +
+    `<meta property="og:title" content="${esc(title)}" />` +
+    `<meta property="og:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    `<meta property="og:url" content="${SITE_URL}${esc(canonicalPath)}" />` +
+    (ogImage ? `<meta property="og:image" content="${esc(ogImage)}" />` : "") +
+    (e.publishedDate
+      ? `<meta property="article:published_time" content="${esc(e.publishedDate)}" />`
+      : "") +
+    `<meta name="twitter:card" content="summary_large_image" />` +
+    `<meta name="twitter:title" content="${esc(title)}" />` +
+    `<meta name="twitter:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    "\n";
+
+  // Markdown in, plain paragraphs out — same reasoning as reviewHtml().
+  const paras = e.body
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => {
+      const heading = /^(#{2,6})\s+(.*)$/.exec(p.split("\n")[0]);
+      if (heading) return `<h2>${esc(heading[2].replace(/\*\*/g, ""))}</h2>`;
+      return `<p>${esc(p.replace(/^[#>\-*\s]+/, "").replace(/\*\*/g, "").replace(/\s+/g, " "))}</p>`;
+    })
+    .join("");
+
+  const body =
+    `<h1>${esc(e.name)}</h1>` +
+    `<p class="meta">${[e.category, e.author && `By ${e.author}`, e.publishedDate.slice(0, 10)]
+      .filter(Boolean)
+      .map((s) => esc(String(s)))
+      .join(" · ")}</p>` +
+    paras;
+
+  return staticShell({ title, metaDesc, canonicalPath, body, head });
+}
+
+function writeBlogPages(posts: BlogEntry[]): number {
+  const dir = path.join(OUT, "blog-static");
+  mkdirSync(dir, { recursive: true });
+  for (const p of posts) {
+    writeFileSync(path.join(dir, `${p.slug}.html`), blogPageHtml(p), "utf8");
+  }
+  return posts.length;
 }
 
 /* ------------------------------- legal pages ------------------------------- */
@@ -371,12 +487,13 @@ function buildJsonLd(count: number): string {
 
 /* --------------------------------- sitemap --------------------------------- */
 
-function buildSitemap(entries: Entry[]): string {
+function buildSitemap(entries: Entry[], posts: BlogEntry[]): string {
   const today = new Date().toISOString().slice(0, 10);
   const urls: string[] = [
     `${SITE_URL}/`,
     `${SITE_URL}/privacy`,
     `${SITE_URL}/terms`,
+    ...posts.map((p) => `${SITE_URL}/blog/${p.slug}`),
     ...entries.map((e) => `${SITE_URL}/tool/${e.tableKey}/${e.id}`),
   ];
   return (
@@ -438,11 +555,14 @@ async function main() {
     : humanHtml;
   writeFileSync(SEO_HTML, botHtml, "utf8");
 
-  // Per-tool static pages + full sitemap (only when the catalogue fetched).
+  // Per-tool + per-post static pages, and the full sitemap (only when the
+  // catalogue fetched — a Teable outage must not blank an existing sitemap).
+  const posts = await collectBlog();
+  const blogPages = writeBlogPages(posts);
   let toolPages = 0;
   if (entries.length) {
     toolPages = writeToolPages(entries);
-    writeFileSync(path.join(OUT, "sitemap.xml"), buildSitemap(entries), "utf8");
+    writeFileSync(path.join(OUT, "sitemap.xml"), buildSitemap(entries, posts), "utf8");
   }
 
   // Remove index.html so "/" resolves through the vercel.json UA rewrite
@@ -451,7 +571,8 @@ async function main() {
 
   console.log(
     `[prerender] app.html ${kb(humanHtml)} KB · seo.html ${kb(botHtml)} KB · ` +
-      `${toolPages} tool pages · sitemap ${entries.length ? entries.length + 3 : "(kept static)"} URLs · ` +
+      `${toolPages} tool pages · ${blogPages} blog pages · ` +
+      `sitemap ${entries.length ? entries.length + posts.length + 3 : "(kept static)"} URLs · ` +
       `privacy/terms static · removed index.html.`,
   );
 }

@@ -15,8 +15,10 @@ import { Bot } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   accentClassFor,
+  AiRelevanceBadge,
   ContentLanguageBadge,
   ReviewDetails,
+  ReviewMark,
   StarRating,
   ToolIcon,
   VisitButton,
@@ -37,6 +39,10 @@ export interface AiTool extends ReviewInfo {
   isNew?: boolean;
   isEnglishContent?: boolean;
   isSpanishContent?: boolean;
+  aiRelevance?: string;
+  /** Hand-written personal review; presence drives the mark next to the rating. */
+  blogPostEn?: string;
+  blogPostEs?: string;
 }
 
 export function ToolCard({
@@ -83,6 +89,9 @@ export function ToolCard({
   // tables (channels, sites, blog...) keep the quick detail dialog, as does
   // any caller that overrides onOpenDetails (AI Media's blog post).
   const goesToPage = Boolean(pageHref && !onOpenDetails && tableKey && isLandingTable(tableKey));
+  // The English review is the source of truth for "a review exists" — a Spanish
+  // one is only ever written alongside it, never on its own.
+  const hasReview = Boolean(tool.blogPostEn?.trim());
 
   const copyPageLink = async () => {
     if (!pageHref) return;
@@ -162,9 +171,13 @@ export function ToolCard({
           </div>
         </div>
 
-        {(tool.rating ?? 0) > 0 && (
-          <div className="-mt-1">
-            <StarRating rating={tool.rating!} accent="var(--tool-accent)" starClassName="h-3 w-3" />
+        {((tool.rating ?? 0) > 0 || tool.aiRelevance || hasReview) && (
+          <div className="-mt-1 flex items-center gap-2">
+            {(tool.rating ?? 0) > 0 && (
+              <StarRating rating={tool.rating!} accent="var(--tool-accent)" starClassName="h-3 w-3" />
+            )}
+            <ReviewMark hasReview={hasReview} />
+            <AiRelevanceBadge relevance={tool.aiRelevance} />
           </div>
         )}
 
@@ -248,6 +261,8 @@ export function ToolCard({
                   {(tool.rating ?? 0) > 0 && (
                     <StarRating rating={tool.rating!} accent="var(--tool-accent)" />
                   )}
+                  <ReviewMark hasReview={hasReview} />
+                  <AiRelevanceBadge relevance={tool.aiRelevance} />
                 </div>
               </div>
             </div>

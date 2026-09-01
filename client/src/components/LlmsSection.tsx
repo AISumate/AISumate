@@ -10,6 +10,7 @@ export function LlmsSection() {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [providerFilter, setProviderFilter] = useState("all");
+  const [aiFilter, setAiFilter] = useState("all");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
@@ -38,6 +39,13 @@ export function LlmsSection() {
     if (providerFilter !== "all") {
       result = result.filter((m) => m.providerType === providerFilter);
     }
+    if (aiFilter === "ai") {
+      result = result.filter(
+        (m) => m.aiRelevance === "AI-first" || m.aiRelevance === "AI-enabled",
+      );
+    } else if (aiFilter === "aiFirst") {
+      result = result.filter((m) => m.aiRelevance === "AI-first");
+    }
     const sorted = [...result].sort((a, b) => {
       let cmp = 0;
       if (sortField === "name") {
@@ -52,11 +60,12 @@ export function LlmsSection() {
       return sortDirection === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [models, searchTerm, providerFilter, sortField, sortDirection]);
+  }, [models, searchTerm, providerFilter, aiFilter, sortField, sortDirection]);
 
   const handleReset = () => {
     setSearchTerm("");
     setProviderFilter("all");
+    setAiFilter("all");
     setSortField("name");
     setSortDirection("asc");
   };
@@ -81,6 +90,17 @@ export function LlmsSection() {
                     placeholderKey: "filterByProvider",
                   }]
                 : []),
+              {
+                key: "aiRelevance",
+                value: aiFilter,
+                onChange: setAiFilter,
+                options: [
+                  { value: "all", label: t("aiRelevanceAll") },
+                  { value: "ai", label: t("aiRelevanceAiOnly") },
+                  { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
+                ],
+                placeholderKey: "aiRelevanceFilter",
+              },
             ]}
             sort={{
               field: sortField,
