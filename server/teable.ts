@@ -50,6 +50,13 @@ export interface ToolReviewPost {
   blogPostEn: string;
   /** Empty until a Spanish review is written — the client falls back to blogPostEn. */
   blogPostEs: string;
+  /**
+   * The "Review Published" checkbox. Reviews are written straight into Teable,
+   * so without this an unfinished draft would be public from the first
+   * keystroke. Unticked reviews are withheld from the payload entirely — the
+   * text never reaches the browser, so it can't be read from the network tab.
+   */
+  reviewPublished: boolean;
 }
 
 export interface AiTool extends ReviewFields, ToolReviewPost {
@@ -251,11 +258,16 @@ function imageUrls(f: Record<string, unknown>): string[] {
  * drift; cleanStr keeps "N/A"-style placeholders from becoming a review.
  */
 function blogPostFields(f: Record<string, unknown>): ToolReviewPost {
+  const published = bool(f, "Review Published");
+  if (!published) {
+    return { blogTitleEn: "", blogTitleEs: "", blogPostEn: "", blogPostEs: "", reviewPublished: false };
+  }
   return {
     blogTitleEn: cleanStr(f, "Blog Title - EN"),
     blogTitleEs: cleanStr(f, "Blog Title - ES"),
     blogPostEn: cleanStr(f, "Blog Post - EN"),
     blogPostEs: cleanStr(f, "Blog Post - ES"),
+    reviewPublished: true,
   };
 }
 

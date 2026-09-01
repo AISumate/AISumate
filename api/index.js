@@ -418,11 +418,16 @@ function imageUrls(f) {
   return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12).map(proxyImg);
 }
 function blogPostFields(f) {
+  const published = bool(f, "Review Published");
+  if (!published) {
+    return { blogTitleEn: "", blogTitleEs: "", blogPostEn: "", blogPostEs: "", reviewPublished: false };
+  }
   return {
     blogTitleEn: cleanStr(f, "Blog Title - EN"),
     blogTitleEs: cleanStr(f, "Blog Title - ES"),
     blogPostEn: cleanStr(f, "Blog Post - EN"),
-    blogPostEs: cleanStr(f, "Blog Post - ES")
+    blogPostEs: cleanStr(f, "Blog Post - ES"),
+    reviewPublished: true
   };
 }
 function num(f, key) {
