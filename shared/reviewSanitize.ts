@@ -14,7 +14,7 @@ const PLACEHOLDER_RE =
  * carrying these signals is internal QA chatter and must never render.
  */
 const VERIFICATION_JUNK_RE =
-  /unverifiab|insufficient (information|data|details)|domain (is |was )?(inaccessible|not found|unreachable|dead|expired|parked)|(site|website|url) (is |was )?(down|inaccessible|unreachable|not found)|unable to (verify|access|reach|confirm)|could ?n[o']t (be )?(verif|access|reach|confirm)|cannot (be )?(verif|access|reach|confirm)|unable to determine|not verifiable|verification (failed|pending)|404 (error|not found)|unverified/i;
+  /unverifiab|insufficient (information|data|details)|domain (is |was )?(inaccessible|not found|unreachable|dead|expired|parked)|(site|website|url) (is |was )?(down|inaccessible|unreachable|not found)|unable to (verify|access|reach|confirm)|could ?n[o']t (be )?(verif|access|reach|confirm)|cannot (be )?(verif|access|reach|confirm)|unable to determine|not verifiable|verification (failed|pending)|404 (error|not found)|unverified|cannot recommend|no ?puedo recomendar|unreachable|is offline|does not exist|no pricing (data |information )?(available|found)|search results show/i;
 
 /** Strip decorative wrappers like "(unverified)" or "[N/A]." before testing. */
 function normalize(text: string): string {

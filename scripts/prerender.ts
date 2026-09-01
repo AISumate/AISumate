@@ -31,6 +31,7 @@ import {
 } from "../server/teable";
 import { PRIVACY, TERMS, type LegalDoc } from "../shared/legalContent";
 import { isLandingTable } from "../shared/simpleTables";
+import { cleanReviewText, cleanVerdict, splitReviewItems } from "../shared/reviewSanitize";
 import { blogSlug } from "../shared/blogSlug";
 import { mshotsUrl } from "../shared/screenshot";
 
@@ -203,10 +204,9 @@ ${opts.body}
 /* ------------------------------- tool pages -------------------------------- */
 
 function reviewList(label: string, raw: string): string {
-  const items = String(raw)
-    .split(/[;\n•]+/)
-    .map((s) => s.trim())
-    .filter((s) => s && !/^(unknown|n\/?a)$/i.test(s));
+  // splitReviewItems is what ToolLanding uses — it drops verification notes
+  // ("unverified", "unable to verify", "domain parked") clause by clause.
+  const items = splitReviewItems(raw);
   if (!items.length) return "";
   return `<h2>${esc(label)}</h2><ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
 }
@@ -244,7 +244,8 @@ function toolPageHtml(e: Entry): string {
   const stars = e.rating > 0 ? `★ ${e.rating}/5 · ` : "";
   const { shot, ogImage } = toolImage(e);
   const title = `${e.name} — aisumate`;
-  const metaDesc = e.desc || `${e.name} on aisumate, the human-curated AI tools directory.`;
+  const metaDesc =
+    cleanReviewText(e.desc) || `${e.name} on aisumate, the human-curated AI tools directory.`;
   const canonicalPath = `/tool/${e.tableKey}/${e.id}`;
 
   // Per-listing share card, so a pasted link previews as the tool rather than
@@ -262,19 +263,23 @@ function toolPageHtml(e: Entry): string {
     (ogImage ? `<meta name="twitter:image" content="${esc(ogImage)}" />` : "") +
     "\n";
 
+  const cleanDesc = cleanReviewText(e.desc);
+  const cleanedVerdict = cleanVerdict(e.verdict);
+  const costParts = splitReviewItems(e.cost);
+
   const body =
     `<h1>${esc(e.name)}</h1>` +
     `<p class="meta">${stars}${e.category ? `<span class="pill">${esc(e.category)}</span>` : ""}${e.sponsored ? `<span class="pill">Sponsored</span>` : ""}</p>` +
     (shot
       ? `<img class="shot" src="${esc(shot)}" alt="${esc(e.name)} homepage" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()" />`
       : "") +
-    (e.desc ? `<p>${esc(e.desc)}</p>` : "") +
+    (cleanDesc ? `<p>${esc(cleanDesc)}</p>` : "") +
     reviewList("Pros", e.pros) +
     reviewList("Cons", e.cons) +
-    (e.cost && !/^(unknown|n\/?a)$/i.test(e.cost.trim())
-      ? `<h2>Cost</h2><p>${esc(e.cost)}</p>`
-      : "") +
-    (e.verdict ? `<h2>Verdict</h2><p><em>${esc(e.verdict)}</em></p>` : "") +
+    // Cost is chips on the page; join the surviving clauses back into a
+    // sentence here, so a wholly-unverified cost renders nothing at all.
+    (costParts.length ? `<h2>Cost</h2><p>${esc(costParts.join("; "))}</p>` : "") +
+    (cleanedVerdict ? `<h2>Verdict</h2><p><em>${esc(cleanedVerdict)}</em></p>` : "") +
     reviewHtml(e.reviewTitle, e.review) +
     (href
       ? `<a class="visit" href="${esc(href)}" rel="sponsored nofollow noopener noreferrer">Visit ${esc(e.name)}</a>`
