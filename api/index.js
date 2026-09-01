@@ -559,6 +559,7 @@ function mapGenericTool(record) {
     isNew: isNewRecord(record),
     images: imageUrls(f),
     aiRelevance: cleanStr(f, "AI Relevance"),
+    sponsored: bool(f, "Sponsored"),
     ...blogPostFields(f),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
@@ -648,6 +649,7 @@ async function fetchAllTools() {
         isNew: isNewRecord(record),
         images: imageUrls(f),
         aiRelevance: cleanStr(f, "AI Relevance"),
+        sponsored: bool(f, "Sponsored"),
         ...blogPostFields(f),
         ...reviewFields(f)
       };
@@ -734,6 +736,7 @@ async function fetchLlmModels() {
         isNew: isNewRecord(record),
         images: imageUrls(f),
         aiRelevance: cleanStr(f, "AI Relevance"),
+        sponsored: bool(f, "Sponsored"),
         ...blogPostFields(f),
         ...reviewFields(f)
       };

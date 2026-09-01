@@ -62,6 +62,8 @@ interface Entry {
   /** Hand-written personal review (Teable "Blog Post - EN"); usually empty. */
   review: string;
   reviewTitle: string;
+  /** Paid placement — the static twin must carry the marking too. */
+  sponsored: boolean;
 }
 
 function esc(s: string): string {
@@ -104,6 +106,7 @@ function normalize(item: any, tableKey: string, fallbackCategory: string): Entry
     iconUrl: item.iconUrl || "",
     review: item.blogPostEn || "",
     reviewTitle: item.blogTitleEn || "",
+    sponsored: Boolean(item.sponsored),
   };
 }
 
@@ -261,7 +264,7 @@ function toolPageHtml(e: Entry): string {
 
   const body =
     `<h1>${esc(e.name)}</h1>` +
-    `<p class="meta">${stars}${e.category ? `<span class="pill">${esc(e.category)}</span>` : ""}</p>` +
+    `<p class="meta">${stars}${e.category ? `<span class="pill">${esc(e.category)}</span>` : ""}${e.sponsored ? `<span class="pill">Sponsored</span>` : ""}</p>` +
     (shot
       ? `<img class="shot" src="${esc(shot)}" alt="${esc(e.name)} homepage" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()" />`
       : "") +

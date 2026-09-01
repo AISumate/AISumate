@@ -19,6 +19,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import {
   AiRelevanceBadge,
   ConfidenceBadge,
+  SponsoredBadge,
   StarRating,
   ToolIcon,
   VisitButton,
@@ -185,6 +186,7 @@ export function ToolLanding({
             )}
             <ConfidenceBadge level={item.reviewConfidence} />
             <AiRelevanceBadge relevance={item.aiRelevance} />
+            <SponsoredBadge sponsored={item.sponsored} />
           </div>
 
           {description && (

@@ -19,6 +19,7 @@ import {
   ContentLanguageBadge,
   ReviewDetails,
   ReviewMark,
+  SponsoredBadge,
   StarRating,
   ToolIcon,
   VisitButton,
@@ -43,6 +44,8 @@ export interface AiTool extends ReviewInfo {
   /** Hand-written personal review; presence drives the mark next to the rating. */
   blogPostEn?: string;
   blogPostEs?: string;
+  /** Paid placement — renders the neutral Sponsored badge. */
+  sponsored?: boolean;
 }
 
 export function ToolCard({
@@ -171,13 +174,14 @@ export function ToolCard({
           </div>
         </div>
 
-        {((tool.rating ?? 0) > 0 || tool.aiRelevance || hasReview) && (
+        {((tool.rating ?? 0) > 0 || tool.aiRelevance || hasReview || tool.sponsored) && (
           <div className="-mt-1 flex items-center gap-2">
             {(tool.rating ?? 0) > 0 && (
               <StarRating rating={tool.rating!} accent="var(--tool-accent)" starClassName="h-3 w-3" />
             )}
             <ReviewMark hasReview={hasReview} />
             <AiRelevanceBadge relevance={tool.aiRelevance} />
+            <SponsoredBadge sponsored={tool.sponsored} />
           </div>
         )}
 
@@ -263,6 +267,7 @@ export function ToolCard({
                   )}
                   <ReviewMark hasReview={hasReview} />
                   <AiRelevanceBadge relevance={tool.aiRelevance} />
+                  <SponsoredBadge sponsored={tool.sponsored} />
                 </div>
               </div>
             </div>

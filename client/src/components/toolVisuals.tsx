@@ -194,6 +194,25 @@ export function ReviewMark({ hasReview }: { hasReview?: boolean }) {
   );
 }
 
+/**
+ * Paid-placement marker. Deliberately neutral — border and muted text, never
+ * the terracotta of the editorial AI badges — so a bought slot can't be
+ * mistaken for an earned one. Rendering it prominently is also what the
+ * FTC/Google marking rules ask for.
+ */
+export function SponsoredBadge({ sponsored }: { sponsored?: boolean }) {
+  const { t } = useLanguage();
+  if (!sponsored) return null;
+  return (
+    <span
+      className="inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground"
+      style={{ fontFamily: "var(--font-mono)" }}
+    >
+      {t("badgeSponsored")}
+    </span>
+  );
+}
+
 /** Compact high/medium/low review-confidence pill. */
 export function ConfidenceBadge({ level }: { level?: string }) {
   const { t } = useLanguage();

@@ -26,6 +26,7 @@ interface GenericTool extends ReviewInfo {
   isEnglishContent?: boolean;
   isSpanishContent?: boolean;
   aiRelevance?: string;
+  sponsored?: boolean;
   popularity?: number;
   slug?: string;
   bodyEn?: string;

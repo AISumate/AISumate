@@ -75,6 +75,8 @@ export interface AiTool extends ReviewFields, ToolReviewPost {
   images?: string[];
   /** "AI-first" | "AI-enabled" | "General" | "Resource" | "" — see GenericTool.aiRelevance. */
   aiRelevance: string;
+  /** The "Sponsored" checkbox — paid placement, always rendered with a visible badge. */
+  sponsored: boolean;
 }
 
 export interface GithubRepo {
@@ -126,6 +128,8 @@ export interface LlmModel extends ReviewFields, ToolReviewPost {
   images?: string[];
   /** "AI-first" | "AI-enabled" | "General" | "Resource" | "" — see GenericTool.aiRelevance. */
   aiRelevance: string;
+  /** The "Sponsored" checkbox — paid placement, always rendered with a visible badge. */
+  sponsored: boolean;
 }
 
 export interface LtdDeal extends ReviewFields {
@@ -175,6 +179,8 @@ export interface GenericTool extends ReviewFields, ToolReviewPost {
    * The client shows a badge for the first two and an "AI only" filter.
    */
   aiRelevance: string;
+  /** The "Sponsored" checkbox — paid placement, always rendered with a visible badge. */
+  sponsored: boolean;
   /** Popularity metric (currently only populated on AI Influencers via its "Subscribers" column). */
   popularity: number;
   /** Curated rank (currently only populated on AI Influencers and Sumate Top Recommendations via their "Rank" column). */
@@ -458,6 +464,7 @@ function mapGenericTool(record: TeableRecord): GenericTool {
     isNew: isNewRecord(record),
     images: imageUrls(f),
     aiRelevance: cleanStr(f, "AI Relevance"),
+    sponsored: bool(f, "Sponsored"),
     ...blogPostFields(f),
     isEnglishContent: bool(f, "English"),
     isSpanishContent: bool(f, "Spanish"),
@@ -566,6 +573,7 @@ export async function fetchAllTools(): Promise<AiTool[]> {
         isNew: isNewRecord(record),
         images: imageUrls(f),
         aiRelevance: cleanStr(f, "AI Relevance"),
+        sponsored: bool(f, "Sponsored"),
         ...blogPostFields(f),
         ...reviewFields(f),
       };
@@ -662,6 +670,7 @@ export async function fetchLlmModels(): Promise<LlmModel[]> {
         isNew: isNewRecord(record),
         images: imageUrls(f),
         aiRelevance: cleanStr(f, "AI Relevance"),
+        sponsored: bool(f, "Sponsored"),
         ...blogPostFields(f),
         ...reviewFields(f),
       };

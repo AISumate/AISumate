@@ -56,6 +56,7 @@ export const PRIVACY: { en: LegalDoc; es: LegalDoc } = {
         heading: "Affiliate links",
         paragraphs: [
           "Some outbound links may be affiliate links, which means we may earn a commission if you buy something after clicking them — at no extra cost to you. Affiliate relationships never change a tool's rating or review; ratings are our editorial opinion. Links that may be compensated are marked with rel=\"sponsored\" for search engines and disclosed on the tool's detail view.",
+          "Some listings may be sponsored placements. Sponsored listings are always marked with a visible \"Sponsored\" badge, and sponsorship never changes a tool's rating or review.",
         ],
       },
       {
@@ -105,6 +106,7 @@ export const PRIVACY: { en: LegalDoc; es: LegalDoc } = {
         heading: "Enlaces de afiliado",
         paragraphs: [
           "Algunos enlaces salientes pueden ser de afiliado: podemos ganar una comisión si compras tras hacer clic, sin coste extra para ti. Las relaciones de afiliado nunca cambian la calificación ni la reseña de una herramienta; las calificaciones son nuestra opinión editorial. Los enlaces que pueden ser compensados llevan rel=\"sponsored\" para los buscadores y se divulgan en la vista de detalle.",
+          "Algunas fichas pueden ser posiciones patrocinadas. Las fichas patrocinadas llevan siempre una etiqueta visible de «Patrocinado», y el patrocinio nunca cambia la calificación ni la reseña de una herramienta.",
         ],
       },
       {
