@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { BlogArticle, type BlogPostToolInfo } from "@/components/BlogArticle";
 import { blogSlug } from "@shared/blogSlug";
+import { lastTab } from "@/lib/lastTab";
 
 /**
  * A single blog post at its own URL: /blog/:slug
@@ -49,7 +50,7 @@ export default function BlogPost() {
       <Header />
       <main className="container flex-1 py-7">
         <Link
-          href="/#aiMedia"
+          href={`/#${lastTab("aiMedia")}`}
           className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />

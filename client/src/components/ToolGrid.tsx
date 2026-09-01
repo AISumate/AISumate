@@ -131,11 +131,11 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
               value: aiFilter,
               onChange: (v: string) => { setAiFilter(v); setDisplayCount(100); },
               options: [
-                { value: "all", label: t("aiRelevanceAll") },
                 { value: "ai", label: t("aiRelevanceAiOnly") },
                 { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
               ],
               placeholderKey: "aiRelevanceFilter",
+              allLabel: t("aiRelevanceAll"),
             },
           ]}
           sort={{

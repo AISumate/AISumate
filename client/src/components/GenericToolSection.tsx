@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
 import { SectionHeading, type ReviewInfo } from "./toolVisuals";
 import { ToolCard } from "./ToolCard";
+import { blogSlug } from "@shared/blogSlug";
 
 interface GenericTool extends ReviewInfo {
   id: string;
@@ -188,11 +189,11 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
                 value: aiFilter,
                 onChange: (v: string) => { setAiFilter(v); setDisplayCount(100); },
                 options: [
-                  { value: "all", label: t("aiRelevanceAll") },
                   { value: "ai", label: t("aiRelevanceAiOnly") },
                   { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
                 ],
                 placeholderKey: "aiRelevanceFilter",
+                allLabel: t("aiRelevanceAll"),
               },
             ]}
             sort={{
@@ -260,7 +261,7 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
               // Blog posts have their own page at /blog/<slug>; everything else
               // keeps the card default (landing page, or the detail dialog).
               const blogHref =
-                hasBlogView && tool.bodyEn ? `/blog/${tool.slug || tool.id}` : "";
+                hasBlogView && tool.bodyEn ? `/blog/${blogSlug(tool.slug, tool.id)}` : "";
               return (
                 <ToolCard
                   key={tool.id}

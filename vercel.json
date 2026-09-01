@@ -31,7 +31,7 @@
     },
     { "source": "/tool/:table/:id", "destination": "/app.html" },
     {
-      "source": "/blog/:slug",
+      "source": "/blog/:slug([a-zA-Z0-9-]+)",
       "has": [
         {
           "type": "header",

@@ -14,7 +14,7 @@ import { ToolCard, type AiTool } from "./ToolCard";
  * Renders nothing while loading or if the table is empty, rather than leaving a
  * heading over a blank strip.
  */
-export function ThisWeeksAiPicksSection() {
+export function ThisWeeksAiPicksSection({ divider = true }: { divider?: boolean } = {}) {
   const { t } = useLanguage();
   const { data, isLoading } = trpc.thisWeeksAiPicks.list.useQuery(undefined, {
     refetchOnWindowFocus: false,
@@ -32,7 +32,11 @@ export function ThisWeeksAiPicksSection() {
   if (picks.length === 0) return null;
 
   return (
-    <section className="mb-10">
+    // On the AI Tools tab this strip sits above the main grid and needs the
+    // divider plus generous space to read as its own thing. On the home page
+    // it's one row among several, so it takes the same pb-2 as its siblings —
+    // otherwise the gap below it is nearly double every other gap.
+    <section className={divider ? "mb-10" : "pb-2"}>
       <SectionHeading
         title={t("thisWeeksAiPicksTitle")}
         subtitle={t("thisWeeksAiPicksSubtitle")}
@@ -46,7 +50,7 @@ export function ThisWeeksAiPicksSection() {
 
       {/* Divider so the picks read as their own section, not the first row of
           the main grid below. */}
-      <div className="mt-10 border-t border-border/70" />
+      {divider && <div className="mt-10 border-t border-border/70" />}
     </section>
   );
 }

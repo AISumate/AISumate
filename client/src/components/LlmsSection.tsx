@@ -95,11 +95,11 @@ export function LlmsSection() {
                 value: aiFilter,
                 onChange: setAiFilter,
                 options: [
-                  { value: "all", label: t("aiRelevanceAll") },
                   { value: "ai", label: t("aiRelevanceAiOnly") },
                   { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
                 ],
                 placeholderKey: "aiRelevanceFilter",
+                allLabel: t("aiRelevanceAll"),
               },
             ]}
             sort={{

@@ -69,7 +69,8 @@ function esc(s: string): string {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /** Only allow http(s) links through — never javascript:/data: etc. */
@@ -376,10 +377,18 @@ function blogPageHtml(e: BlogEntry): string {
 function writeBlogPages(posts: BlogEntry[]): number {
   const dir = path.join(OUT, "blog-static");
   mkdirSync(dir, { recursive: true });
+  let written = 0;
   for (const p of posts) {
-    writeFileSync(path.join(dir, `${p.slug}.html`), blogPageHtml(p), "utf8");
+    // Per-post try/catch, like collect()'s per-table one: a single unwritable
+    // filename must skip that post, not fail the deploy.
+    try {
+      writeFileSync(path.join(dir, `${p.slug}.html`), blogPageHtml(p), "utf8");
+      written++;
+    } catch (err) {
+      console.warn(`[prerender] skipped blog post "${p.slug}":`, err);
+    }
   }
-  return posts.length;
+  return written;
 }
 
 /* ------------------------------- legal pages ------------------------------- */

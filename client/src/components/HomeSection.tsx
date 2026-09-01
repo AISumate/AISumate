@@ -112,7 +112,7 @@ function BlogRowSection() {
 export function HomeSection() {
   return (
     <div>
-      <ThisWeeksAiPicksSection />
+      <ThisWeeksAiPicksSection divider={false} />
       <SumateTopRecommendationsSection limit={6} />
       <WeeklyViralGithubSection />
       <BlogRowSection />

@@ -11,6 +11,7 @@ import { LlmsSection } from "./LlmsSection";
 import { GenericToolSection } from "./GenericToolSection";
 import { GroupedCategoryNav } from "./GroupedCategoryNav";
 import { HomeSection } from "./HomeSection";
+import { rememberTab } from "@/lib/lastTab";
 
 interface SectionTabsProps {
   tools: AiTool[];
@@ -52,6 +53,12 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
     window.addEventListener("hashchange", apply);
     return () => window.removeEventListener("hashchange", apply);
   }, []);
+
+  // Remember the tab so detail pages can send people back to where they were,
+  // not to whichever tab the record happens to live in.
+  useEffect(() => {
+    rememberTab(activeTab);
+  }, [activeTab]);
 
   return (
     <div className="flex-1">

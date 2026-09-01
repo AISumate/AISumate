@@ -30,6 +30,13 @@ interface FilterBarProps {
     onChange: (value: string) => void;
     options: FilterOption[];
     placeholderKey: string;
+    /**
+     * Label for the built-in "everything" entry. Filters must NOT put their own
+     * `value: "all"` option in `options` — Radix matches the trigger text by
+     * value, so two items sharing "all" render both labels run together
+     * ("AllAll tools").
+     */
+    allLabel?: string;
   }[];
   sort?: {
     field: string;
@@ -146,8 +153,8 @@ export function FilterBar({
                 <SelectValue placeholder={t(filter.placeholderKey as never)} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("allOption")}</SelectItem>
-                {filter.options.map((opt) => (
+                <SelectItem value="all">{filter.allLabel ?? t("allOption")}</SelectItem>
+                {filter.options.filter((opt) => opt.value !== "all").map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>
