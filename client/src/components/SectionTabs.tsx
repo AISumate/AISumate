@@ -65,8 +65,8 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
       {!navHidden && <GroupedCategoryNav activeTab={activeTab} onChange={setActiveTab} />}
 
       {/* Floating show/hide toggle for the category bar — persisted in
-          localStorage. Anchored bottom-LEFT so it never overlaps the MindPal
-          chat widget, which sits in the bottom-right corner. */}
+          localStorage. Kept bottom-LEFT: the MindPal chat widget occupied the
+          bottom-right corner and is disabled rather than removed. */}
       <button
         onClick={toggleNav}
         title={navHidden ? t("showCategoryBar") : t("hideCategoryBar")}

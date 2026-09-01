@@ -32,8 +32,11 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- MindPal AI assistant (floating-corner widget). Knowledge-base + output
-         only — no conversation storage or webhooks. Loads from getmindpal.com. -->
+    <!-- MindPal AI assistant (floating-corner widget) — DISABLED 2026-09-01 at
+         Duncan's request while the catalogue data is being corrected; the
+         assistant answers from a knowledge base built on that data. Its bubble
+         also sat over card text in the bottom-right on mobile.
+         To restore: uncomment. Config is unchanged.
     <script>
       window.mindpalConfig = {
         chatbotId: "ai-sumate-website-assistant-xi3",
@@ -48,6 +51,7 @@
       };
     </script>
     <script src="https://chatbot.getmindpal.com/embed.min.js"></script>
+    -->
   </body>
 
 </html>

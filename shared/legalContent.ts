@@ -49,7 +49,6 @@ export const PRIVACY: { en: LegalDoc; es: LegalDoc } = {
         paragraphs: [
           "Tool logos and curated images: these are served through our own site — our server fetches them and our host's cache delivers them, so your browser normally never contacts the tool maker's host or Google's favicon service. Only if one of our copies fails to load may your browser fall back to fetching a logo directly from Google, which would then see that request (including your IP address).",
           "Tool screenshots: tool pages without curated images show an automatic screenshot of the tool's own website, served by WordPress.com's public mShots service. Your browser fetches that screenshot directly from WordPress.com, which therefore sees the request (including your IP address). We ask browsers not to send the referring page address with these image requests.",
-          "Chat assistant: the site includes an optional chat widget provided by MindPal. It answers questions from our public catalogue only. If you use it, your messages are processed by MindPal to generate answers; we do not use it to collect personal data.",
           "Fonts are self-hosted — no font request leaves this site.",
         ],
       },
@@ -99,7 +98,6 @@ export const PRIVACY: { en: LegalDoc; es: LegalDoc } = {
         paragraphs: [
           "Logos e imágenes seleccionadas: se sirven a través de nuestro propio sitio — nuestro servidor las obtiene y la caché de nuestro proveedor las entrega, de modo que tu navegador normalmente nunca contacta con el servidor del fabricante ni con el servicio de favicons de Google. Solo si una de nuestras copias falla, tu navegador puede recurrir a cargar un logo directamente desde Google, que entonces vería esa petición (incluida tu IP).",
           "Capturas de herramientas: las páginas sin imágenes seleccionadas muestran una captura automática del sitio web de la propia herramienta, servida por el servicio público mShots de WordPress.com. Tu navegador solicita esa captura directamente a WordPress.com, que por tanto ve la petición (incluida tu IP). Pedimos a los navegadores que no envíen la dirección de la página de origen en esas peticiones de imagen.",
-          "Asistente de chat: el sitio incluye un widget opcional de chat de MindPal. Responde solo con información de nuestro catálogo público. Si lo usas, tus mensajes son procesados por MindPal para generar respuestas; no lo usamos para recopilar datos personales.",
           "Las fuentes están auto-alojadas — ninguna petición de fuentes sale de este sitio.",
         ],
       },
