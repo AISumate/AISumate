@@ -105,9 +105,6 @@ export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: 
             <span className="text-[color:var(--chart-2)]">✓</span> {t("trustCurated")}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="text-[color:var(--chart-2)]">✓</span> {t("trustNoPayToRank")}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
             <span className="text-[color:var(--chart-2)]">✓</span> {t("trustBilingual")}
           </span>
         </div>

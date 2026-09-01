@@ -306,7 +306,6 @@ export const translations = {
     heroChipFreeLlmApi: "free LLM API",
     heroChipImageUpscaler: "image upscaler",
     trustCurated: "Human-curated",
-    trustNoPayToRank: "No pay-to-rank",
     trustBilingual: "EN / ES reviews",
 
     // Header
@@ -629,7 +628,6 @@ export const translations = {
     heroChipFreeLlmApi: "API LLM gratis",
     heroChipImageUpscaler: "mejorador de imágenes",
     trustCurated: "Curado por humanos",
-    trustNoPayToRank: "Sin pago por ranking",
     trustBilingual: "Reseñas EN / ES",
 
     // Header
