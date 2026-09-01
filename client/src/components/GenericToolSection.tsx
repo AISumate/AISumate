@@ -65,8 +65,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [aiFilter, setAiFilter] = useState("all");
-  const [sortField, setSortField] = useState("name");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  // The blog reads newest-first; every other section reads alphabetically.
+  const [sortField, setSortField] = useState(hasBlogView ? "newest" : "name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">(hasBlogView ? "desc" : "asc");
   const [languageFilter, setLanguageFilter] = useState<ContentLanguageFilter>("all");
   const [displayCount, setDisplayCount] = useState(100);
   const [, navigate] = useLocation();
@@ -85,7 +86,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
   );
 
   const filteredTools = useMemo(() => {
-    let result = tools;
+    // Teable returns rows in view order, so the index IS insertion order.
+    // Captured before any filtering so it survives as a sort tiebreak.
+    let result: (GenericTool & { _pos?: number })[] = tools.map((t, i) => ({ ...t, _pos: i }));
     if (search.trim()) {
       const term = search.toLowerCase().trim();
       result = result.filter(
@@ -120,6 +123,13 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
       } else if (sortField === "rating") {
         cmp = (b.rating || 0) - (a.rating || 0);
         if (cmp === 0) cmp = a.name.localeCompare(b.name);
+      } else if (sortField === "newest") {
+        // Newest published first; posts sharing a date fall back to whichever
+        // was entered into Teable last.
+        cmp = String(b.publishedDate || "").localeCompare(String(a.publishedDate || ""));
+        if (cmp === 0) cmp = (b._pos ?? 0) - (a._pos ?? 0);
+        // Already descending by construction — don't let the toggle invert it twice.
+        return sortDirection === "desc" ? cmp : -cmp;
       } else if (sortField === "popularity") {
         cmp = (b.popularity || 0) - (a.popularity || 0);
         if (cmp === 0) cmp = a.name.localeCompare(b.name);
@@ -140,8 +150,8 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
     setSearch("");
     setCategoryFilter("all");
     setAiFilter("all");
-    setSortField("name");
-    setSortDirection("asc");
+    setSortField(hasBlogView ? "newest" : "name");
+    setSortDirection(hasBlogView ? "desc" : "asc");
     setLanguageFilter("all");
     setDisplayCount(100);
   };
@@ -202,6 +212,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
               onFieldChange: (f: string) => { setSortField(f); setDisplayCount(100); },
               onDirectionChange: (d: "asc" | "desc") => { setSortDirection(d); setDisplayCount(100); },
               options: [
+                ...(hasBlogView
+                  ? [{ value: "newest", labelKey: "sortByNewest", defaultDirection: "desc" as const }]
+                  : []),
                 { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
                 { value: "category", labelKey: "sortByCategory", defaultDirection: "asc" },
                 { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },

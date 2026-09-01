@@ -37,8 +37,12 @@ function BlogRowSection() {
 
   const posts = ((data?.tools ?? []) as BlogRow[])
     .filter((p) => p.bodyEn?.trim())
-    // Newest first; posts with no date sink to the bottom.
-    .sort((a, b) => String(b.publishedDate ?? "").localeCompare(String(a.publishedDate ?? "")))
+    .map((p, i) => ({ ...p, _pos: i }))
+    // Newest first; undated posts sink, and posts sharing a date fall back to
+    // whichever was entered into Teable last.
+    .sort((a, b) =>
+      String(b.publishedDate ?? "").localeCompare(String(a.publishedDate ?? "")) ||
+      (b._pos ?? 0) - (a._pos ?? 0))
     .slice(0, 3);
 
   if (isLoading || posts.length === 0) return null;
