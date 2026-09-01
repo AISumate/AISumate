@@ -21,7 +21,7 @@ export interface LegalDoc {
   sections: LegalSection[];
 }
 
-const UPDATED = "2026-08-31";
+const UPDATED = "2026-09-01";
 
 export const PRIVACY: { en: LegalDoc; es: LegalDoc } = {
   en: {
@@ -146,6 +146,14 @@ export const TERMS: { en: LegalDoc; es: LegalDoc } = {
         ],
       },
       {
+        heading: "Sponsored placements",
+        paragraphs: [
+          "Some listings may be sponsored: the tool's maker or a partner has paid for placement on the site. Every sponsored listing is clearly marked with a visible \"Sponsored\" badge wherever it appears.",
+          "Sponsorship buys visibility only. It never buys a rating, a review, a verdict or the removal of criticism — sponsored tools are reviewed to the same editorial standard as everything else, and their ratings can go down as well as up. A sponsored listing is not an endorsement.",
+          "We may decline or end a sponsorship at our sole discretion, including where a tool no longer meets the standards of the directory.",
+        ],
+      },
+      {
         heading: "External links",
         paragraphs: [
           "Outbound links take you to sites we do not control. We are not responsible for their content, pricing, security or privacy practices. Some links may be affiliate links, as disclosed in our Privacy Policy — commissions never influence ratings.",
@@ -185,6 +193,14 @@ export const TERMS: { en: LegalDoc; es: LegalDoc } = {
         heading: "Las calificaciones y reseñas son opiniones",
         paragraphs: [
           "Las calificaciones (1 = Indie · 5 = Líder del mercado), pros, contras, notas de precio y veredictos son opiniones editoriales basadas en investigación al momento de la reseña. Pueden quedar desactualizadas o ser incorrectas, y pueden cambiar tras nuevas revisiones. Verifica siempre precios y capacidades en el sitio de la propia herramienta.",
+        ],
+      },
+      {
+        heading: "Posiciones patrocinadas",
+        paragraphs: [
+          "Algunas fichas pueden estar patrocinadas: el creador de la herramienta o un socio ha pagado por su presencia en el sitio. Toda ficha patrocinada está claramente marcada con una etiqueta visible de «Patrocinado» allí donde aparece.",
+          "El patrocinio solo compra visibilidad. Nunca compra una calificación, una reseña, un veredicto ni la retirada de críticas — las herramientas patrocinadas se reseñan con el mismo estándar editorial que todas las demás, y sus calificaciones pueden bajar igual que subir. Una ficha patrocinada no es un respaldo.",
+          "Podemos rechazar o terminar un patrocinio a nuestra entera discreción, incluso cuando una herramienta deje de cumplir los estándares del directorio.",
         ],
       },
       {
