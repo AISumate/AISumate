@@ -40,6 +40,70 @@ describe("isJunkReviewText", () => {
     "Polished, thoughtful UX with backlinking capabilities",
     "no public API documentation visible beyond basic functionality",
   ])("keeps real review text %j", (v) => expect(isJunkReviewText(v)).toBe(false));
+
+  // Notes about OUR record, saved into public review fields. They read like
+  // product criticism, survive after the record is corrected, and were being
+  // published as Cons and Verdicts — Otter's Verdict was one of these.
+  it.each([
+    "Data quality issue: affiliate link provided instead of official domain; product category and summary mismatch.",
+    "URL provided is affiliate link (not official product domain)",
+    "Generic LLM summary does not match actual product (transcription, not inference)",
+    "Source data unreliable",
+    "No website content available to verify actual function",
+    "generic placeholder summary suggests poor data quality",
+    "Cannot recommend: the URL is an affiliate/partner referral link, not the official product domain.",
+    "Cannot evaluate: URL provided is a partner affiliate link, not the official domain",
+    "appears to be duplicate listing with potential data quality issue",
+    "pricing and features not verified",
+    "Problema de calidad de datos: se proporcionó enlace de afiliado en lugar de dominio oficial",
+    "Datos de origen no confiables",
+    "No se puede evaluar: la URL proporcionada es un enlace de afiliado asociado, no el dominio oficial",
+    "actual destination unclear",
+    "insufficient detail for meaningful assessment",
+    "no verified pricing information",
+    "resumen genérico e no informativo",
+    "Información del producto inaccesible",
+    "provided URL redirects through affiliate link (appwiki.nl)",
+    "la URL proporcionada se redirige a través de un enlace de afiliado (appwiki.nl)",
+    "URL points to appwiki.nl rather than the vendor",
+    "original affiliate link obscures official domain",
+    "affiliate link in URL (?via=francesco-d-alessio) raises transparency concerns",
+    "pricing not accessible via affiliate link",
+    "Referral URL format suggests affiliate link rather than official product landing",
+    "URL contains tracking parameters suggesting marketing affiliate link",
+    "pricing not directly accessible through affiliate link",
+    "Generic summary provides no meaningful description of product function",
+    "Extremely generic summary provides no specifics",
+    "website appears inaccessible",
+    "Standard iOS habit tracker for personal use, but misclassified as AI/LLM",
+    "Cannot recommend—product purpose is unclear from available description",
+    "Resumen genérico de marcador de posición sin características específicas",
+    "affiliate link prevents direct pricing verification",
+    "affiliate link makes direct pricing verification difficult",
+    "el enlace de afiliado impide la verificación directa de precios",
+  ])("flags an editorial note about the record %j", (v) =>
+    expect(isJunkReviewText(v)).toBe(true)
+  );
+
+  // The narrow phrasing above must not swallow genuine criticism of a product
+  // that happens to be about affiliates, data handling or verification.
+  it.each([
+    "Runs a generous affiliate programme with a 30% recurring commission",
+    "Affiliate payouts are slow and the dashboard is dated",
+    "Data quality depends heavily on how well you tag your own sources",
+    "No official mobile app; the web view is the only supported client",
+    "Free plan is generic and most useful features sit behind the Pro tier",
+    "Summary reports are template-driven and hard to customise",
+    "Duplicate contacts are merged automatically, which can be hard to undo",
+    "The affiliate dashboard is dated and payouts take 60 days",
+    "Referral rewards are capped at three invites per account",
+    "Tracking pixels fire on every page, which some teams will not accept",
+    "Generates a summary for every meeting, even short ones",
+    "The onboarding description is thin but the docs are excellent",
+    "Exports are inaccessible on the free plan",
+  ])("keeps genuine product criticism %j", (v) =>
+    expect(isJunkReviewText(v)).toBe(false)
+  );
 });
 
 describe("splitReviewItems", () => {
