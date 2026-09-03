@@ -307,6 +307,9 @@ var MAX_BYTES = 4 * 1024 * 1024;
 var FETCH_TIMEOUT_MS = 15e3;
 var OK_CACHE = "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
 var ERR_CACHE = "public, max-age=60, s-maxage=120";
+function isPendingScreenshot(url, contentType) {
+  return url.hostname.toLowerCase() === "s.wordpress.com" && url.pathname.startsWith("/mshots/") && contentType === "image/gif";
+}
 function fail(res, status) {
   res.status(status).set("Cache-Control", ERR_CACHE).end();
 }
@@ -376,7 +379,7 @@ async function imgProxyHandler(req, res) {
     }
     const buf = Buffer.concat(chunks);
     if (buf.length === 0) return fail(res, 502);
-    res.status(200).set("Content-Type", type).set("Cache-Control", OK_CACHE).set("X-Content-Type-Options", "nosniff").set("Content-Security-Policy", "default-src 'none'; sandbox").send(buf);
+    res.status(200).set("Content-Type", type).set("Cache-Control", isPendingScreenshot(url, type) ? ERR_CACHE : OK_CACHE).set("X-Content-Type-Options", "nosniff").set("Content-Security-Policy", "default-src 'none'; sandbox").send(buf);
   } catch {
     fail(res, 502);
   } finally {

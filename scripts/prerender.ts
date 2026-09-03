@@ -34,6 +34,7 @@ import { isLandingTable } from "../shared/simpleTables";
 import { cleanReviewText, cleanVerdict, splitReviewItems } from "../shared/reviewSanitize";
 import { blogSlug } from "../shared/blogSlug";
 import { mshotsUrl } from "../shared/screenshot";
+import { proxyImg } from "../server/imgProxy";
 
 const SITE_URL = "https://www.aisumate.com";
 const OUT = path.resolve(process.cwd(), "dist/public");
@@ -235,7 +236,13 @@ function safeImgUrl(u: string): string {
 function toolImage(e: Entry): { shot: string; ogImage: string } {
   const curated = e.images.map(safeImgUrl).filter(Boolean);
   const href = safeUrl(e.url);
-  const shot = curated[0] || (isLandingTable(e.tableKey) && href ? mshotsUrl(href, 1200) : "");
+  // The auto screenshot goes through our own /api/img like every other image:
+  // s.wordpress.com/robots.txt carries "Disallow: /mshots/v1/", so a raw mshots
+  // URL is a resource Googlebot is forbidden to fetch. Proxied, it becomes a
+  // same-origin URL our own robots.txt allows (and the edge caches it).
+  const auto =
+    isLandingTable(e.tableKey) && href ? safeImgUrl(proxyImg(mshotsUrl(href, 1200))) : "";
+  const shot = curated[0] || auto;
   return { shot, ogImage: shot || safeImgUrl(e.iconUrl) };
 }
 

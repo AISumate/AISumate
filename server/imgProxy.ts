@@ -81,6 +81,21 @@ const FETCH_TIMEOUT_MS = 15_000;
 const OK_CACHE = "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
 const ERR_CACHE = "public, max-age=60, s-maxage=120";
 
+/**
+ * mShots serves a small loading GIF (via a redirect to its default image)
+ * until the screenshot has actually been generated. A 200 is a 200, so
+ * without this the edge would pin that spinner onto every page with no
+ * curated image for a month. Not-ready answers get the short TTL instead, so
+ * the next visitor re-asks and the real screenshot lands.
+ */
+export function isPendingScreenshot(url: URL, contentType: string): boolean {
+  return (
+    url.hostname.toLowerCase() === "s.wordpress.com" &&
+    url.pathname.startsWith("/mshots/") &&
+    contentType === "image/gif"
+  );
+}
+
 function fail(res: Response, status: number): void {
   res.status(status).set("Cache-Control", ERR_CACHE).end();
 }
@@ -170,7 +185,7 @@ export async function imgProxyHandler(req: Request, res: Response): Promise<void
     res
       .status(200)
       .set("Content-Type", type)
-      .set("Cache-Control", OK_CACHE)
+      .set("Cache-Control", isPendingScreenshot(url, type) ? ERR_CACHE : OK_CACHE)
       .set("X-Content-Type-Options", "nosniff")
       // Neutralises scripted SVGs if the proxy URL is opened directly —
       // as an <img> source the sandbox changes nothing.

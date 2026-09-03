@@ -62,3 +62,22 @@ describe("imgProxy signing", () => {
     expect(verifySig("https://x.com/i.png", "0".repeat(32))).toBe(false);
   });
 });
+
+describe("pending screenshots", () => {
+  it("treats an mShots loading GIF as not-ready, real formats as ready", async () => {
+    const { isPendingScreenshot } = await loadWithKey("test-key-1");
+    const shot = new URL("https://s.wordpress.com/mshots/v1/https%3A%2F%2Fexample.com?w=1200");
+    expect(isPendingScreenshot(shot, "image/gif")).toBe(true);
+    expect(isPendingScreenshot(shot, "image/jpeg")).toBe(false);
+    expect(isPendingScreenshot(shot, "image/png")).toBe(false);
+  });
+
+  it("never short-caches a genuine GIF from another host", async () => {
+    const { isPendingScreenshot } = await loadWithKey("test-key-1");
+    expect(isPendingScreenshot(new URL("https://cdn.example.com/a.gif"), "image/gif")).toBe(false);
+    // A look-alike host must not match either.
+    expect(
+      isPendingScreenshot(new URL("https://evil-s.wordpress.com.attacker.test/mshots/x"), "image/gif"),
+    ).toBe(false);
+  });
+});
