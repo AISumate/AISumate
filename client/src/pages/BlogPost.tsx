@@ -25,13 +25,20 @@ export default function BlogPost() {
   const { t } = useLanguage();
   const slug = params.slug ?? "";
 
-  const query = trpc.aiMedia.list.useQuery(undefined, { refetchOnWindowFocus: false });
+  const query = trpc.aiMedia.list.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   const post = useMemo(() => {
-    const rows = (query.data?.tools ?? []) as (BlogPostToolInfo & { id: string })[];
+    const rows = (query.data?.tools ?? []) as (BlogPostToolInfo & {
+      id: string;
+    })[];
     // Compare on the normalised slug, so the page resolves for exactly the
     // addresses the links and the crawler twins use.
-    return rows.find((r) => blogSlug(r.slug, r.id) === slug) ?? rows.find((r) => r.id === slug);
+    return (
+      rows.find(r => blogSlug(r.slug, r.id) === slug) ??
+      rows.find(r => r.id === slug)
+    );
   }, [query.data, slug]);
 
   useEffect(() => {

@@ -65,26 +65,36 @@ export function ToolLanding({
       : item.descriptionEn || item.summaryEn) ||
     item.description ||
     "";
-  const category = item.category || item.providerType || item.topic || item.platform || "";
+  const category =
+    item.category || item.providerType || item.topic || item.platform || "";
   const url = item.url || item.repoUrl || item.dealUrl || item.website || "";
-  const visitUrl = item.isAffiliate && item.affiliateUrl ? item.affiliateUrl : url;
+  const visitUrl =
+    item.isAffiliate && item.affiliateUrl ? item.affiliateUrl : url;
   const domain = hostnameOf(url);
 
   const pros = splitReviewItems(language === "es" ? item.prosEs : item.prosEn);
   const cons = splitReviewItems(language === "es" ? item.consEs : item.consEn);
-  const costChips = splitReviewItems(language === "es" ? item.costEs : item.costEn);
-  const verdict = cleanVerdict(language === "es" ? item.verdictEs : item.verdictEn);
+  const costChips = splitReviewItems(
+    language === "es" ? item.costEs : item.costEn
+  );
+  const verdict = cleanVerdict(
+    language === "es" ? item.verdictEs : item.verdictEn
+  );
   const providerNote = cleanReviewText(
-    language === "es" ? item.providerNoteEs : item.providerNoteEn,
+    language === "es" ? item.providerNoteEs : item.providerNoteEn
   );
 
   // Hand-written personal review (Teable "Blog Post" columns). Falls back to
   // the English text when no Spanish one has been written yet — same rule as
   // BlogPostDialog uses for the Sumate Media posts.
   const reviewBody =
-    (language === "es" && item.blogPostEs?.trim() ? item.blogPostEs : item.blogPostEn) ?? "";
+    (language === "es" && item.blogPostEs?.trim()
+      ? item.blogPostEs
+      : item.blogPostEn) ?? "";
   const reviewTitle =
-    (language === "es" && item.blogTitleEs?.trim() ? item.blogTitleEs : item.blogTitleEn) ?? "";
+    (language === "es" && item.blogTitleEs?.trim()
+      ? item.blogTitleEs
+      : item.blogTitleEn) ?? "";
   const hasReview = Boolean(item.blogPostEn?.trim());
 
   // Curated images (Teable `Images` column, one URL per line) win; otherwise
@@ -93,12 +103,14 @@ export function ToolLanding({
   // full-size lightbox. Broken URLs drop out silently.
   const curated: string[] = Array.isArray(item.images) ? item.images : [];
   const autoShotBase = url ? mshotsUrl(url, 1200) : "";
-  const liveCurated = curated.slice(0, 6).filter((s) => !failedShots.has(s));
+  const liveCurated = curated.slice(0, 6).filter(s => !failedShots.has(s));
   // A curated image that 404s falls back to the auto screenshot rather than
   // leaving a gap; if that fails too, `mainShot` is undefined and the whole
   // card (browser frame included) never renders — no empty box.
   const usingAutoShot =
-    liveCurated.length === 0 && !!autoShotBase && !failedShots.has(autoShotBase);
+    liveCurated.length === 0 &&
+    !!autoShotBase &&
+    !failedShots.has(autoShotBase);
   const shots = usingAutoShot
     ? [mshotsTry ? `${autoShotBase}&retry=${mshotsTry}` : autoShotBase]
     : liveCurated;
@@ -116,22 +128,32 @@ export function ToolLanding({
   const handleShotLoad = (img: HTMLImageElement) => {
     if (!usingAutoShot || img.naturalWidth > 420) return;
     if (mshotsTry >= 4) {
-      setFailedShots((prev) => new Set(prev).add(autoShotBase));
+      setFailedShots(prev => new Set(prev).add(autoShotBase));
       return;
     }
-    window.setTimeout(() => setMshotsTry((n) => n + 1), 3500);
+    window.setTimeout(() => setMshotsTry(n => n + 1), 3500);
   };
 
   // Same-category neighbours from the already-cached table list — internal
   // links, zero extra fetches. Rating-first so the strongest tools show.
   const related = rows
-    .filter((r) => r.id !== id && (r.category || r.providerType) === (item.category || item.providerType))
-    .sort((a, b) => (b.rating || 0) - (a.rating || 0) || String(a.name).localeCompare(String(b.name)))
+    .filter(
+      r =>
+        r.id !== id &&
+        (r.category || r.providerType) === (item.category || item.providerType)
+    )
+    .sort(
+      (a, b) =>
+        (b.rating || 0) - (a.rating || 0) ||
+        String(a.name).localeCompare(String(b.name))
+    )
     .slice(0, 3);
 
   const copyPageLink = async () => {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/tool/${table}/${id}`);
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/tool/${table}/${id}`
+      );
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -147,9 +169,7 @@ export function ToolLanding({
       <div className="mt-3 grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-6">
         <div className="flex w-full flex-col gap-4 lg:w-auto lg:max-w-[600px]">
           <div className="flex items-center gap-4">
-            <div
-              className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-border bg-card shadow-sm"
-            >
+            <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-border bg-card shadow-sm">
               <ToolIcon
                 iconUrl={item.iconUrl}
                 siteUrl={url}
@@ -190,7 +210,9 @@ export function ToolLanding({
           </div>
 
           {description && (
-            <p className="max-w-[520px] text-lg leading-relaxed text-foreground">{description}</p>
+            <p className="max-w-[520px] text-lg leading-relaxed text-foreground">
+              {description}
+            </p>
           )}
 
           <div className="mt-1 flex flex-wrap items-center gap-3">
@@ -206,7 +228,11 @@ export function ToolLanding({
               onClick={copyPageLink}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
             >
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
+              {copied ? (
+                <Check className="h-3.5 w-3.5" />
+              ) : (
+                <Link2 className="h-3.5 w-3.5" />
+              )}
               {copied ? t("linkCopied") : t("copyLink")}
             </button>
           </div>
@@ -224,7 +250,9 @@ export function ToolLanding({
             </div>
           )}
           {item.isAffiliate && item.affiliateUrl && (
-            <p className="text-xs italic text-muted-foreground">{t("affiliateDisclosure")}</p>
+            <p className="text-xs italic text-muted-foreground">
+              {t("affiliateDisclosure")}
+            </p>
           )}
         </div>
 
@@ -257,9 +285,9 @@ export function ToolLanding({
                   alt={`${name} website`}
                   loading="lazy"
                   referrerPolicy="no-referrer"
-                  onLoad={(e) => handleShotLoad(e.currentTarget)}
+                  onLoad={e => handleShotLoad(e.currentTarget)}
                   onError={() =>
-                    setFailedShots((prev) => new Set(prev).add(mainShotKey))
+                    setFailedShots(prev => new Set(prev).add(mainShotKey))
                   }
                   // Fixed 16:10 frame so every tool page's image card is the
                   // same size — source images range from wide og banners to
@@ -279,7 +307,9 @@ export function ToolLanding({
                     type="button"
                     onClick={() => setActiveShot(i)}
                     className={`h-14 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
-                      s === mainShot ? "border-primary" : "border-border hover:border-primary/50"
+                      s === mainShot
+                        ? "border-primary"
+                        : "border-border hover:border-primary/50"
                     }`}
                     aria-label={`${name} image ${i + 1}`}
                   >
@@ -288,7 +318,9 @@ export function ToolLanding({
                       alt=""
                       loading="lazy"
                       referrerPolicy="no-referrer"
-                      onError={() => setFailedShots((prev) => new Set(prev).add(s))}
+                      onError={() =>
+                        setFailedShots(prev => new Set(prev).add(s))
+                      }
                       className="h-full w-full object-cover"
                     />
                   </button>
@@ -326,7 +358,10 @@ export function ToolLanding({
               </div>
               <div className="flex flex-col gap-2.5">
                 {pros.map((p, i) => (
-                  <div key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground">
+                  <div
+                    key={i}
+                    className="flex gap-2.5 text-sm leading-relaxed text-foreground"
+                  >
                     <span className="font-bold" style={{ color: "#4E7A4E" }}>
                       +
                     </span>
@@ -347,7 +382,10 @@ export function ToolLanding({
               </div>
               <div className="flex flex-col gap-2.5">
                 {cons.map((c, i) => (
-                  <div key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground">
+                  <div
+                    key={i}
+                    className="flex gap-2.5 text-sm leading-relaxed text-foreground"
+                  >
                     <span className="font-bold" style={{ color: "#A03D12" }}>
                       −
                     </span>
@@ -379,7 +417,9 @@ export function ToolLanding({
                   </span>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground">{t("costVerifyNote")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("costVerifyNote")}
+              </p>
             </div>
           )}
           {verdict && (
@@ -391,7 +431,9 @@ export function ToolLanding({
                 <Quote className="h-4 w-4" />
                 {t("ourVerdict")}
               </div>
-              <p className="text-[17px] italic leading-relaxed text-background">"{verdict}"</p>
+              <p className="text-[17px] italic leading-relaxed text-background">
+                "{verdict}"
+              </p>
               <div
                 className="text-[11px]"
                 style={{ fontFamily: "var(--font-mono)", color: "#A08B72" }}
@@ -415,10 +457,14 @@ export function ToolLanding({
             {t("reviewSectionTitle")}
           </div>
           {reviewTitle && (
-            <h2 className="mt-3 text-xl font-bold leading-snug text-foreground">{reviewTitle}</h2>
+            <h2 className="mt-3 text-xl font-bold leading-snug text-foreground">
+              {reviewTitle}
+            </h2>
           )}
           <article className="prose prose-sm sm:prose-base dark:prose-invert mt-4 max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{reviewBody}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {reviewBody}
+            </ReactMarkdown>
           </article>
         </section>
       )}
@@ -433,8 +479,12 @@ export function ToolLanding({
             <Pencil className="h-5 w-5 text-primary" />
           </div>
           <div className="flex flex-col gap-0.5">
-            <div className="text-sm font-bold text-foreground">{t("fromTheMaker")}</div>
-            <div className="text-[13px] leading-relaxed text-muted-foreground">{providerNote}</div>
+            <div className="text-sm font-bold text-foreground">
+              {t("fromTheMaker")}
+            </div>
+            <div className="text-[13px] leading-relaxed text-muted-foreground">
+              {providerNote}
+            </div>
           </div>
         </div>
       )}
@@ -454,7 +504,7 @@ export function ToolLanding({
             </div>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {related.map((r) => {
+            {related.map(r => {
               const rDesc =
                 (language === "es"
                   ? r.descriptionEs || r.summaryEs
@@ -465,7 +515,9 @@ export function ToolLanding({
                   href={`/tool/${table}/${r.id}`}
                   className="group flex flex-col gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
                 >
-                  <div className="text-[15px] font-bold text-foreground">{r.name}</div>
+                  <div className="text-[15px] font-bold text-foreground">
+                    {r.name}
+                  </div>
                   <div className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                     {rDesc}
                   </div>

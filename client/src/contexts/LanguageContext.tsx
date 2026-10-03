@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { Language, translations, TranslationKey } from "@/lib/i18n";
 
 interface LanguageContextType {
@@ -8,7 +14,9 @@ interface LanguageContextType {
   t: (key: TranslationKey) => string;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLang] = useState<Language>(() => {
@@ -26,7 +34,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLanguage = useCallback((lang: Language) => setLang(lang), []);
   const toggleLanguage = useCallback(
-    () => setLang((prev) => (prev === "en" ? "es" : "en")),
+    () => setLang(prev => (prev === "en" ? "es" : "en")),
     []
   );
 
@@ -36,7 +44,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage, t }}>
+    <LanguageContext.Provider
+      value={{ language, toggleLanguage, setLanguage, t }}
+    >
       {children}
     </LanguageContext.Provider>
   );

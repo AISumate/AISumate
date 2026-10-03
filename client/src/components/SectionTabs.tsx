@@ -20,14 +20,21 @@ interface SectionTabsProps {
   toolsError?: boolean;
 }
 
-export function SectionTabs({ tools, categories, toolsLoading, toolsError }: SectionTabsProps) {
+export function SectionTabs({
+  tools,
+  categories,
+  toolsLoading,
+  toolsError,
+}: SectionTabsProps) {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("home");
   // The 3-row category bar can feel bulky — a floating toggle hides it, remembered per browser.
-  const [navHidden, setNavHidden] = useState(() => localStorage.getItem("hideCategoryBar") === "true");
+  const [navHidden, setNavHidden] = useState(
+    () => localStorage.getItem("hideCategoryBar") === "true"
+  );
 
   const toggleNav = () => {
-    setNavHidden((prev) => {
+    setNavHidden(prev => {
       localStorage.setItem("hideCategoryBar", String(!prev));
       return !prev;
     });
@@ -39,11 +46,29 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
   // and render an empty page.
   useEffect(() => {
     const VALID_TABS = new Set([
-      "home", "tools", "aiMedia", "github", "llms", "videoImage", "musicVoice",
-      "chatbots", "freeApis", "freeLlmIde", "vibeCoding", "designerTools",
-      "aiInfra", "hardware", "testingTools", "aiSecurity",
-      "businessProductivity", "mcpProviders", "vpsCloud", "aiInfluencers",
-      "aiSites", "aiDiscord", "auSeoTools",
+      "home",
+      "tools",
+      "aiMedia",
+      "github",
+      "llms",
+      "videoImage",
+      "musicVoice",
+      "chatbots",
+      "freeApis",
+      "freeLlmIde",
+      "vibeCoding",
+      "designerTools",
+      "aiInfra",
+      "hardware",
+      "testingTools",
+      "aiSecurity",
+      "businessProductivity",
+      "mcpProviders",
+      "vpsCloud",
+      "aiInfluencers",
+      "aiSites",
+      "aiDiscord",
+      "auSeoTools",
     ]);
     const apply = () => {
       const h = window.location.hash.replace("#", "");
@@ -62,7 +87,9 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
 
   return (
     <div className="flex-1">
-      {!navHidden && <GroupedCategoryNav activeTab={activeTab} onChange={setActiveTab} />}
+      {!navHidden && (
+        <GroupedCategoryNav activeTab={activeTab} onChange={setActiveTab} />
+      )}
 
       {/* Floating show/hide toggle for the category bar — persisted in
           localStorage. Kept bottom-LEFT: the MindPal chat widget occupied the
@@ -73,7 +100,11 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
         aria-label={navHidden ? t("showCategoryBar") : t("hideCategoryBar")}
         className="fixed bottom-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/90 backdrop-blur-md shadow-lg text-muted-foreground transition-colors hover:text-primary hover:border-primary/50"
       >
-        {navHidden ? <PanelTopOpen className="h-4 w-4" /> : <PanelTopClose className="h-4 w-4" />}
+        {navHidden ? (
+          <PanelTopOpen className="h-4 w-4" />
+        ) : (
+          <PanelTopClose className="h-4 w-4" />
+        )}
       </button>
 
       <div className="container py-4">
@@ -88,7 +119,9 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
             ) : toolsError ? (
-              <p className="text-center py-20 text-sm text-destructive">{t("errorLoading")}</p>
+              <p className="text-center py-20 text-sm text-destructive">
+                {t("errorLoading")}
+              </p>
             ) : (
               <ToolGrid tools={tools} categories={categories} />
             )}
@@ -200,7 +233,10 @@ export function SectionTabs({ tools, categories, toolsLoading, toolsError }: Sec
             />
           </TabsContent>
 
-          <TabsContent value="businessProductivity" className="mt-0 grid-pattern-bg">
+          <TabsContent
+            value="businessProductivity"
+            className="mt-0 grid-pattern-bg"
+          >
             <GenericToolSection
               queryKey="businessProductivity"
               titleKey="businessProductivityTitle"

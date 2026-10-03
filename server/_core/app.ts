@@ -36,7 +36,7 @@ export function createApp() {
       legacyHeaders: false,
       keyGenerator: (req: { ip?: string }) => ipKeyGenerator(req.ip ?? ""),
     }),
-    imgProxyHandler,
+    imgProxyHandler
   );
   // tRPC API
   app.use(

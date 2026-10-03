@@ -9,7 +9,9 @@ export function Header() {
 
   const segClass = (active: boolean) =>
     `rounded-full px-2.5 py-1 text-xs font-bold transition-colors ${
-      active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+      active
+        ? "bg-primary text-primary-foreground"
+        : "text-muted-foreground hover:text-foreground"
     }`;
 
   return (
@@ -30,7 +32,8 @@ export function Header() {
             className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            <span className="text-primary">ai</span><span className="text-foreground">sumate</span>
+            <span className="text-primary">ai</span>
+            <span className="text-foreground">sumate</span>
           </span>
         </a>
 
@@ -38,10 +41,18 @@ export function Header() {
         <div className="flex items-center gap-2">
           {/* Language pill toggle */}
           <div className="flex items-center gap-0.5 rounded-full border border-border bg-secondary p-0.5">
-            <button className={segClass(language === "en")} onClick={() => setLanguage("en")} aria-label={t("english")}>
+            <button
+              className={segClass(language === "en")}
+              onClick={() => setLanguage("en")}
+              aria-label={t("english")}
+            >
               EN
             </button>
-            <button className={segClass(language === "es")} onClick={() => setLanguage("es")} aria-label={t("spanish")}>
+            <button
+              className={segClass(language === "es")}
+              onClick={() => setLanguage("es")}
+              aria-label={t("spanish")}
+            >
               ES
             </button>
           </div>
@@ -54,7 +65,11 @@ export function Header() {
             aria-label={t("toggleTheme")}
             className="h-9 w-9 rounded-full"
           >
-            {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            {theme === "light" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

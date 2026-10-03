@@ -91,7 +91,9 @@ export function ToolCard({
   // Landing tables go straight to the tool's landing page on click; excluded
   // tables (channels, sites, blog...) keep the quick detail dialog, as does
   // any caller that overrides onOpenDetails (AI Media's blog post).
-  const goesToPage = Boolean(pageHref && !onOpenDetails && tableKey && isLandingTable(tableKey));
+  const goesToPage = Boolean(
+    pageHref && !onOpenDetails && tableKey && isLandingTable(tableKey)
+  );
   // The English review is the source of truth for "a review exists" — a Spanish
   // one is only ever written alongside it, never on its own.
   const hasReview = Boolean(tool.blogPostEn?.trim());
@@ -99,7 +101,9 @@ export function ToolCard({
   const copyPageLink = async () => {
     if (!pageHref) return;
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}${pageHref}`);
+      await navigator.clipboard.writeText(
+        `${window.location.origin}${pageHref}`
+      );
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -108,11 +112,14 @@ export function ToolCard({
   };
   const accentClass = accentClassFor(index);
 
-  const description = language === "es" ? tool.descriptionEs : tool.descriptionEn;
-  const visitUrl = tool.isAffiliate && tool.affiliateUrl ? tool.affiliateUrl : tool.url;
+  const description =
+    language === "es" ? tool.descriptionEs : tool.descriptionEn;
+  const visitUrl =
+    tool.isAffiliate && tool.affiliateUrl ? tool.affiliateUrl : tool.url;
   const label = visitLabel ?? t("visitTool");
   const openDetails =
-    onOpenDetails ?? (goesToPage ? () => navigate(pageHref!) : () => setOpen(true));
+    onOpenDetails ??
+    (goesToPage ? () => navigate(pageHref!) : () => setOpen(true));
 
   return (
     <>
@@ -120,7 +127,7 @@ export function ToolCard({
         role="button"
         tabIndex={0}
         onClick={openDetails}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === "Enter" || e.key === " ") openDetails();
         }}
         className={`group relative flex flex-col rounded-xl border border-border bg-card cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:z-20 focus-within:z-20 hover:border-[color-mix(in_oklch,var(--tool-accent)_45%,var(--border))] hover:shadow-xl ${
@@ -131,14 +138,19 @@ export function ToolCard({
         {rank != null && (
           <div
             className="absolute top-3 left-3 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold shrink-0"
-            style={{ backgroundColor: "var(--tool-accent)", color: "oklch(0.96 0.01 60)" }}
+            style={{
+              backgroundColor: "var(--tool-accent)",
+              color: "oklch(0.96 0.01 60)",
+            }}
           >
             {rank}
           </div>
         )}
 
         {/* Corner badge (top-right), e.g. "+8.8k this week". */}
-        {cornerBadge && <div className="absolute top-3 right-3">{cornerBadge}</div>}
+        {cornerBadge && (
+          <div className="absolute top-3 right-3">{cornerBadge}</div>
+        )}
 
         {/* Header: icon + title/category only. The rating sits on its own row below —
             sharing this row with it cost ~92px, which at 5-up (218px cards) left the
@@ -146,16 +158,27 @@ export function ToolCard({
         <div className="flex items-center gap-2.5">
           <div
             className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl overflow-hidden ring-2 ring-border group-hover:ring-[var(--tool-accent)] transition-all duration-200"
-            style={{ backgroundColor: "color-mix(in oklch, var(--tool-accent) 12%, var(--card))" }}
+            style={{
+              backgroundColor:
+                "color-mix(in oklch, var(--tool-accent) 12%, var(--card))",
+            }}
           >
             <ToolIcon
               iconUrl={tool.iconUrl}
               siteUrl={tool.url}
               alt={tool.name}
               className="h-full w-full object-contain"
-              fallback={<Bot className="h-5 w-5" style={{ color: "var(--tool-accent)" }} />}
+              fallback={
+                <Bot
+                  className="h-5 w-5"
+                  style={{ color: "var(--tool-accent)" }}
+                />
+              }
             />
-            <ContentLanguageBadge isEnglish={tool.isEnglishContent} isSpanish={tool.isSpanishContent} />
+            <ContentLanguageBadge
+              isEnglish={tool.isEnglishContent}
+              isSpanish={tool.isSpanishContent}
+            />
           </div>
           <div className="min-w-0 flex-1">
             {/* Compact tiles are narrower, so long names (YouTube channels) get
@@ -169,15 +192,24 @@ export function ToolCard({
               {tool.name}
             </h3>
             {tool.category && (
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">{tool.category}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                {tool.category}
+              </p>
             )}
           </div>
         </div>
 
-        {((tool.rating ?? 0) > 0 || tool.aiRelevance || hasReview || tool.sponsored) && (
+        {((tool.rating ?? 0) > 0 ||
+          tool.aiRelevance ||
+          hasReview ||
+          tool.sponsored) && (
           <div className="-mt-1 flex items-center gap-2">
             {(tool.rating ?? 0) > 0 && (
-              <StarRating rating={tool.rating!} accent="var(--tool-accent)" starClassName="h-3 w-3" />
+              <StarRating
+                rating={tool.rating!}
+                accent="var(--tool-accent)"
+                starClassName="h-3 w-3"
+              />
             )}
             <ReviewMark hasReview={hasReview} />
             <AiRelevanceBadge relevance={tool.aiRelevance} />
@@ -210,14 +242,17 @@ export function ToolCard({
             variant="outline"
             size="sm"
             className="h-7 w-full px-3 text-xs"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               openDetails();
             }}
           >
             {goesToPage ? t("openToolPage") : t("description")}
           </Button>
-          <div onClick={(e) => e.stopPropagation()} className="flex justify-center">
+          <div
+            onClick={e => e.stopPropagation()}
+            className="flex justify-center"
+          >
             <VisitButton url={visitUrl} label={label} compact />
           </div>
         </div>
@@ -225,19 +260,29 @@ export function ToolCard({
 
       {/* Tool detail modal */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className={`sm:max-w-lg max-h-[85vh] overflow-y-auto ${accentClass}`}>
+        <DialogContent
+          className={`sm:max-w-lg max-h-[85vh] overflow-y-auto ${accentClass}`}
+        >
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div
                 className="flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden shrink-0"
-                style={{ backgroundColor: "color-mix(in oklch, var(--tool-accent) 13%, var(--card))" }}
+                style={{
+                  backgroundColor:
+                    "color-mix(in oklch, var(--tool-accent) 13%, var(--card))",
+                }}
               >
                 <ToolIcon
                   iconUrl={tool.iconUrl}
                   siteUrl={tool.url}
                   alt={tool.name}
                   className="h-full w-full object-contain"
-                  fallback={<Bot className="h-6 w-6" style={{ color: "var(--tool-accent)" }} />}
+                  fallback={
+                    <Bot
+                      className="h-6 w-6"
+                      style={{ color: "var(--tool-accent)" }}
+                    />
+                  }
                 />
               </div>
               <div className="min-w-0 flex-1">
@@ -255,7 +300,8 @@ export function ToolCard({
                       variant="outline"
                       className="text-xs"
                       style={{
-                        borderColor: "color-mix(in oklch, var(--tool-accent) 30%, transparent)",
+                        borderColor:
+                          "color-mix(in oklch, var(--tool-accent) 30%, transparent)",
                         color: "var(--tool-accent)",
                       }}
                     >
@@ -263,7 +309,10 @@ export function ToolCard({
                     </Badge>
                   )}
                   {(tool.rating ?? 0) > 0 && (
-                    <StarRating rating={tool.rating!} accent="var(--tool-accent)" />
+                    <StarRating
+                      rating={tool.rating!}
+                      accent="var(--tool-accent)"
+                    />
                   )}
                   <ReviewMark hasReview={hasReview} />
                   <AiRelevanceBadge relevance={tool.aiRelevance} />
@@ -271,11 +320,15 @@ export function ToolCard({
                 </div>
               </div>
             </div>
-            <DialogDescription>{description || t("noDescription")}</DialogDescription>
+            <DialogDescription>
+              {description || t("noDescription")}
+            </DialogDescription>
           </DialogHeader>
 
           {tool.isAffiliate && tool.affiliateUrl && (
-            <p className="text-xs text-muted-foreground italic -mt-2">{t("affiliateDisclosure")}</p>
+            <p className="text-xs text-muted-foreground italic -mt-2">
+              {t("affiliateDisclosure")}
+            </p>
           )}
 
           {detailExtra}
@@ -298,7 +351,11 @@ export function ToolCard({
                 onClick={copyPageLink}
                 className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-primary"
               >
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
+                {copied ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : (
+                  <Link2 className="h-3.5 w-3.5" />
+                )}
                 {copied ? t("linkCopied") : t("copyLink")}
               </button>
             </div>

@@ -21,14 +21,22 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
   const [aiFilter, setAiFilter] = useState("all");
 
   const categoryOptions = useMemo(
-    () => categories.map((cat) => ({ value: cat, label: cat })),
-    [categories],
+    () => categories.map(cat => ({ value: cat, label: cat })),
+    [categories]
   );
 
   const sortOptions = [
     { value: "name", labelKey: "sortByName", defaultDirection: "asc" as const },
-    { value: "category", labelKey: "filterByCategory", defaultDirection: "asc" as const },
-    { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" as const },
+    {
+      value: "category",
+      labelKey: "filterByCategory",
+      defaultDirection: "asc" as const,
+    },
+    {
+      value: "rating",
+      labelKey: "sortByRating",
+      defaultDirection: "desc" as const,
+    },
   ];
 
   const filteredTools = useMemo(() => {
@@ -37,25 +45,26 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       result = result.filter(
-        (tool) =>
+        tool =>
           tool.name.toLowerCase().includes(term) ||
           tool.descriptionEn.toLowerCase().includes(term) ||
-          tool.descriptionEs.toLowerCase().includes(term),
+          tool.descriptionEs.toLowerCase().includes(term)
       );
     }
 
     if (activeCategory !== "all") {
       result = result.filter(
-        (tool) => tool.category.toLowerCase() === activeCategory.toLowerCase(),
+        tool => tool.category.toLowerCase() === activeCategory.toLowerCase()
       );
     }
 
     if (aiFilter === "ai") {
       result = result.filter(
-        (tool) => tool.aiRelevance === "AI-first" || tool.aiRelevance === "AI-enabled",
+        tool =>
+          tool.aiRelevance === "AI-first" || tool.aiRelevance === "AI-enabled"
       );
     } else if (aiFilter === "aiFirst") {
-      result = result.filter((tool) => tool.aiRelevance === "AI-first");
+      result = result.filter(tool => tool.aiRelevance === "AI-first");
     }
 
     const sorted = [...result].sort((a, b) => {
@@ -118,18 +127,23 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
           onSearchChange={handleSearchChange}
           filters={[
             ...(categories.length > 0
-              ? [{
-                  key: "category",
-                  value: activeCategory,
-                  onChange: handleCategoryChange,
-                  options: categoryOptions,
-                  placeholderKey: "filterByCategory",
-                }]
+              ? [
+                  {
+                    key: "category",
+                    value: activeCategory,
+                    onChange: handleCategoryChange,
+                    options: categoryOptions,
+                    placeholderKey: "filterByCategory",
+                  },
+                ]
               : []),
             {
               key: "aiRelevance",
               value: aiFilter,
-              onChange: (v: string) => { setAiFilter(v); setDisplayCount(100); },
+              onChange: (v: string) => {
+                setAiFilter(v);
+                setDisplayCount(100);
+              },
               options: [
                 { value: "ai", label: t("aiRelevanceAiOnly") },
                 { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
@@ -158,18 +172,25 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
                 4 at lg (960px container → 228px). */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {filteredTools.slice(0, displayCount).map((tool, idx) => (
-                <ToolCard key={tool.id} tool={tool} index={idx} tableKey="tools" />
+                <ToolCard
+                  key={tool.id}
+                  tool={tool}
+                  index={idx}
+                  tableKey="tools"
+                />
               ))}
             </div>
             {filteredTools.length > displayCount && (
               <div className="flex flex-col items-center gap-3 mt-8">
                 <p className="text-xs text-muted-foreground">
-                  {t("showingResults").replace("{shown}", String(displayCount)).replace("{total}", String(filteredTools.length))}
+                  {t("showingResults")
+                    .replace("{shown}", String(displayCount))
+                    .replace("{total}", String(filteredTools.length))}
                 </p>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setDisplayCount((prev) => prev + 100)}
+                  onClick={() => setDisplayCount(prev => prev + 100)}
                   className="border-primary/30 text-primary hover:bg-primary/5"
                 >
                   {t("loadMore")}

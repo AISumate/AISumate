@@ -114,7 +114,7 @@
 ## 6 New Teable Tables
 
 - [x] Add 6 new table IDs as environment secrets
-- [x] Update server/_core/env.ts with 6 new table ID env vars
+- [x] Update server/\_core/env.ts with 6 new table ID env vars
 - [x] Add 6 new fetch functions and cache vars to server/teable.ts
 - [x] Update fetchTotalToolCount to include all 6 new tables
 - [x] Add 6 new tRPC routers in server/routers.ts
@@ -130,7 +130,7 @@
 - [x] Inspect all 9 new Teable tables for field structures
 - [x] Add 5 new section tab table IDs as secrets (Testing Tools, AI Security, Business Productivity, MCP Providers, VPS & Cloud)
 - [x] Add 4 icon-link table IDs as secrets (AI Media, AI Influencers, AI Sites, AI Discord)
-- [x] Update server/_core/env.ts with 9 new table ID env vars
+- [x] Update server/\_core/env.ts with 9 new table ID env vars
 - [x] Add 5 new fetch functions + cache vars to server/teable.ts
 - [x] Add 4 icon-link fetch functions to server/teable.ts
 - [x] Update fetchTotalToolCount to include all new tables

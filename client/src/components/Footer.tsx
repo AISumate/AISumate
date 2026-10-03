@@ -9,7 +9,8 @@ export function Footer() {
     <footer className="border-t border-border py-8 mt-auto bg-secondary/30">
       <div className="container text-center">
         <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-primary">{t("brandName")}</span> — {t("footerText")}
+          <span className="font-semibold text-primary">{t("brandName")}</span> —{" "}
+          {t("footerText")}
         </p>
 
         <p className="mt-3 text-sm text-muted-foreground">
@@ -31,10 +32,16 @@ export function Footer() {
 
         {/* Standalone legal pages */}
         <p className="mt-4 flex items-center justify-center gap-4 text-xs font-semibold">
-          <Link href="/privacy" className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline">
+          <Link
+            href="/privacy"
+            className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+          >
             {t("privacyLink")}
           </Link>
-          <Link href="/terms" className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline">
+          <Link
+            href="/terms"
+            className="text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+          >
             {t("termsLink")}
           </Link>
         </p>

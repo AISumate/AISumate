@@ -14,7 +14,9 @@ import { ToolCard, type AiTool } from "./ToolCard";
  * Renders nothing while loading or if the table is empty, rather than leaving a
  * heading over a blank strip.
  */
-export function ThisWeeksAiPicksSection({ divider = true }: { divider?: boolean } = {}) {
+export function ThisWeeksAiPicksSection({
+  divider = true,
+}: { divider?: boolean } = {}) {
   const { t } = useLanguage();
   const { data, isLoading } = trpc.thisWeeksAiPicks.list.useQuery(undefined, {
     refetchOnWindowFocus: false,
@@ -44,7 +46,12 @@ export function ThisWeeksAiPicksSection({ divider = true }: { divider?: boolean 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {picks.slice(0, 5).map((tool, idx) => (
-          <ToolCard key={tool.id} tool={tool} index={idx} tableKey="thisWeeksAiPicks" />
+          <ToolCard
+            key={tool.id}
+            tool={tool}
+            index={idx}
+            tableKey="thisWeeksAiPicks"
+          />
         ))}
       </div>
 

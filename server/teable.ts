@@ -212,7 +212,10 @@ const caches = new Map<string, CachedData<unknown>>();
  * hold stale data, serve the stale data instead of caching an empty result —
  * a Teable outage must never blank the site for the TTL window.
  */
-async function withCache<T>(key: string, fetcher: () => Promise<T[]>): Promise<T[]> {
+async function withCache<T>(
+  key: string,
+  fetcher: () => Promise<T[]>
+): Promise<T[]> {
   const cached = caches.get(key) as CachedData<T> | undefined;
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.data;
@@ -256,7 +259,12 @@ function imageUrls(f: Record<string, unknown>): string[] {
   // Capped so one over-filled cell can't bloat the table's JSON for every
   // client — the landing page shows 6, the crawler twin uses the first.
   // Proxied so visitors load them from our own origin (CDN-cached, private).
-  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12).map(proxyImg);
+  return str(f, "Images")
+    .split(/\s+/)
+    .map(validUrl)
+    .filter(Boolean)
+    .slice(0, 12)
+    .map(proxyImg);
 }
 
 /**
@@ -266,7 +274,13 @@ function imageUrls(f: Record<string, unknown>): string[] {
 function blogPostFields(f: Record<string, unknown>): ToolReviewPost {
   const published = bool(f, "Review Published");
   if (!published) {
-    return { blogTitleEn: "", blogTitleEs: "", blogPostEn: "", blogPostEs: "", reviewPublished: false };
+    return {
+      blogTitleEn: "",
+      blogTitleEs: "",
+      blogPostEn: "",
+      blogPostEs: "",
+      reviewPublished: false,
+    };
   }
   return {
     blogTitleEn: cleanStr(f, "Blog Title - EN"),
@@ -293,17 +307,36 @@ function bool(f: Record<string, unknown>, key: string): boolean {
 
 /** Try multiple possible field name variants for logo URL */
 function logoUrl(f: Record<string, unknown>): string {
-  return validUrl(str(f, "LogoUrl") || str(f, "LogoURL") || str(f, "Logo Url") || str(f, "Logo URL") || "");
+  return validUrl(
+    str(f, "LogoUrl") ||
+      str(f, "LogoURL") ||
+      str(f, "Logo Url") ||
+      str(f, "Logo URL") ||
+      ""
+  );
 }
 
 /** Try multiple possible field name variants for affiliate URL */
 function affiliateUrl(f: Record<string, unknown>): string {
-  return validUrl(str(f, "AffiliateUrl") || str(f, "AffiliateURL") || str(f, "Affiliate URL") || str(f, "Affiliate Url") || "");
+  return validUrl(
+    str(f, "AffiliateUrl") ||
+      str(f, "AffiliateURL") ||
+      str(f, "Affiliate URL") ||
+      str(f, "Affiliate Url") ||
+      ""
+  );
 }
 
 /** Try multiple possible field name variants for outbound URL */
 function outboundUrl(f: Record<string, unknown>): string {
-  return validUrl(str(f, "OutboundUrl") || str(f, "Outbound URL") || str(f, "Website") || str(f, "Repository URL") || str(f, "URL") || "");
+  return validUrl(
+    str(f, "OutboundUrl") ||
+      str(f, "Outbound URL") ||
+      str(f, "Website") ||
+      str(f, "Repository URL") ||
+      str(f, "URL") ||
+      ""
+  );
 }
 
 /**
@@ -358,8 +391,17 @@ const NEW_BADGE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
  * once bulk-stamped across whole tables, so it's only a last-resort fallback.
  */
 function isNewRecord(record: TeableRecord): boolean {
-  const inputDate = str(record.fields, "InputDate") || str(record.fields, "Input Date") || str(record.fields, "inputDate");
-  const createdTime = record.createdTime || str(record.fields, "Created Time") || str(record.fields, "Created") || str(record.fields, "Date Added") || str(record.fields, "Date Created") || inputDate;
+  const inputDate =
+    str(record.fields, "InputDate") ||
+    str(record.fields, "Input Date") ||
+    str(record.fields, "inputDate");
+  const createdTime =
+    record.createdTime ||
+    str(record.fields, "Created Time") ||
+    str(record.fields, "Created") ||
+    str(record.fields, "Date Added") ||
+    str(record.fields, "Date Created") ||
+    inputDate;
   if (!createdTime) return false;
   const created = new Date(createdTime).getTime();
   if (isNaN(created)) return false;
@@ -376,7 +418,11 @@ function isNewRecord(record: TeableRecord): boolean {
 // renders empty.
 const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
 
-async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 5): Promise<Response> {
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  maxRetries = 5
+): Promise<Response> {
   let lastResponse: Response | null = null;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const response = await fetch(url, options);
@@ -385,10 +431,13 @@ async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 5)
     if (attempt === maxRetries) break;
     // Prefer the server's Retry-After (seconds) if it sent one; else exponential backoff.
     const retryAfter = Number(response.headers.get("retry-after"));
-    const backoffMs = Number.isFinite(retryAfter) && retryAfter > 0
-      ? Math.min(retryAfter * 1000, 8000)
-      : Math.min(500 * Math.pow(2, attempt), 8000);
-    console.warn(`[Teable] ${response.status}, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`);
+    const backoffMs =
+      Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1000, 8000)
+        : Math.min(500 * Math.pow(2, attempt), 8000);
+    console.warn(
+      `[Teable] ${response.status}, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`
+    );
     await delay(backoffMs);
   }
   return lastResponse!;
@@ -423,11 +472,18 @@ async function fetchAllRecords(tableId: string): Promise<TeableRecord[]> {
     });
 
     if (!response.ok) {
-      throw new Error(`Teable API returned ${response.status} for table ${tableId}`);
+      throw new Error(
+        `Teable API returned ${response.status} for table ${tableId}`
+      );
     }
 
-    const data = (await response.json()) as { records: (TeableRecord & { createdTime?: string; fields: Record<string, unknown> })[] };
-    const records: TeableRecord[] = (data.records ?? []).map((r) => ({
+    const data = (await response.json()) as {
+      records: (TeableRecord & {
+        createdTime?: string;
+        fields: Record<string, unknown>;
+      })[];
+    };
+    const records: TeableRecord[] = (data.records ?? []).map(r => ({
       id: r.id,
       name: r.name,
       fields: r.fields,
@@ -474,7 +530,10 @@ function mapGenericTool(record: TeableRecord): GenericTool {
     bodyEn: cleanStr(f, "Body - EN"),
     bodyEs: cleanStr(f, "Body - ES"),
     author: cleanStr(f, "Author"),
-    tags: str(f, "Tags").split(",").map((s) => s.trim()).filter(Boolean),
+    tags: str(f, "Tags")
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean),
     readingTimeMinutes: num(f, "Reading Time"),
     publishedDate: normalizeDate(f["InputDate"]),
     ...reviewFields(f),
@@ -487,40 +546,128 @@ function mapGenericTool(record: TeableRecord): GenericTool {
  * derive from this list.
  */
 export const GENERIC_TABLES = [
-  { key: "videoImage", label: "Video & Image", tableId: () => ENV.teableVideoImageTableId },
-  { key: "musicVoice", label: "Music & Voice", tableId: () => ENV.teableMusicVoiceTableId },
-  { key: "chatbots", label: "Chatbots & Agents", tableId: () => ENV.teableChatbotsTableId },
-  { key: "freeApis", label: "Free APIs", tableId: () => ENV.teableFreeApisTableId },
-  { key: "freeLlmIde", label: "Free LLM & IDE", tableId: () => ENV.teableFreeLlmIdeTableId },
-  { key: "vibeCoding", label: "Vibe Coding", tableId: () => ENV.teableVibeCodingTableId },
-  { key: "designerTools", label: "Designer Tools", tableId: () => ENV.teableDesignerToolsTableId },
-  { key: "aiInfra", label: "AI Infrastructure", tableId: () => ENV.teableAiInfraTableId },
-  { key: "hardware", label: "Hardware & Computers", tableId: () => ENV.teableHardwareTableId },
-  { key: "testingTools", label: "Testing Tools", tableId: () => ENV.teableTestingToolsTableId },
-  { key: "aiSecurity", label: "AI Security", tableId: () => ENV.teableAiSecurityTableId },
-  { key: "businessProductivity", label: "Business Productivity", tableId: () => ENV.teableBusinessProductivityTableId },
-  { key: "mcpProviders", label: "MCP Providers", tableId: () => ENV.teableMcpProvidersTableId },
-  { key: "vpsCloud", label: "VPS & Cloud", tableId: () => ENV.teableVpsCloudTableId },
-  { key: "aiMedia", label: "AI Media", tableId: () => ENV.teableAiMediaTableId },
-  { key: "aiInfluencers", label: "AI Influencers", tableId: () => ENV.teableAiInfluencersTableId },
-  { key: "aiSites", label: "AI Sites", tableId: () => ENV.teableAiSitesTableId },
-  { key: "aiDiscord", label: "AI Discord", tableId: () => ENV.teableAiDiscordTableId },
-  { key: "auSeoTools", label: "AU SEO Tools", tableId: () => ENV.teableAuSeoToolsTableId },
-  { key: "sumateTopRecommendations", label: "Sumate Top Recommendations", tableId: () => ENV.teableSumateTopRecommendationsTableId },
-  { key: "thisWeeksAiPicks", label: "This Week's AI Picks", tableId: () => ENV.teableThisWeeksAiPicksTableId },
+  {
+    key: "videoImage",
+    label: "Video & Image",
+    tableId: () => ENV.teableVideoImageTableId,
+  },
+  {
+    key: "musicVoice",
+    label: "Music & Voice",
+    tableId: () => ENV.teableMusicVoiceTableId,
+  },
+  {
+    key: "chatbots",
+    label: "Chatbots & Agents",
+    tableId: () => ENV.teableChatbotsTableId,
+  },
+  {
+    key: "freeApis",
+    label: "Free APIs",
+    tableId: () => ENV.teableFreeApisTableId,
+  },
+  {
+    key: "freeLlmIde",
+    label: "Free LLM & IDE",
+    tableId: () => ENV.teableFreeLlmIdeTableId,
+  },
+  {
+    key: "vibeCoding",
+    label: "Vibe Coding",
+    tableId: () => ENV.teableVibeCodingTableId,
+  },
+  {
+    key: "designerTools",
+    label: "Designer Tools",
+    tableId: () => ENV.teableDesignerToolsTableId,
+  },
+  {
+    key: "aiInfra",
+    label: "AI Infrastructure",
+    tableId: () => ENV.teableAiInfraTableId,
+  },
+  {
+    key: "hardware",
+    label: "Hardware & Computers",
+    tableId: () => ENV.teableHardwareTableId,
+  },
+  {
+    key: "testingTools",
+    label: "Testing Tools",
+    tableId: () => ENV.teableTestingToolsTableId,
+  },
+  {
+    key: "aiSecurity",
+    label: "AI Security",
+    tableId: () => ENV.teableAiSecurityTableId,
+  },
+  {
+    key: "businessProductivity",
+    label: "Business Productivity",
+    tableId: () => ENV.teableBusinessProductivityTableId,
+  },
+  {
+    key: "mcpProviders",
+    label: "MCP Providers",
+    tableId: () => ENV.teableMcpProvidersTableId,
+  },
+  {
+    key: "vpsCloud",
+    label: "VPS & Cloud",
+    tableId: () => ENV.teableVpsCloudTableId,
+  },
+  {
+    key: "aiMedia",
+    label: "AI Media",
+    tableId: () => ENV.teableAiMediaTableId,
+  },
+  {
+    key: "aiInfluencers",
+    label: "AI Influencers",
+    tableId: () => ENV.teableAiInfluencersTableId,
+  },
+  {
+    key: "aiSites",
+    label: "AI Sites",
+    tableId: () => ENV.teableAiSitesTableId,
+  },
+  {
+    key: "aiDiscord",
+    label: "AI Discord",
+    tableId: () => ENV.teableAiDiscordTableId,
+  },
+  {
+    key: "auSeoTools",
+    label: "AU SEO Tools",
+    tableId: () => ENV.teableAuSeoToolsTableId,
+  },
+  {
+    key: "sumateTopRecommendations",
+    label: "Sumate Top Recommendations",
+    tableId: () => ENV.teableSumateTopRecommendationsTableId,
+  },
+  {
+    key: "thisWeeksAiPicks",
+    label: "This Week's AI Picks",
+    tableId: () => ENV.teableThisWeeksAiPicksTableId,
+  },
 ] as const;
 
 export type GenericTableKey = (typeof GENERIC_TABLES)[number]["key"];
 
-export async function fetchGenericTools(key: GenericTableKey): Promise<GenericTool[]> {
-  const table = GENERIC_TABLES.find((t) => t.key === key);
+export async function fetchGenericTools(
+  key: GenericTableKey
+): Promise<GenericTool[]> {
+  const table = GENERIC_TABLES.find(t => t.key === key);
   if (!table) return [];
   return withCache(key, async () => {
     const records = await fetchAllRecords(table.tableId());
     // "Published" (currently only on AI Media) gates drafts from the public site;
     // a no-op filter on every other table, which never has this column.
     const tools = records
-      .filter((r) => r.fields["Published"] === undefined || bool(r.fields, "Published"))
+      .filter(
+        r => r.fields["Published"] === undefined || bool(r.fields, "Published")
+      )
       .filter(notQuarantined)
       .map(mapGenericTool);
     tools.sort((a, b) => a.name.localeCompare(b.name));
@@ -540,7 +687,8 @@ export const fetchAiInfraTools = () => fetchGenericTools("aiInfra");
 export const fetchHardwareTools = () => fetchGenericTools("hardware");
 export const fetchTestingTools = () => fetchGenericTools("testingTools");
 export const fetchAiSecurityTools = () => fetchGenericTools("aiSecurity");
-export const fetchBusinessProductivityTools = () => fetchGenericTools("businessProductivity");
+export const fetchBusinessProductivityTools = () =>
+  fetchGenericTools("businessProductivity");
 export const fetchMcpProvidersTools = () => fetchGenericTools("mcpProviders");
 export const fetchVpsCloudTools = () => fetchGenericTools("vpsCloud");
 export const fetchAiMediaTools = () => fetchGenericTools("aiMedia");
@@ -548,15 +696,17 @@ export const fetchAiInfluencersTools = () => fetchGenericTools("aiInfluencers");
 export const fetchAiSitesTools = () => fetchGenericTools("aiSites");
 export const fetchAiDiscordTools = () => fetchGenericTools("aiDiscord");
 export const fetchAuSeoTools = () => fetchGenericTools("auSeoTools");
-export const fetchSumateTopRecommendations = () => fetchGenericTools("sumateTopRecommendations");
-export const fetchThisWeeksAiPicks = () => fetchGenericTools("thisWeeksAiPicks");
+export const fetchSumateTopRecommendations = () =>
+  fetchGenericTools("sumateTopRecommendations");
+export const fetchThisWeeksAiPicks = () =>
+  fetchGenericTools("thisWeeksAiPicks");
 
 // --- Tools (main table) ---
 
 export async function fetchAllTools(): Promise<AiTool[]> {
   return withCache("tools", async () => {
     const records = await fetchAllRecords(ENV.teableTableId);
-    const tools = records.filter(notQuarantined).map((record) => {
+    const tools = records.filter(notQuarantined).map(record => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -588,15 +738,17 @@ export async function fetchAllTools(): Promise<AiTool[]> {
 export async function fetchGithubRepos(): Promise<GithubRepo[]> {
   return withCache("github", async () => {
     const records = await fetchAllRecords(ENV.teableGithubTableId);
-    const repos = records.map((record) => {
+    const repos = records.map(record => {
       const f = record.fields ?? {};
       return {
         id: record.id,
         name: str(f, "Name") || record.name || "Untitled",
         repoUrl: validUrl(str(f, "Repository URL")),
         description: cleanStr(f, "Description"),
-        descriptionEn: cleanStr(f, "Summary - EN") || cleanStr(f, "Description"),
-        descriptionEs: cleanStr(f, "Summary - ES") || cleanStr(f, "Description"),
+        descriptionEn:
+          cleanStr(f, "Summary - EN") || cleanStr(f, "Description"),
+        descriptionEs:
+          cleanStr(f, "Summary - ES") || cleanStr(f, "Description"),
         owner: str(f, "Owner"),
         language: cleanStr(f, "Language"),
         stars: num(f, "Stars"),
@@ -612,10 +764,12 @@ export async function fetchGithubRepos(): Promise<GithubRepo[]> {
 
 // --- Weekly Viral GitHub Repos (curated trending highlight, refreshed weekly) ---
 
-export async function fetchWeeklyViralGithubRepos(): Promise<WeeklyViralRepo[]> {
+export async function fetchWeeklyViralGithubRepos(): Promise<
+  WeeklyViralRepo[]
+> {
   return withCache("weeklyViralGithub", async () => {
     const records = await fetchAllRecords(ENV.teableWeeklyViralGithubTableId);
-    const repos = records.map((record) => {
+    const repos = records.map(record => {
       const f = record.fields ?? {};
       const repoUrl = validUrl(str(f, "Repository URL"));
       const description = cleanStr(f, "Description");
@@ -653,7 +807,7 @@ export async function fetchWeeklyViralGithubRepos(): Promise<WeeklyViralRepo[]> 
 export async function fetchLlmModels(): Promise<LlmModel[]> {
   return withCache("llms", async () => {
     const records = await fetchAllRecords(ENV.teableLlmTableId);
-    const models = records.filter(notQuarantined).map((record) => {
+    const models = records.filter(notQuarantined).map(record => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -686,7 +840,10 @@ export async function fetchLlmModels(): Promise<LlmModel[]> {
 function normalizeDate(raw: unknown): string {
   if (raw === null || raw === undefined || raw === "") return "";
   const asNumber = Number(raw);
-  const date = !isNaN(asNumber) && asNumber > 0 ? new Date(asNumber) : new Date(String(raw));
+  const date =
+    !isNaN(asNumber) && asNumber > 0
+      ? new Date(asNumber)
+      : new Date(String(raw));
   if (isNaN(date.getTime())) return "";
   return date.toISOString();
 }
@@ -696,7 +853,7 @@ function normalizeDate(raw: unknown): string {
 export async function fetchLtdDeals(): Promise<LtdDeal[]> {
   return withCache("ltds", async () => {
     const records = await fetchAllRecords(ENV.teableLtdTableId);
-    const deals = records.map((record) => {
+    const deals = records.map(record => {
       const f = record.fields ?? {};
       const website = validUrl(str(f, "Website"));
       return {
@@ -731,8 +888,8 @@ export async function fetchTotalToolCount(): Promise<number> {
     // "This Week's AI Picks" is also excluded: it re-lists tools that already
     // live in the other tables (a curated shortlist, not new inventory), so
     // counting it would inflate the headline "tools indexed" figure.
-    ...GENERIC_TABLES.filter((t) => t.key !== "thisWeeksAiPicks").map(
-      (t) => () => fetchGenericTools(t.key),
+    ...GENERIC_TABLES.filter(t => t.key !== "thisWeeksAiPicks").map(
+      t => () => fetchGenericTools(t.key)
     ),
   ];
   const results = await staggeredAll(tasks, 3, 200);

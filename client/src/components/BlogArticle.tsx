@@ -21,7 +21,12 @@ export function formatPublishedDate(iso: string, locale: string): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "";
-  return d.toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+  return d.toLocaleDateString(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 /** True when the post has a body worth opening. */
@@ -37,7 +42,8 @@ export function hasBody(post: BlogPostToolInfo | null | undefined): boolean {
 export function BlogArticle({ post }: { post: BlogPostToolInfo }) {
   const { t, language } = useLanguage();
   // Falls back to the English body until a "Body - ES" value exists in Teable.
-  const body = (language === "es" && post.bodyEs) ? post.bodyEs : (post.bodyEn ?? "");
+  const body =
+    language === "es" && post.bodyEs ? post.bodyEs : (post.bodyEn ?? "");
 
   return (
     <>
@@ -46,27 +52,50 @@ export function BlogArticle({ post }: { post: BlogPostToolInfo }) {
           <span
             className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium mb-2"
             style={{
-              backgroundColor: "color-mix(in oklch, var(--primary) 15%, transparent)",
+              backgroundColor:
+                "color-mix(in oklch, var(--primary) 15%, transparent)",
               color: "var(--primary)",
             }}
           >
             {post.category}
           </span>
         )}
-        <h1 className="text-2xl sm:text-3xl font-bold leading-snug text-foreground">{post.name}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold leading-snug text-foreground">
+          {post.name}
+        </h1>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-2 text-xs text-muted-foreground">
-          {post.author && <span>{t("blogByAuthor")} {post.author}</span>}
+          {post.author && (
+            <span>
+              {t("blogByAuthor")} {post.author}
+            </span>
+          )}
           {(post.readingTimeMinutes ?? 0) > 0 && (
-            <span>{t("blogReadingTime").replace("{minutes}", String(post.readingTimeMinutes))}</span>
+            <span>
+              {t("blogReadingTime").replace(
+                "{minutes}",
+                String(post.readingTimeMinutes)
+              )}
+            </span>
           )}
           {post.publishedDate && (
-            <span>{formatPublishedDate(post.publishedDate, language === "es" ? "es-ES" : "en-US")}</span>
+            <span>
+              {formatPublishedDate(
+                post.publishedDate,
+                language === "es" ? "es-ES" : "en-US"
+              )}
+            </span>
           )}
         </div>
         {(post.tags?.length ?? 0) > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-3">
-            {post.tags!.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs font-normal">{tag}</Badge>
+            {post.tags!.map(tag => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="text-xs font-normal"
+              >
+                {tag}
+              </Badge>
             ))}
           </div>
         )}

@@ -39,7 +39,26 @@ interface GenericTool extends ReviewInfo {
 
 type ContentLanguageFilter = "all" | "en" | "es";
 
-type SectionTabKey = "videoImage" | "musicVoice" | "chatbots" | "freeApis" | "freeLlmIde" | "vibeCoding" | "designerTools" | "aiInfra" | "hardware" | "testingTools" | "aiSecurity" | "businessProductivity" | "mcpProviders" | "vpsCloud" | "aiMedia" | "aiInfluencers" | "aiSites" | "aiDiscord" | "auSeoTools";
+type SectionTabKey =
+  | "videoImage"
+  | "musicVoice"
+  | "chatbots"
+  | "freeApis"
+  | "freeLlmIde"
+  | "vibeCoding"
+  | "designerTools"
+  | "aiInfra"
+  | "hardware"
+  | "testingTools"
+  | "aiSecurity"
+  | "businessProductivity"
+  | "mcpProviders"
+  | "vpsCloud"
+  | "aiMedia"
+  | "aiInfluencers"
+  | "aiSites"
+  | "aiDiscord"
+  | "auSeoTools";
 type TranslationKey = Parameters<ReturnType<typeof useLanguage>["t"]>[0];
 
 interface GenericToolSectionProps {
@@ -61,57 +80,75 @@ interface GenericToolSectionProps {
   compactCards?: boolean;
 }
 
-export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabelKey = "visitToolGeneric", hasPopularitySort = false, hasLanguageFilter = false, hasBlogView = false, compactCards = false }: GenericToolSectionProps) {
+export function GenericToolSection({
+  queryKey,
+  titleKey,
+  subtitleKey,
+  visitLabelKey = "visitToolGeneric",
+  hasPopularitySort = false,
+  hasLanguageFilter = false,
+  hasBlogView = false,
+  compactCards = false,
+}: GenericToolSectionProps) {
   const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [aiFilter, setAiFilter] = useState("all");
   // The blog reads newest-first; every other section reads alphabetically.
   const [sortField, setSortField] = useState(hasBlogView ? "newest" : "name");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">(hasBlogView ? "desc" : "asc");
-  const [languageFilter, setLanguageFilter] = useState<ContentLanguageFilter>("all");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">(
+    hasBlogView ? "desc" : "asc"
+  );
+  const [languageFilter, setLanguageFilter] =
+    useState<ContentLanguageFilter>("all");
   const [displayCount, setDisplayCount] = useState(100);
   const [, navigate] = useLocation();
 
   // Fetch the full (server-cached) list once; search/filter/sort client-side
   // so typing doesn't fire a request per keystroke.
-  const query = trpc[queryKey].list.useQuery(undefined, { refetchOnWindowFocus: false });
+  const query = trpc[queryKey].list.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   const tools = query.data?.tools ?? [];
   const isLoading = query.isLoading;
   const isError = query.isError;
 
   const categoryOptions = useMemo(
-    () => buildFilterOptions(tools, (tool) => tool.category),
-    [tools],
+    () => buildFilterOptions(tools, tool => tool.category),
+    [tools]
   );
 
   const filteredTools = useMemo(() => {
     // Teable returns rows in view order, so the index IS insertion order.
     // Captured before any filtering so it survives as a sort tiebreak.
-    let result: (GenericTool & { _pos?: number })[] = tools.map((t, i) => ({ ...t, _pos: i }));
+    let result: (GenericTool & { _pos?: number })[] = tools.map((t, i) => ({
+      ...t,
+      _pos: i,
+    }));
     if (search.trim()) {
       const term = search.toLowerCase().trim();
       result = result.filter(
-        (tool) =>
+        tool =>
           tool.name.toLowerCase().includes(term) ||
           tool.descriptionEn.toLowerCase().includes(term) ||
-          tool.descriptionEs.toLowerCase().includes(term),
+          tool.descriptionEs.toLowerCase().includes(term)
       );
     }
     if (categoryFilter !== "all") {
-      result = result.filter((tool) => tool.category === categoryFilter);
+      result = result.filter(tool => tool.category === categoryFilter);
     }
     if (aiFilter === "ai") {
       result = result.filter(
-        (tool) => tool.aiRelevance === "AI-first" || tool.aiRelevance === "AI-enabled",
+        tool =>
+          tool.aiRelevance === "AI-first" || tool.aiRelevance === "AI-enabled"
       );
     } else if (aiFilter === "aiFirst") {
-      result = result.filter((tool) => tool.aiRelevance === "AI-first");
+      result = result.filter(tool => tool.aiRelevance === "AI-first");
     }
     if (hasLanguageFilter && languageFilter !== "all") {
-      result = result.filter((tool) =>
-        languageFilter === "en" ? tool.isEnglishContent : tool.isSpanishContent,
+      result = result.filter(tool =>
+        languageFilter === "en" ? tool.isEnglishContent : tool.isSpanishContent
       );
     }
     const sorted = [...result].sort((a, b) => {
@@ -127,7 +164,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
       } else if (sortField === "newest") {
         // Newest published first; posts sharing a date fall back to whichever
         // was entered into Teable last.
-        cmp = String(b.publishedDate || "").localeCompare(String(a.publishedDate || ""));
+        cmp = String(b.publishedDate || "").localeCompare(
+          String(a.publishedDate || "")
+        );
         if (cmp === 0) cmp = (b._pos ?? 0) - (a._pos ?? 0);
         // Already descending by construction — don't let the toggle invert it twice.
         return sortDirection === "desc" ? cmp : -cmp;
@@ -138,9 +177,21 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
       return sortDirection === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [tools, search, categoryFilter, aiFilter, sortField, sortDirection, hasLanguageFilter, languageFilter]);
+  }, [
+    tools,
+    search,
+    categoryFilter,
+    aiFilter,
+    sortField,
+    sortDirection,
+    hasLanguageFilter,
+    languageFilter,
+  ]);
 
-  const displayedTools = useMemo(() => filteredTools.slice(0, displayCount), [filteredTools, displayCount]);
+  const displayedTools = useMemo(
+    () => filteredTools.slice(0, displayCount),
+    [filteredTools, displayCount]
+  );
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -174,7 +225,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
       {/* Error state */}
       {!isLoading && isError && (
         <div className="text-center py-20">
-          <p className="text-lg font-medium text-foreground mb-1">{t("errorLoading")}</p>
+          <p className="text-lg font-medium text-foreground mb-1">
+            {t("errorLoading")}
+          </p>
         </div>
       )}
 
@@ -187,18 +240,26 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
             onSearchChange={handleSearchChange}
             filters={[
               ...(categoryOptions.length > 0
-                ? [{
-                    key: "category",
-                    value: categoryFilter,
-                    onChange: (v: string) => { setCategoryFilter(v); setDisplayCount(100); },
-                    options: categoryOptions,
-                    placeholderKey: "filterByCategory",
-                  }]
+                ? [
+                    {
+                      key: "category",
+                      value: categoryFilter,
+                      onChange: (v: string) => {
+                        setCategoryFilter(v);
+                        setDisplayCount(100);
+                      },
+                      options: categoryOptions,
+                      placeholderKey: "filterByCategory",
+                    },
+                  ]
                 : []),
               {
                 key: "aiRelevance",
                 value: aiFilter,
-                onChange: (v: string) => { setAiFilter(v); setDisplayCount(100); },
+                onChange: (v: string) => {
+                  setAiFilter(v);
+                  setDisplayCount(100);
+                },
                 options: [
                   { value: "ai", label: t("aiRelevanceAiOnly") },
                   { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
@@ -210,17 +271,47 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
             sort={{
               field: sortField,
               direction: sortDirection,
-              onFieldChange: (f: string) => { setSortField(f); setDisplayCount(100); },
-              onDirectionChange: (d: "asc" | "desc") => { setSortDirection(d); setDisplayCount(100); },
+              onFieldChange: (f: string) => {
+                setSortField(f);
+                setDisplayCount(100);
+              },
+              onDirectionChange: (d: "asc" | "desc") => {
+                setSortDirection(d);
+                setDisplayCount(100);
+              },
               options: [
                 ...(hasBlogView
-                  ? [{ value: "newest", labelKey: "sortByNewest", defaultDirection: "desc" as const }]
+                  ? [
+                      {
+                        value: "newest",
+                        labelKey: "sortByNewest",
+                        defaultDirection: "desc" as const,
+                      },
+                    ]
                   : []),
-                { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
-                { value: "category", labelKey: "sortByCategory", defaultDirection: "asc" },
-                { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
+                {
+                  value: "name",
+                  labelKey: "sortByName",
+                  defaultDirection: "asc",
+                },
+                {
+                  value: "category",
+                  labelKey: "sortByCategory",
+                  defaultDirection: "asc",
+                },
+                {
+                  value: "rating",
+                  labelKey: "sortByRating",
+                  defaultDirection: "desc",
+                },
                 ...(hasPopularitySort
-                  ? [{ value: "popularity", labelKey: "sortByPopularity", defaultDirection: "desc" as const }]
+                  ? [
+                      {
+                        value: "popularity",
+                        labelKey: "sortByPopularity",
+                        defaultDirection: "desc" as const,
+                      },
+                    ]
                   : []),
               ],
             }}
@@ -231,20 +322,38 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
           {hasLanguageFilter && (
             <RadioGroup
               value={languageFilter}
-              onValueChange={(v) => { setLanguageFilter(v as ContentLanguageFilter); setDisplayCount(100); }}
+              onValueChange={v => {
+                setLanguageFilter(v as ContentLanguageFilter);
+                setDisplayCount(100);
+              }}
               className="mb-6 -mt-3 flex flex-row flex-wrap items-center gap-5"
             >
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="en" id={`${queryKey}-lang-en`} />
-                <Label htmlFor={`${queryKey}-lang-en`} className="font-normal cursor-pointer">{t("languageFilterEnglish")}</Label>
+                <Label
+                  htmlFor={`${queryKey}-lang-en`}
+                  className="font-normal cursor-pointer"
+                >
+                  {t("languageFilterEnglish")}
+                </Label>
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="es" id={`${queryKey}-lang-es`} />
-                <Label htmlFor={`${queryKey}-lang-es`} className="font-normal cursor-pointer">{t("languageFilterSpanish")}</Label>
+                <Label
+                  htmlFor={`${queryKey}-lang-es`}
+                  className="font-normal cursor-pointer"
+                >
+                  {t("languageFilterSpanish")}
+                </Label>
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="all" id={`${queryKey}-lang-both`} />
-                <Label htmlFor={`${queryKey}-lang-both`} className="font-normal cursor-pointer">{t("languageFilterBoth")}</Label>
+                <Label
+                  htmlFor={`${queryKey}-lang-both`}
+                  className="font-normal cursor-pointer"
+                >
+                  {t("languageFilterBoth")}
+                </Label>
               </div>
             </RadioGroup>
           )}
@@ -252,7 +361,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
           {/* Empty state */}
           {filteredTools.length === 0 && (
             <div className="text-center py-20">
-              <p className="text-lg text-muted-foreground">{t("noResultsGeneric")}</p>
+              <p className="text-lg text-muted-foreground">
+                {t("noResultsGeneric")}
+              </p>
             </div>
           )}
         </>
@@ -275,7 +386,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
               // Blog posts have their own page at /blog/<slug>; everything else
               // keeps the card default (landing page, or the detail dialog).
               const blogHref =
-                hasBlogView && tool.bodyEn ? `/blog/${blogSlug(tool.slug, tool.id)}` : "";
+                hasBlogView && tool.bodyEn
+                  ? `/blog/${blogSlug(tool.slug, tool.id)}`
+                  : "";
               return (
                 <ToolCard
                   key={tool.id}
@@ -284,7 +397,9 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
                   compact={compactCards}
                   tableKey={queryKey}
                   visitLabel={t(visitLabelKey)}
-                  onOpenDetails={blogHref ? () => navigate(blogHref) : undefined}
+                  onOpenDetails={
+                    blogHref ? () => navigate(blogHref) : undefined
+                  }
                 />
               );
             })}
@@ -300,7 +415,7 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
               </p>
               <Button
                 variant="outline"
-                onClick={() => setDisplayCount((c) => c + 100)}
+                onClick={() => setDisplayCount(c => c + 100)}
                 className="border-primary/30 text-primary hover:bg-primary/5"
               >
                 {t("loadMore")}
@@ -309,7 +424,6 @@ export function GenericToolSection({ queryKey, titleKey, subtitleKey, visitLabel
           )}
         </>
       )}
-
     </div>
   );
 }

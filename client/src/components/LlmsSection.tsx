@@ -21,8 +21,8 @@ export function LlmsSection() {
   const models = data?.models ?? [];
 
   const providerOptions = useMemo(
-    () => buildFilterOptions(models, (m) => m.providerType),
-    [models],
+    () => buildFilterOptions(models, m => m.providerType),
+    [models]
   );
 
   const filteredModels = useMemo(() => {
@@ -30,21 +30,21 @@ export function LlmsSection() {
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       result = result.filter(
-        (m) =>
+        m =>
           m.name.toLowerCase().includes(term) ||
           m.summaryEn.toLowerCase().includes(term) ||
-          m.summaryEs.toLowerCase().includes(term),
+          m.summaryEs.toLowerCase().includes(term)
       );
     }
     if (providerFilter !== "all") {
-      result = result.filter((m) => m.providerType === providerFilter);
+      result = result.filter(m => m.providerType === providerFilter);
     }
     if (aiFilter === "ai") {
       result = result.filter(
-        (m) => m.aiRelevance === "AI-first" || m.aiRelevance === "AI-enabled",
+        m => m.aiRelevance === "AI-first" || m.aiRelevance === "AI-enabled"
       );
     } else if (aiFilter === "aiFirst") {
-      result = result.filter((m) => m.aiRelevance === "AI-first");
+      result = result.filter(m => m.aiRelevance === "AI-first");
     }
     const sorted = [...result].sort((a, b) => {
       let cmp = 0;
@@ -82,13 +82,15 @@ export function LlmsSection() {
             onSearchChange={setSearchTerm}
             filters={[
               ...(providerOptions.length > 0
-                ? [{
-                    key: "provider",
-                    value: providerFilter,
-                    onChange: setProviderFilter,
-                    options: providerOptions,
-                    placeholderKey: "filterByProvider",
-                  }]
+                ? [
+                    {
+                      key: "provider",
+                      value: providerFilter,
+                      onChange: setProviderFilter,
+                      options: providerOptions,
+                      placeholderKey: "filterByProvider",
+                    },
+                  ]
                 : []),
               {
                 key: "aiRelevance",
@@ -108,9 +110,21 @@ export function LlmsSection() {
               onFieldChange: setSortField,
               onDirectionChange: setSortDirection,
               options: [
-                { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
-                { value: "providerType", labelKey: "sortByProvider", defaultDirection: "asc" },
-                { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
+                {
+                  value: "name",
+                  labelKey: "sortByName",
+                  defaultDirection: "asc",
+                },
+                {
+                  value: "providerType",
+                  labelKey: "sortByProvider",
+                  defaultDirection: "asc",
+                },
+                {
+                  value: "rating",
+                  labelKey: "sortByRating",
+                  defaultDirection: "desc",
+                },
               ],
             }}
             resultCount={filteredModels.length}
@@ -146,7 +160,9 @@ export function LlmsSection() {
             ))}
           </div>
         ) : (
-          <p className="text-center py-12 text-muted-foreground">{t("noResults")}</p>
+          <p className="text-center py-12 text-muted-foreground">
+            {t("noResults")}
+          </p>
         )}
       </div>
     </section>

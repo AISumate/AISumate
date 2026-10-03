@@ -5,11 +5,15 @@ import { SectionTabs } from "@/components/SectionTabs";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
-  const { data: toolsData, isLoading: toolsLoading, error: toolsError } =
-    trpc.tools.list.useQuery(undefined);
+  const {
+    data: toolsData,
+    isLoading: toolsLoading,
+    error: toolsError,
+  } = trpc.tools.list.useQuery(undefined);
 
   const { data: categoriesData } = trpc.tools.categories.useQuery();
-  const { data: totalCountData, isLoading: countLoading } = trpc.tools.totalCount.useQuery();
+  const { data: totalCountData, isLoading: countLoading } =
+    trpc.tools.totalCount.useQuery();
 
   const tools = toolsData?.tools ?? [];
   const categories = categoriesData?.categories ?? [];

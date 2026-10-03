@@ -36,25 +36,33 @@ function BlogRowSection() {
   });
 
   const posts = ((data?.tools ?? []) as BlogRow[])
-    .filter((p) => p.bodyEn?.trim())
+    .filter(p => p.bodyEn?.trim())
     .map((p, i) => ({ ...p, _pos: i }))
     // Newest first; undated posts sink, and posts sharing a date fall back to
     // whichever was entered into Teable last.
-    .sort((a, b) =>
-      String(b.publishedDate ?? "").localeCompare(String(a.publishedDate ?? "")) ||
-      (b._pos ?? 0) - (a._pos ?? 0))
+    .sort(
+      (a, b) =>
+        String(b.publishedDate ?? "").localeCompare(
+          String(a.publishedDate ?? "")
+        ) || (b._pos ?? 0) - (a._pos ?? 0)
+    )
     .slice(0, 3);
 
   if (isLoading || posts.length === 0) return null;
 
   return (
     <section className="pt-10 pb-2">
-      <SectionHeading title={t("aiMediaTitle")} subtitle={t("aiMediaSubtitle")} />
+      <SectionHeading
+        title={t("aiMediaTitle")}
+        subtitle={t("aiMediaSubtitle")}
+      />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => {
+        {posts.map(post => {
           const standfirst =
-            (language === "es" ? post.descriptionEs : post.descriptionEn) || post.descriptionEn || "";
+            (language === "es" ? post.descriptionEs : post.descriptionEn) ||
+            post.descriptionEn ||
+            "";
           return (
             <Link
               key={post.id}
@@ -66,7 +74,8 @@ function BlogRowSection() {
                   <span
                     className="rounded-full px-2.5 py-0.5 font-medium"
                     style={{
-                      backgroundColor: "color-mix(in oklch, var(--primary) 15%, transparent)",
+                      backgroundColor:
+                        "color-mix(in oklch, var(--primary) 15%, transparent)",
                       color: "var(--primary)",
                     }}
                   >
@@ -75,12 +84,18 @@ function BlogRowSection() {
                 )}
                 {post.publishedDate && (
                   <span>
-                    {formatPublishedDate(post.publishedDate, language === "es" ? "es-ES" : "en-US")}
+                    {formatPublishedDate(
+                      post.publishedDate,
+                      language === "es" ? "es-ES" : "en-US"
+                    )}
                   </span>
                 )}
                 {(post.readingTimeMinutes ?? 0) > 0 && (
                   <span>
-                    {t("blogReadingTime").replace("{minutes}", String(post.readingTimeMinutes))}
+                    {t("blogReadingTime").replace(
+                      "{minutes}",
+                      String(post.readingTimeMinutes)
+                    )}
                   </span>
                 )}
               </div>
@@ -141,7 +156,7 @@ export function HomeSection() {
   // than inside one section. Skipped entirely until something is typed.
   const query = trpc.search.global.useQuery(
     { query: term, limit: 100 },
-    { enabled: searching, refetchOnWindowFocus: false },
+    { enabled: searching, refetchOnWindowFocus: false }
   );
 
   const results = useMemo(() => {
@@ -150,7 +165,7 @@ export function HomeSection() {
     const sorted = [...rows].sort((a, b) =>
       sortField === "rating"
         ? (b.rating ?? 0) - (a.rating ?? 0) || a.name.localeCompare(b.name)
-        : a.name.localeCompare(b.name),
+        : a.name.localeCompare(b.name)
     );
     return sortDirection === "asc" ? sorted : sorted.reverse();
   }, [query.data, sortField, sortDirection]);
@@ -175,7 +190,11 @@ export function HomeSection() {
           options: [
             { value: "relevance", labelKey: "sortByRelevance" },
             { value: "name", labelKey: "sortByName" },
-            { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
+            {
+              value: "rating",
+              labelKey: "sortByRating",
+              defaultDirection: "desc",
+            },
           ],
         }}
         resultCount={searching ? results.length : undefined}
@@ -184,8 +203,10 @@ export function HomeSection() {
 
       {!searching && (
         <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-          <span className="font-medium text-muted-foreground">{t("heroTryLabel")}</span>
-          {chips.map((chip) => (
+          <span className="font-medium text-muted-foreground">
+            {t("heroTryLabel")}
+          </span>
+          {chips.map(chip => (
             <button
               key={chip.value}
               type="button"

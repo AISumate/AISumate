@@ -11,7 +11,8 @@ export const ENV = {
   teableApiUrl: process.env.TEABLE_API_URL ?? "https://app.teable.ai/api",
   teableTableId: process.env.TEABLE_TABLE_ID ?? "",
   teableGithubTableId: process.env.TEABLE_GITHUB_TABLE_ID ?? "",
-  teableWeeklyViralGithubTableId: process.env.TEABLE_WEEKLY_VIRAL_GITHUB_TABLE_ID ?? "",
+  teableWeeklyViralGithubTableId:
+    process.env.TEABLE_WEEKLY_VIRAL_GITHUB_TABLE_ID ?? "",
   teableLlmTableId: process.env.TEABLE_LLM_TABLE_ID ?? "",
   teableLtdTableId: process.env.TEABLE_LTD_TABLE_ID ?? "",
   teableVideoImageTableId: process.env.TEABLE_VIDEO_IMAGE_TABLE_ID ?? "",
@@ -25,7 +26,8 @@ export const ENV = {
   teableHardwareTableId: process.env.TEABLE_HARDWARE_TABLE_ID ?? "",
   teableTestingToolsTableId: process.env.TEABLE_TESTING_TOOLS_TABLE_ID ?? "",
   teableAiSecurityTableId: process.env.TEABLE_AI_SECURITY_TABLE_ID ?? "",
-  teableBusinessProductivityTableId: process.env.TEABLE_BUSINESS_PRODUCTIVITY_TABLE_ID ?? "",
+  teableBusinessProductivityTableId:
+    process.env.TEABLE_BUSINESS_PRODUCTIVITY_TABLE_ID ?? "",
   teableMcpProvidersTableId: process.env.TEABLE_MCP_PROVIDERS_TABLE_ID ?? "",
   teableVpsCloudTableId: process.env.TEABLE_VPS_CLOUD_TABLE_ID ?? "",
   teableAiMediaTableId: process.env.TEABLE_AI_MEDIA_TABLE_ID ?? "",
@@ -33,7 +35,8 @@ export const ENV = {
   teableAiSitesTableId: process.env.TEABLE_AI_SITES_TABLE_ID ?? "",
   teableAiDiscordTableId: process.env.TEABLE_AI_DISCORD_TABLE_ID ?? "",
   teableAuSeoToolsTableId: process.env.TEABLE_AU_SEO_TOOLS_TABLE_ID ?? "",
-  teableSumateTopRecommendationsTableId: process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? "",
+  teableSumateTopRecommendationsTableId:
+    process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? "",
   // Table IDs are not secrets (the API key is what grants access), so this one
   // carries its real default: the front-page "This Week's AI Picks" strip then
   // works on any deploy without needing a new dashboard env var set first.

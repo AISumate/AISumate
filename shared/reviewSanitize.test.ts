@@ -10,15 +10,35 @@ import {
 } from "./reviewSanitize";
 
 describe("isPlaceholderValue", () => {
-  it.each(["Unknown", "unknown", "N/A", "n/a", "NA", "None", "TBD", "-", "—", "", "  ", "Unverified", "(unverified)", "[N/A]", "Not available", "Pricing unknown", "Unable to determine", "Unable to be determined from available data"])(
-    "treats %j as a placeholder",
-    (v) => expect(isPlaceholderValue(v)).toBe(true)
+  it.each([
+    "Unknown",
+    "unknown",
+    "N/A",
+    "n/a",
+    "NA",
+    "None",
+    "TBD",
+    "-",
+    "—",
+    "",
+    "  ",
+    "Unverified",
+    "(unverified)",
+    "[N/A]",
+    "Not available",
+    "Pricing unknown",
+    "Unable to determine",
+    "Unable to be determined from available data",
+  ])("treats %j as a placeholder", v =>
+    expect(isPlaceholderValue(v)).toBe(true)
   );
 
-  it.each(["Free tier available", "$9/user/mo", "Solo free; Essentials pricing on request", "Unknown Industries Inc"])(
-    "keeps real value %j",
-    (v) => expect(isPlaceholderValue(v)).toBe(false)
-  );
+  it.each([
+    "Free tier available",
+    "$9/user/mo",
+    "Solo free; Essentials pricing on request",
+    "Unknown Industries Inc",
+  ])("keeps real value %j", v => expect(isPlaceholderValue(v)).toBe(false));
 });
 
 describe("isJunkReviewText", () => {
@@ -32,14 +52,14 @@ describe("isJunkReviewText", () => {
     "could not be verified",
     "404 not found",
     "insufficient information",
-  ])("flags verification junk %j", (v) => expect(isJunkReviewText(v)).toBe(true));
+  ])("flags verification junk %j", v => expect(isJunkReviewText(v)).toBe(true));
 
   it.each([
     "Free tier (limited monthly credits); Pro $29.99/mo",
     "Best for Apple-ecosystem users who prioritize UI polish",
     "Polished, thoughtful UX with backlinking capabilities",
     "no public API documentation visible beyond basic functionality",
-  ])("keeps real review text %j", (v) => expect(isJunkReviewText(v)).toBe(false));
+  ])("keeps real review text %j", v => expect(isJunkReviewText(v)).toBe(false));
 
   // Notes about OUR record, saved into public review fields. They read like
   // product criticism, survive after the record is corrected, and were being
@@ -81,7 +101,7 @@ describe("isJunkReviewText", () => {
     "affiliate link prevents direct pricing verification",
     "affiliate link makes direct pricing verification difficult",
     "el enlace de afiliado impide la verificación directa de precios",
-  ])("flags an editorial note about the record %j", (v) =>
+  ])("flags an editorial note about the record %j", v =>
     expect(isJunkReviewText(v)).toBe(true)
   );
 
@@ -101,23 +121,23 @@ describe("isJunkReviewText", () => {
     "Generates a summary for every meeting, even short ones",
     "The onboarding description is thin but the docs are excellent",
     "Exports are inaccessible on the free plan",
-  ])("keeps genuine product criticism %j", (v) =>
+  ])("keeps genuine product criticism %j", v =>
     expect(isJunkReviewText(v)).toBe(false)
   );
 });
 
 describe("splitReviewItems", () => {
   it("splits on semicolons and newlines, trims bullets", () => {
-    expect(splitReviewItems("• Fast sync; - Cheap plans\nGreat support")).toEqual([
-      "Fast sync",
-      "Cheap plans",
-      "Great support",
-    ]);
+    expect(
+      splitReviewItems("• Fast sync; - Cheap plans\nGreat support")
+    ).toEqual(["Fast sync", "Cheap plans", "Great support"]);
   });
 
   it("drops placeholder and junk items but keeps the rest", () => {
     expect(
-      splitReviewItems("All-in-one workspace; unknown; unable to verify domain; 14-day free trial")
+      splitReviewItems(
+        "All-in-one workspace; unknown; unable to verify domain; 14-day free trial"
+      )
     ).toEqual(["All-in-one workspace", "14-day free trial"]);
   });
 
@@ -148,7 +168,7 @@ describe("cleanVerdict", () => {
     "Unable to determine product quality from available information.",
     "Product details unverifiable, insufficient information to make reliable assessment",
     "Could not verify the product exists.",
-  ])("omits non-verdict %j", (v) => expect(cleanVerdict(v)).toBe(""));
+  ])("omits non-verdict %j", v => expect(cleanVerdict(v)).toBe(""));
 
   it("keeps a real verdict", () => {
     const v = "Best for small service teams wanting to consolidate tools.";

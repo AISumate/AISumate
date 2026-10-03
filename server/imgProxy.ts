@@ -31,7 +31,10 @@ function secret(): string {
 }
 
 function sign(src: string): string {
-  return createHmac("sha256", secret()).update(src).digest("hex").slice(0, SIG_BYTES * 2);
+  return createHmac("sha256", secret())
+    .update(src)
+    .digest("hex")
+    .slice(0, SIG_BYTES * 2);
 }
 
 /**
@@ -54,7 +57,13 @@ export function verifySig(src: string, sig: string): boolean {
 /** Defence-in-depth on top of the signature: never fetch internal targets. */
 function isBlockedHost(hostname: string): boolean {
   const h = hostname.toLowerCase();
-  if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal")) return true;
+  if (
+    h === "localhost" ||
+    h.endsWith(".localhost") ||
+    h.endsWith(".local") ||
+    h.endsWith(".internal")
+  )
+    return true;
   // IPv4 literal in private/link-local/loopback/CGNAT/benchmark ranges, or
   // any IPv6 literal.
   if (h.includes(":")) return true;
@@ -78,7 +87,8 @@ function isBlockedUrl(url: URL): boolean {
 /** Keep well under Vercel's serverless response payload limit. */
 const MAX_BYTES = 4 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 15_000;
-const OK_CACHE = "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
+const OK_CACHE =
+  "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
 const ERR_CACHE = "public, max-age=60, s-maxage=120";
 
 /**
@@ -107,7 +117,10 @@ const MAX_REDIRECTS = 5;
  * a signed public URL must not be able to bounce the fetch to an internal
  * address.
  */
-async function fetchImage(url: URL, signal: AbortSignal): Promise<globalThis.Response | null> {
+async function fetchImage(
+  url: URL,
+  signal: AbortSignal
+): Promise<globalThis.Response | null> {
   let current = url;
   for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
     if (isBlockedUrl(current)) return null;
@@ -134,7 +147,10 @@ async function fetchImage(url: URL, signal: AbortSignal): Promise<globalThis.Res
   return null;
 }
 
-export async function imgProxyHandler(req: Request, res: Response): Promise<void> {
+export async function imgProxyHandler(
+  req: Request,
+  res: Response
+): Promise<void> {
   // Only src+sig — any extra parameter would mint a fresh CDN cache key per
   // value and turn the edge cache into an amplification lever.
   const keys = Object.keys(req.query);
@@ -159,7 +175,10 @@ export async function imgProxyHandler(req: Request, res: Response): Promise<void
     const upstream = await fetchImage(url, ctrl.signal);
     if (!upstream || !upstream.ok || !upstream.body) return fail(res, 502);
 
-    const type = (upstream.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+    const type = (upstream.headers.get("content-type") || "")
+      .split(";")[0]
+      .trim()
+      .toLowerCase();
     if (!type.startsWith("image/")) return fail(res, 502);
     const declared = Number(upstream.headers.get("content-length") || 0);
     if (declared > MAX_BYTES) return fail(res, 502);
@@ -185,7 +204,10 @@ export async function imgProxyHandler(req: Request, res: Response): Promise<void
     res
       .status(200)
       .set("Content-Type", type)
-      .set("Cache-Control", isPendingScreenshot(url, type) ? ERR_CACHE : OK_CACHE)
+      .set(
+        "Cache-Control",
+        isPendingScreenshot(url, type) ? ERR_CACHE : OK_CACHE
+      )
       .set("X-Content-Type-Options", "nosniff")
       // Neutralises scripted SVGs if the proxy URL is opened directly —
       // as an <img> source the sandbox changes nothing.

@@ -29,20 +29,24 @@ describe("imgProxy signing", () => {
   it("rejects tampered src or sig", async () => {
     const { proxyImg, verifySig } = await loadWithKey("test-key-1");
     const out = proxyImg("https://cdn.example.com/og.png");
-    const sig = new URLSearchParams(out.slice(out.indexOf("?") + 1)).get("sig")!;
+    const sig = new URLSearchParams(out.slice(out.indexOf("?") + 1)).get(
+      "sig"
+    )!;
     expect(verifySig("https://evil.example.com/x.png", sig)).toBe(false);
-    expect(verifySig("https://cdn.example.com/og.png", "0".repeat(32))).toBe(false);
+    expect(verifySig("https://cdn.example.com/og.png", "0".repeat(32))).toBe(
+      false
+    );
     expect(verifySig("https://cdn.example.com/og.png", "")).toBe(false);
   });
 
   it("signs depend on the secret", async () => {
     const a = await loadWithKey("key-a");
     const sigA = new URLSearchParams(
-      a.proxyImg("https://x.com/i.png").split("?")[1],
+      a.proxyImg("https://x.com/i.png").split("?")[1]
     ).get("sig");
     const b = await loadWithKey("key-b");
     const sigB = new URLSearchParams(
-      b.proxyImg("https://x.com/i.png").split("?")[1],
+      b.proxyImg("https://x.com/i.png").split("?")[1]
     ).get("sig");
     expect(sigA).not.toBe(sigB);
   });
@@ -66,7 +70,9 @@ describe("imgProxy signing", () => {
 describe("pending screenshots", () => {
   it("treats an mShots loading GIF as not-ready, real formats as ready", async () => {
     const { isPendingScreenshot } = await loadWithKey("test-key-1");
-    const shot = new URL("https://s.wordpress.com/mshots/v1/https%3A%2F%2Fexample.com?w=1200");
+    const shot = new URL(
+      "https://s.wordpress.com/mshots/v1/https%3A%2F%2Fexample.com?w=1200"
+    );
     expect(isPendingScreenshot(shot, "image/gif")).toBe(true);
     expect(isPendingScreenshot(shot, "image/jpeg")).toBe(false);
     expect(isPendingScreenshot(shot, "image/png")).toBe(false);
@@ -74,10 +80,15 @@ describe("pending screenshots", () => {
 
   it("never short-caches a genuine GIF from another host", async () => {
     const { isPendingScreenshot } = await loadWithKey("test-key-1");
-    expect(isPendingScreenshot(new URL("https://cdn.example.com/a.gif"), "image/gif")).toBe(false);
+    expect(
+      isPendingScreenshot(new URL("https://cdn.example.com/a.gif"), "image/gif")
+    ).toBe(false);
     // A look-alike host must not match either.
     expect(
-      isPendingScreenshot(new URL("https://evil-s.wordpress.com.attacker.test/mshots/x"), "image/gif"),
+      isPendingScreenshot(
+        new URL("https://evil-s.wordpress.com.attacker.test/mshots/x"),
+        "image/gif"
+      )
     ).toBe(false);
   });
 });

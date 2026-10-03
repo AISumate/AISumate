@@ -1,5 +1,13 @@
 import { useState, type ReactNode } from "react";
-import { Star, ThumbsUp, ThumbsDown, Coins, Scale, ExternalLink, PenLine } from "lucide-react";
+import {
+  Star,
+  ThumbsUp,
+  ThumbsDown,
+  Coins,
+  Scale,
+  ExternalLink,
+  PenLine,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -44,7 +52,13 @@ export function ContentLanguageBadge({
     <span
       className="absolute -bottom-1 -right-1 rounded-full border border-border bg-card px-1 py-px text-[8px] font-bold leading-tight text-foreground shadow-sm"
       style={{ fontFamily: "var(--font-mono)" }}
-      title={isEnglish && isSpanish ? "English & Spanish channel" : isEnglish ? "English-language channel" : "Spanish-language channel"}
+      title={
+        isEnglish && isSpanish
+          ? "English & Spanish channel"
+          : isEnglish
+            ? "English-language channel"
+            : "Spanish-language channel"
+      }
     >
       {label}
     </span>
@@ -70,7 +84,10 @@ export function StarRating({
   const fullStars = Math.floor(rating);
   const hasHalf = rating % 1 >= 0.5;
   return (
-    <div className="flex items-center gap-0.5" aria-label={`Rating: ${rating} out of 5`}>
+    <div
+      className="flex items-center gap-0.5"
+      aria-label={`Rating: ${rating} out of 5`}
+    >
       {Array.from({ length: 5 }).map((_, i) => {
         const filled = i < fullStars;
         const half = i === fullStars && hasHalf;
@@ -85,7 +102,9 @@ export function StarRating({
           />
         );
       })}
-      <span className="ml-1 text-xs font-medium text-muted-foreground">{rating.toFixed(1)}</span>
+      <span className="ml-1 text-xs font-medium text-muted-foreground">
+        {rating.toFixed(1)}
+      </span>
     </div>
   );
 }
@@ -94,7 +113,13 @@ export function StarRating({
  * Section header in the Sau5 Command Centre language: terracotta hairline,
  * uppercase mono tick label, Geist display title.
  */
-export function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
+export function SectionHeading({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle?: string;
+}) {
   return (
     <div className="relative mb-6 overflow-hidden">
       {/* Animated theme-aware dot field, masked to fade in from the left so the
@@ -113,7 +138,9 @@ export function SectionHeading({ title, subtitle }: { title: string; subtitle?: 
         >
           {title}
         </h2>
-        {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+        {subtitle && (
+          <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+        )}
       </div>
     </div>
   );
@@ -138,7 +165,13 @@ export interface ReviewInfo {
 // tested by shared/reviewSanitize.test.ts and shared with the server mappers.
 const cleanText = cleanReviewText;
 
-const CONFIDENCE_STYLES: Record<string, { dot: string; labelKey: "confidenceHigh" | "confidenceMedium" | "confidenceLow" }> = {
+const CONFIDENCE_STYLES: Record<
+  string,
+  {
+    dot: string;
+    labelKey: "confidenceHigh" | "confidenceMedium" | "confidenceLow";
+  }
+> = {
   high: { dot: "#4E7A4E", labelKey: "confidenceHigh" },
   medium: { dot: "#B8863B", labelKey: "confidenceMedium" },
   low: { dot: "#A03D12", labelKey: "confidenceLow" },
@@ -223,7 +256,10 @@ export function ConfidenceBadge({ level }: { level?: string }) {
       className="inline-flex items-center gap-1.5 rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-[0.08em] text-muted-foreground"
       style={{ fontFamily: "var(--font-mono)" }}
     >
-      <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: style.dot }} />
+      <span
+        className="h-1.5 w-1.5 rounded-full shrink-0"
+        style={{ backgroundColor: style.dot }}
+      />
       {t(style.labelKey)}
     </span>
   );
@@ -274,7 +310,10 @@ export function hasReviewContent(review: ReviewInfo): boolean {
  * neatly above/below the hovered tile and lets Radix's collision handling flip
  * it cleanly on edge rows.
  */
-export function reviewHoverCardClass(review: ReviewInfo, padding = "p-5"): string {
+export function reviewHoverCardClass(
+  review: ReviewInfo,
+  padding = "p-5"
+): string {
   return hasReviewContent(review)
     ? `w-[440px] max-w-[90vw] ${padding} max-h-[380px] overflow-y-auto`
     : `w-80 ${padding}`;
@@ -290,13 +329,21 @@ export function reviewHoverCardClass(review: ReviewInfo, padding = "p-5"): strin
 export function ReviewDetails({ review }: { review: ReviewInfo }) {
   const { t, language } = useLanguage();
 
-  const pros = splitReviewItems(language === "es" ? review.prosEs : review.prosEn);
-  const cons = splitReviewItems(language === "es" ? review.consEs : review.consEn);
+  const pros = splitReviewItems(
+    language === "es" ? review.prosEs : review.prosEn
+  );
+  const cons = splitReviewItems(
+    language === "es" ? review.consEs : review.consEn
+  );
   const cost = cleanText(language === "es" ? review.costEs : review.costEn);
-  const verdict = cleanVerdict(language === "es" ? review.verdictEs : review.verdictEn);
-  const hasConfidence = !!CONFIDENCE_STYLES[(review.reviewConfidence ?? "").toLowerCase().trim()];
+  const verdict = cleanVerdict(
+    language === "es" ? review.verdictEs : review.verdictEn
+  );
+  const hasConfidence =
+    !!CONFIDENCE_STYLES[(review.reviewConfidence ?? "").toLowerCase().trim()];
 
-  if (!pros.length && !cons.length && !cost && !verdict && !hasConfidence) return null;
+  if (!pros.length && !cons.length && !cost && !verdict && !hasConfidence)
+    return null;
 
   return (
     <div className="space-y-3 border-t border-border pt-3">
@@ -304,11 +351,19 @@ export function ReviewDetails({ review }: { review: ReviewInfo }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
         {pros.length > 0 && (
-          <ReviewSection icon={<ThumbsUp className="h-3 w-3" />} label={t("reviewPros")}>
+          <ReviewSection
+            icon={<ThumbsUp className="h-3 w-3" />}
+            label={t("reviewPros")}
+          >
             <ul className="space-y-1">
               {pros.map((item, i) => (
-                <li key={i} className="flex gap-1.5 text-xs text-popover-foreground leading-snug">
-                  <span className="shrink-0" style={{ color: "#4E7A4E" }}>+</span>
+                <li
+                  key={i}
+                  className="flex gap-1.5 text-xs text-popover-foreground leading-snug"
+                >
+                  <span className="shrink-0" style={{ color: "#4E7A4E" }}>
+                    +
+                  </span>
                   {item}
                 </li>
               ))}
@@ -317,11 +372,19 @@ export function ReviewDetails({ review }: { review: ReviewInfo }) {
         )}
 
         {cons.length > 0 && (
-          <ReviewSection icon={<ThumbsDown className="h-3 w-3" />} label={t("reviewCons")}>
+          <ReviewSection
+            icon={<ThumbsDown className="h-3 w-3" />}
+            label={t("reviewCons")}
+          >
             <ul className="space-y-1">
               {cons.map((item, i) => (
-                <li key={i} className="flex gap-1.5 text-xs text-popover-foreground leading-snug">
-                  <span className="shrink-0" style={{ color: "#A03D12" }}>−</span>
+                <li
+                  key={i}
+                  className="flex gap-1.5 text-xs text-popover-foreground leading-snug"
+                >
+                  <span className="shrink-0" style={{ color: "#A03D12" }}>
+                    −
+                  </span>
                   {item}
                 </li>
               ))}
@@ -330,14 +393,24 @@ export function ReviewDetails({ review }: { review: ReviewInfo }) {
         )}
 
         {cost && (
-          <ReviewSection icon={<Coins className="h-3 w-3" />} label={t("reviewCost")}>
-            <p className="text-xs text-popover-foreground leading-snug">{cost}</p>
+          <ReviewSection
+            icon={<Coins className="h-3 w-3" />}
+            label={t("reviewCost")}
+          >
+            <p className="text-xs text-popover-foreground leading-snug">
+              {cost}
+            </p>
           </ReviewSection>
         )}
 
         {verdict && (
-          <ReviewSection icon={<Scale className="h-3 w-3" />} label={t("reviewVerdict")}>
-            <p className="text-xs italic text-popover-foreground leading-snug">{verdict}</p>
+          <ReviewSection
+            icon={<Scale className="h-3 w-3" />}
+            label={t("reviewVerdict")}
+          >
+            <p className="text-xs italic text-popover-foreground leading-snug">
+              {verdict}
+            </p>
           </ReviewSection>
         )}
       </div>
@@ -367,7 +440,7 @@ export function VisitButton({
     <Button
       asChild
       size="sm"
-      className={compact ? "h-7 px-3 text-xs" : className ?? "w-full"}
+      className={compact ? "h-7 px-3 text-xs" : (className ?? "w-full")}
       style={{
         backgroundColor: "var(--tool-accent, var(--primary))",
         color: "oklch(0.96 0.01 60)",
@@ -376,9 +449,15 @@ export function VisitButton({
       {/* sponsored+nofollow: this is a directory whose outbound links may become
           affiliate links — Google requires rel=sponsored on paid links, and
           blanket-applying it keeps us compliant the day AffiliateUrls land. */}
-      <a href={url} target="_blank" rel="sponsored nofollow noopener noreferrer">
+      <a
+        href={url}
+        target="_blank"
+        rel="sponsored nofollow noopener noreferrer"
+      >
         {label}
-        <ExternalLink className={compact ? "ml-1.5 h-3 w-3" : "ml-2 h-3.5 w-3.5"} />
+        <ExternalLink
+          className={compact ? "ml-1.5 h-3 w-3" : "ml-2 h-3.5 w-3.5"}
+        />
       </a>
     </Button>
   );
@@ -419,8 +498,12 @@ export function ToolIcon({
   const host = siteUrl ? hostnameOf(siteUrl) : "";
   const sources = [
     iconUrl || "",
-    host ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128` : "",
-    host ? `https://icons.duckduckgo.com/ip3/${encodeURIComponent(host)}.ico` : "",
+    host
+      ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128`
+      : "",
+    host
+      ? `https://icons.duckduckgo.com/ip3/${encodeURIComponent(host)}.ico`
+      : "",
   ].filter(Boolean);
   const uniqueSources = Array.from(new Set(sources));
   const sourcesKey = uniqueSources.join("|");

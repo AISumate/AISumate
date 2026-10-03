@@ -1,6 +1,8 @@
 // server/_core/app.ts
 import express from "express";
-import rateLimit2, { ipKeyGenerator as ipKeyGenerator2 } from "express-rate-limit";
+import rateLimit2, {
+  ipKeyGenerator as ipKeyGenerator2,
+} from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
 // shared/const.ts
@@ -9,7 +11,7 @@ var ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
 var AXIOS_TIMEOUT_MS = 3e4;
 var UNAUTHED_ERR_MSG = "Please login (10001)";
 var NOT_ADMIN_ERR_MSG = "You do not have required permission (10002)";
-var decodeOAuthState = (state) => {
+var decodeOAuthState = state => {
   let decoded;
   try {
     decoded = atob(state);
@@ -19,8 +21,7 @@ var decodeOAuthState = (state) => {
   try {
     const parsed = JSON.parse(decoded);
     if (parsed && typeof parsed.redirectUri === "string") return parsed;
-  } catch {
-  }
+  } catch {}
   return { redirectUri: decoded };
 };
 
@@ -32,27 +33,29 @@ function isSecureRequest(req) {
   if (req.protocol === "https") return true;
   const forwardedProto = req.headers["x-forwarded-proto"];
   if (!forwardedProto) return false;
-  const protoList = Array.isArray(forwardedProto) ? forwardedProto : forwardedProto.split(",");
-  return protoList.some((proto) => proto.trim().toLowerCase() === "https");
+  const protoList = Array.isArray(forwardedProto)
+    ? forwardedProto
+    : forwardedProto.split(",");
+  return protoList.some(proto => proto.trim().toLowerCase() === "https");
 }
 function getSessionCookieOptions(req) {
   return {
     httpOnly: true,
     path: "/",
     sameSite: "none",
-    secure: isSecureRequest(req)
+    secure: isSecureRequest(req),
   };
 }
 
 // server/_core/batch.ts
 function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function staggeredAll(tasks, batchSize = 2, delayMs = 350) {
   const results = [];
   for (let i = 0; i < tasks.length; i += batchSize) {
     const batch = tasks.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch.map((task) => task()));
+    const batchResults = await Promise.all(batch.map(task => task()));
     results.push(...batchResults);
     if (i + batchSize < tasks.length) {
       await delay(delayMs);
@@ -81,7 +84,8 @@ var ENV = {
   teableApiUrl: process.env.TEABLE_API_URL ?? "https://app.teable.ai/api",
   teableTableId: process.env.TEABLE_TABLE_ID ?? "",
   teableGithubTableId: process.env.TEABLE_GITHUB_TABLE_ID ?? "",
-  teableWeeklyViralGithubTableId: process.env.TEABLE_WEEKLY_VIRAL_GITHUB_TABLE_ID ?? "",
+  teableWeeklyViralGithubTableId:
+    process.env.TEABLE_WEEKLY_VIRAL_GITHUB_TABLE_ID ?? "",
   teableLlmTableId: process.env.TEABLE_LLM_TABLE_ID ?? "",
   teableLtdTableId: process.env.TEABLE_LTD_TABLE_ID ?? "",
   teableVideoImageTableId: process.env.TEABLE_VIDEO_IMAGE_TABLE_ID ?? "",
@@ -95,7 +99,8 @@ var ENV = {
   teableHardwareTableId: process.env.TEABLE_HARDWARE_TABLE_ID ?? "",
   teableTestingToolsTableId: process.env.TEABLE_TESTING_TOOLS_TABLE_ID ?? "",
   teableAiSecurityTableId: process.env.TEABLE_AI_SECURITY_TABLE_ID ?? "",
-  teableBusinessProductivityTableId: process.env.TEABLE_BUSINESS_PRODUCTIVITY_TABLE_ID ?? "",
+  teableBusinessProductivityTableId:
+    process.env.TEABLE_BUSINESS_PRODUCTIVITY_TABLE_ID ?? "",
   teableMcpProvidersTableId: process.env.TEABLE_MCP_PROVIDERS_TABLE_ID ?? "",
   teableVpsCloudTableId: process.env.TEABLE_VPS_CLOUD_TABLE_ID ?? "",
   teableAiMediaTableId: process.env.TEABLE_AI_MEDIA_TABLE_ID ?? "",
@@ -103,37 +108,40 @@ var ENV = {
   teableAiSitesTableId: process.env.TEABLE_AI_SITES_TABLE_ID ?? "",
   teableAiDiscordTableId: process.env.TEABLE_AI_DISCORD_TABLE_ID ?? "",
   teableAuSeoToolsTableId: process.env.TEABLE_AU_SEO_TOOLS_TABLE_ID ?? "",
-  teableSumateTopRecommendationsTableId: process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? "",
+  teableSumateTopRecommendationsTableId:
+    process.env.TEABLE_SUMATE_TOP_RECOMMENDATIONS_TABLE_ID ?? "",
   // Table IDs are not secrets (the API key is what grants access), so this one
   // carries its real default: the front-page "This Week's AI Picks" strip then
   // works on any deploy without needing a new dashboard env var set first.
   // Still overridable by the env var if the base ever changes.
-  teableThisWeeksAiPicksTableId: process.env.TEABLE_THIS_WEEKS_AI_PICKS_TABLE_ID ?? "tbloOK3GBpzHHUyVZeW"
+  teableThisWeeksAiPicksTableId:
+    process.env.TEABLE_THIS_WEEKS_AI_PICKS_TABLE_ID ?? "tbloOK3GBpzHHUyVZeW",
 };
 
 // server/_core/notification.ts
 var TITLE_MAX_LENGTH = 1200;
 var CONTENT_MAX_LENGTH = 2e4;
-var trimValue = (value) => value.trim();
-var isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0;
-var buildEndpointUrl = (baseUrl) => {
+var trimValue = value => value.trim();
+var isNonEmptyString = value =>
+  typeof value === "string" && value.trim().length > 0;
+var buildEndpointUrl = baseUrl => {
   const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
   return new URL(
     "webdevtoken.v1.WebDevService/SendNotification",
     normalizedBase
   ).toString();
 };
-var validatePayload = (input) => {
+var validatePayload = input => {
   if (!isNonEmptyString(input.title)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Notification title is required."
+      message: "Notification title is required.",
     });
   }
   if (!isNonEmptyString(input.content)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Notification content is required."
+      message: "Notification content is required.",
     });
   }
   const title = trimValue(input.title);
@@ -141,13 +149,13 @@ var validatePayload = (input) => {
   if (title.length > TITLE_MAX_LENGTH) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: `Notification title must be at most ${TITLE_MAX_LENGTH} characters.`
+      message: `Notification title must be at most ${TITLE_MAX_LENGTH} characters.`,
     });
   }
   if (content.length > CONTENT_MAX_LENGTH) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: `Notification content must be at most ${CONTENT_MAX_LENGTH} characters.`
+      message: `Notification content must be at most ${CONTENT_MAX_LENGTH} characters.`,
     });
   }
   return { title, content };
@@ -157,13 +165,13 @@ async function notifyOwner(payload) {
   if (!ENV.forgeApiUrl) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Notification service URL is not configured."
+      message: "Notification service URL is not configured.",
     });
   }
   if (!ENV.forgeApiKey) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Notification service API key is not configured."
+      message: "Notification service API key is not configured.",
     });
   }
   const endpoint = buildEndpointUrl(ENV.forgeApiUrl);
@@ -174,9 +182,9 @@ async function notifyOwner(payload) {
         accept: "application/json",
         authorization: `Bearer ${ENV.forgeApiKey}`,
         "content-type": "application/json",
-        "connect-protocol-version": "1"
+        "connect-protocol-version": "1",
       },
-      body: JSON.stringify({ title, content })
+      body: JSON.stringify({ title, content }),
     });
     if (!response.ok) {
       const detail = await response.text().catch(() => "");
@@ -196,11 +204,11 @@ async function notifyOwner(payload) {
 import { initTRPC, TRPCError as TRPCError2 } from "@trpc/server";
 import superjson from "superjson";
 var t = initTRPC.context().create({
-  transformer: superjson
+  transformer: superjson,
 });
 var router = t.router;
 var publicProcedure = t.procedure;
-var requireUser = t.middleware(async (opts) => {
+var requireUser = t.middleware(async opts => {
   const { ctx, next } = opts;
   if (!ctx.user) {
     throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
@@ -208,13 +216,13 @@ var requireUser = t.middleware(async (opts) => {
   return next({
     ctx: {
       ...ctx,
-      user: ctx.user
-    }
+      user: ctx.user,
+    },
   });
 });
 var protectedProcedure = t.procedure.use(requireUser);
 var adminProcedure = t.procedure.use(
-  t.middleware(async (opts) => {
+  t.middleware(async opts => {
     const { ctx, next } = opts;
     if (!ctx.user || ctx.user.role !== "admin") {
       throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
@@ -222,36 +230,41 @@ var adminProcedure = t.procedure.use(
     return next({
       ctx: {
         ...ctx,
-        user: ctx.user
-      }
+        user: ctx.user,
+      },
     });
   })
 );
 
 // server/_core/systemRouter.ts
 var systemRouter = router({
-  health: publicProcedure.input(
-    z.object({
-      timestamp: z.number().min(0, "timestamp cannot be negative")
-    })
-  ).query(() => ({
-    ok: true
-  })),
-  notifyOwner: adminProcedure.input(
-    z.object({
-      title: z.string().min(1, "title is required"),
-      content: z.string().min(1, "content is required")
-    })
-  ).mutation(async ({ input }) => {
-    const delivered = await notifyOwner(input);
-    return {
-      success: delivered
-    };
-  })
+  health: publicProcedure
+    .input(
+      z.object({
+        timestamp: z.number().min(0, "timestamp cannot be negative"),
+      })
+    )
+    .query(() => ({
+      ok: true,
+    })),
+  notifyOwner: adminProcedure
+    .input(
+      z.object({
+        title: z.string().min(1, "title is required"),
+        content: z.string().min(1, "content is required"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const delivered = await notifyOwner(input);
+      return {
+        success: delivered,
+      };
+    }),
 });
 
 // shared/reviewSanitize.ts
-var PLACEHOLDER_RE = /^(unknown|unknowns?|n\/?a|none|null|nil|tbd|pending|-|—|no data( available)?|not (yet )?(determined|available|verified)|unable to (be )?determine(d)?( .*)?|unverified|not verified|pricing unknown( .*)?)\.?$/i;
+var PLACEHOLDER_RE =
+  /^(unknown|unknowns?|n\/?a|none|null|nil|tbd|pending|-|—|no data( available)?|not (yet )?(determined|available|verified)|unable to (be )?determine(d)?( .*)?|unverified|not verified|pricing unknown( .*)?)\.?$/i;
 function normalize(text2) {
   return text2.trim().replace(/^[(\[\s]+|[)\]\s.]+$/g, "");
 }
@@ -271,7 +284,10 @@ function secret() {
   return ENV.teableApiKey ? `img-proxy:${ENV.teableApiKey}` : "";
 }
 function sign(src) {
-  return createHmac("sha256", secret()).update(src).digest("hex").slice(0, SIG_BYTES * 2);
+  return createHmac("sha256", secret())
+    .update(src)
+    .digest("hex")
+    .slice(0, SIG_BYTES * 2);
 }
 function proxyImg(src) {
   if (!src || !secret() || src.startsWith("/api/img?")) return src;
@@ -286,7 +302,13 @@ function verifySig(src, sig) {
 }
 function isBlockedHost(hostname) {
   const h = hostname.toLowerCase();
-  if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal")) return true;
+  if (
+    h === "localhost" ||
+    h.endsWith(".localhost") ||
+    h.endsWith(".local") ||
+    h.endsWith(".internal")
+  )
+    return true;
   if (h.includes(":")) return true;
   const m = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(h);
   if (m) {
@@ -305,10 +327,15 @@ function isBlockedUrl(url) {
 }
 var MAX_BYTES = 4 * 1024 * 1024;
 var FETCH_TIMEOUT_MS = 15e3;
-var OK_CACHE = "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
+var OK_CACHE =
+  "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
 var ERR_CACHE = "public, max-age=60, s-maxage=120";
 function isPendingScreenshot(url, contentType) {
-  return url.hostname.toLowerCase() === "s.wordpress.com" && url.pathname.startsWith("/mshots/") && contentType === "image/gif";
+  return (
+    url.hostname.toLowerCase() === "s.wordpress.com" &&
+    url.pathname.startsWith("/mshots/") &&
+    contentType === "image/gif"
+  );
 }
 function fail(res, status) {
   res.status(status).set("Cache-Control", ERR_CACHE).end();
@@ -323,8 +350,8 @@ async function fetchImage(url, signal) {
       redirect: "manual",
       headers: {
         "User-Agent": "aisumate-img-proxy/1.0 (+https://www.aisumate.com)",
-        Accept: "image/*,*/*;q=0.5"
-      }
+        Accept: "image/*,*/*;q=0.5",
+      },
     });
     if (r.status >= 300 && r.status < 400) {
       const loc = r.headers.get("location");
@@ -360,14 +387,17 @@ async function imgProxyHandler(req, res) {
   try {
     const upstream = await fetchImage(url, ctrl.signal);
     if (!upstream || !upstream.ok || !upstream.body) return fail(res, 502);
-    const type = (upstream.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+    const type = (upstream.headers.get("content-type") || "")
+      .split(";")[0]
+      .trim()
+      .toLowerCase();
     if (!type.startsWith("image/")) return fail(res, 502);
     const declared = Number(upstream.headers.get("content-length") || 0);
     if (declared > MAX_BYTES) return fail(res, 502);
     const chunks = [];
     let total = 0;
     const reader = upstream.body.getReader();
-    for (; ; ) {
+    for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
       total += value.byteLength;
@@ -379,7 +409,16 @@ async function imgProxyHandler(req, res) {
     }
     const buf = Buffer.concat(chunks);
     if (buf.length === 0) return fail(res, 502);
-    res.status(200).set("Content-Type", type).set("Cache-Control", isPendingScreenshot(url, type) ? ERR_CACHE : OK_CACHE).set("X-Content-Type-Options", "nosniff").set("Content-Security-Policy", "default-src 'none'; sandbox").send(buf);
+    res
+      .status(200)
+      .set("Content-Type", type)
+      .set(
+        "Cache-Control",
+        isPendingScreenshot(url, type) ? ERR_CACHE : OK_CACHE
+      )
+      .set("X-Content-Type-Options", "nosniff")
+      .set("Content-Security-Policy", "default-src 'none'; sandbox")
+      .send(buf);
   } catch {
     fail(res, 502);
   } finally {
@@ -418,19 +457,30 @@ function cleanStr(f, key) {
 }
 var validUrl = validHttpUrl;
 function imageUrls(f) {
-  return str(f, "Images").split(/\s+/).map(validUrl).filter(Boolean).slice(0, 12).map(proxyImg);
+  return str(f, "Images")
+    .split(/\s+/)
+    .map(validUrl)
+    .filter(Boolean)
+    .slice(0, 12)
+    .map(proxyImg);
 }
 function blogPostFields(f) {
   const published = bool(f, "Review Published");
   if (!published) {
-    return { blogTitleEn: "", blogTitleEs: "", blogPostEn: "", blogPostEs: "", reviewPublished: false };
+    return {
+      blogTitleEn: "",
+      blogTitleEs: "",
+      blogPostEn: "",
+      blogPostEs: "",
+      reviewPublished: false,
+    };
   }
   return {
     blogTitleEn: cleanStr(f, "Blog Title - EN"),
     blogTitleEs: cleanStr(f, "Blog Title - ES"),
     blogPostEn: cleanStr(f, "Blog Post - EN"),
     blogPostEs: cleanStr(f, "Blog Post - ES"),
-    reviewPublished: true
+    reviewPublished: true,
   };
 }
 function num(f, key) {
@@ -446,13 +496,32 @@ function bool(f, key) {
   return s === "true" || s === "1" || s === "yes";
 }
 function logoUrl(f) {
-  return validUrl(str(f, "LogoUrl") || str(f, "LogoURL") || str(f, "Logo Url") || str(f, "Logo URL") || "");
+  return validUrl(
+    str(f, "LogoUrl") ||
+      str(f, "LogoURL") ||
+      str(f, "Logo Url") ||
+      str(f, "Logo URL") ||
+      ""
+  );
 }
 function affiliateUrl(f) {
-  return validUrl(str(f, "AffiliateUrl") || str(f, "AffiliateURL") || str(f, "Affiliate URL") || str(f, "Affiliate Url") || "");
+  return validUrl(
+    str(f, "AffiliateUrl") ||
+      str(f, "AffiliateURL") ||
+      str(f, "Affiliate URL") ||
+      str(f, "Affiliate Url") ||
+      ""
+  );
 }
 function outboundUrl(f) {
-  return validUrl(str(f, "OutboundUrl") || str(f, "Outbound URL") || str(f, "Website") || str(f, "Repository URL") || str(f, "URL") || "");
+  return validUrl(
+    str(f, "OutboundUrl") ||
+      str(f, "Outbound URL") ||
+      str(f, "Website") ||
+      str(f, "Repository URL") ||
+      str(f, "URL") ||
+      ""
+  );
 }
 function deriveFaviconUrl(siteUrl) {
   if (!siteUrl) return "";
@@ -480,13 +549,22 @@ function reviewFields(f) {
     consEs: cleanStr(f, "Cons - ES"),
     costEs: cleanStr(f, "Cost - ES"),
     verdictEs: cleanStr(f, "Verdict - ES"),
-    reviewConfidence: str(f, "Review Confidence").toLowerCase().trim()
+    reviewConfidence: str(f, "Review Confidence").toLowerCase().trim(),
   };
 }
 var NEW_BADGE_WINDOW_MS = 7 * 24 * 60 * 60 * 1e3;
 function isNewRecord(record) {
-  const inputDate = str(record.fields, "InputDate") || str(record.fields, "Input Date") || str(record.fields, "inputDate");
-  const createdTime = record.createdTime || str(record.fields, "Created Time") || str(record.fields, "Created") || str(record.fields, "Date Added") || str(record.fields, "Date Created") || inputDate;
+  const inputDate =
+    str(record.fields, "InputDate") ||
+    str(record.fields, "Input Date") ||
+    str(record.fields, "inputDate");
+  const createdTime =
+    record.createdTime ||
+    str(record.fields, "Created Time") ||
+    str(record.fields, "Created") ||
+    str(record.fields, "Date Added") ||
+    str(record.fields, "Date Created") ||
+    inputDate;
   if (!createdTime) return false;
   const created = new Date(createdTime).getTime();
   if (isNaN(created)) return false;
@@ -501,8 +579,13 @@ async function fetchWithRetry(url, options, maxRetries = 5) {
     lastResponse = response;
     if (attempt === maxRetries) break;
     const retryAfter = Number(response.headers.get("retry-after"));
-    const backoffMs = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(retryAfter * 1e3, 8e3) : Math.min(500 * Math.pow(2, attempt), 8e3);
-    console.warn(`[Teable] ${response.status}, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`);
+    const backoffMs =
+      Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1e3, 8e3)
+        : Math.min(500 * Math.pow(2, attempt), 8e3);
+    console.warn(
+      `[Teable] ${response.status}, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1}) for ${url}`
+    );
     await delay(backoffMs);
   }
   return lastResponse;
@@ -523,18 +606,20 @@ async function fetchAllRecords(tableId) {
     const response = await fetchWithRetry(url, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     });
     if (!response.ok) {
-      throw new Error(`Teable API returned ${response.status} for table ${tableId}`);
+      throw new Error(
+        `Teable API returned ${response.status} for table ${tableId}`
+      );
     }
     const data = await response.json();
-    const records = (data.records ?? []).map((r) => ({
+    const records = (data.records ?? []).map(r => ({
       id: r.id,
       name: r.name,
       fields: r.fields,
-      createdTime: r.createdTime
+      createdTime: r.createdTime,
     }));
     allRecords.push(...records);
     if (records.length < pageSize) {
@@ -572,41 +657,133 @@ function mapGenericTool(record) {
     bodyEn: cleanStr(f, "Body - EN"),
     bodyEs: cleanStr(f, "Body - ES"),
     author: cleanStr(f, "Author"),
-    tags: str(f, "Tags").split(",").map((s) => s.trim()).filter(Boolean),
+    tags: str(f, "Tags")
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean),
     readingTimeMinutes: num(f, "Reading Time"),
     publishedDate: normalizeDate(f["InputDate"]),
-    ...reviewFields(f)
+    ...reviewFields(f),
   };
 }
 var GENERIC_TABLES = [
-  { key: "videoImage", label: "Video & Image", tableId: () => ENV.teableVideoImageTableId },
-  { key: "musicVoice", label: "Music & Voice", tableId: () => ENV.teableMusicVoiceTableId },
-  { key: "chatbots", label: "Chatbots & Agents", tableId: () => ENV.teableChatbotsTableId },
-  { key: "freeApis", label: "Free APIs", tableId: () => ENV.teableFreeApisTableId },
-  { key: "freeLlmIde", label: "Free LLM & IDE", tableId: () => ENV.teableFreeLlmIdeTableId },
-  { key: "vibeCoding", label: "Vibe Coding", tableId: () => ENV.teableVibeCodingTableId },
-  { key: "designerTools", label: "Designer Tools", tableId: () => ENV.teableDesignerToolsTableId },
-  { key: "aiInfra", label: "AI Infrastructure", tableId: () => ENV.teableAiInfraTableId },
-  { key: "hardware", label: "Hardware & Computers", tableId: () => ENV.teableHardwareTableId },
-  { key: "testingTools", label: "Testing Tools", tableId: () => ENV.teableTestingToolsTableId },
-  { key: "aiSecurity", label: "AI Security", tableId: () => ENV.teableAiSecurityTableId },
-  { key: "businessProductivity", label: "Business Productivity", tableId: () => ENV.teableBusinessProductivityTableId },
-  { key: "mcpProviders", label: "MCP Providers", tableId: () => ENV.teableMcpProvidersTableId },
-  { key: "vpsCloud", label: "VPS & Cloud", tableId: () => ENV.teableVpsCloudTableId },
-  { key: "aiMedia", label: "AI Media", tableId: () => ENV.teableAiMediaTableId },
-  { key: "aiInfluencers", label: "AI Influencers", tableId: () => ENV.teableAiInfluencersTableId },
-  { key: "aiSites", label: "AI Sites", tableId: () => ENV.teableAiSitesTableId },
-  { key: "aiDiscord", label: "AI Discord", tableId: () => ENV.teableAiDiscordTableId },
-  { key: "auSeoTools", label: "AU SEO Tools", tableId: () => ENV.teableAuSeoToolsTableId },
-  { key: "sumateTopRecommendations", label: "Sumate Top Recommendations", tableId: () => ENV.teableSumateTopRecommendationsTableId },
-  { key: "thisWeeksAiPicks", label: "This Week's AI Picks", tableId: () => ENV.teableThisWeeksAiPicksTableId }
+  {
+    key: "videoImage",
+    label: "Video & Image",
+    tableId: () => ENV.teableVideoImageTableId,
+  },
+  {
+    key: "musicVoice",
+    label: "Music & Voice",
+    tableId: () => ENV.teableMusicVoiceTableId,
+  },
+  {
+    key: "chatbots",
+    label: "Chatbots & Agents",
+    tableId: () => ENV.teableChatbotsTableId,
+  },
+  {
+    key: "freeApis",
+    label: "Free APIs",
+    tableId: () => ENV.teableFreeApisTableId,
+  },
+  {
+    key: "freeLlmIde",
+    label: "Free LLM & IDE",
+    tableId: () => ENV.teableFreeLlmIdeTableId,
+  },
+  {
+    key: "vibeCoding",
+    label: "Vibe Coding",
+    tableId: () => ENV.teableVibeCodingTableId,
+  },
+  {
+    key: "designerTools",
+    label: "Designer Tools",
+    tableId: () => ENV.teableDesignerToolsTableId,
+  },
+  {
+    key: "aiInfra",
+    label: "AI Infrastructure",
+    tableId: () => ENV.teableAiInfraTableId,
+  },
+  {
+    key: "hardware",
+    label: "Hardware & Computers",
+    tableId: () => ENV.teableHardwareTableId,
+  },
+  {
+    key: "testingTools",
+    label: "Testing Tools",
+    tableId: () => ENV.teableTestingToolsTableId,
+  },
+  {
+    key: "aiSecurity",
+    label: "AI Security",
+    tableId: () => ENV.teableAiSecurityTableId,
+  },
+  {
+    key: "businessProductivity",
+    label: "Business Productivity",
+    tableId: () => ENV.teableBusinessProductivityTableId,
+  },
+  {
+    key: "mcpProviders",
+    label: "MCP Providers",
+    tableId: () => ENV.teableMcpProvidersTableId,
+  },
+  {
+    key: "vpsCloud",
+    label: "VPS & Cloud",
+    tableId: () => ENV.teableVpsCloudTableId,
+  },
+  {
+    key: "aiMedia",
+    label: "AI Media",
+    tableId: () => ENV.teableAiMediaTableId,
+  },
+  {
+    key: "aiInfluencers",
+    label: "AI Influencers",
+    tableId: () => ENV.teableAiInfluencersTableId,
+  },
+  {
+    key: "aiSites",
+    label: "AI Sites",
+    tableId: () => ENV.teableAiSitesTableId,
+  },
+  {
+    key: "aiDiscord",
+    label: "AI Discord",
+    tableId: () => ENV.teableAiDiscordTableId,
+  },
+  {
+    key: "auSeoTools",
+    label: "AU SEO Tools",
+    tableId: () => ENV.teableAuSeoToolsTableId,
+  },
+  {
+    key: "sumateTopRecommendations",
+    label: "Sumate Top Recommendations",
+    tableId: () => ENV.teableSumateTopRecommendationsTableId,
+  },
+  {
+    key: "thisWeeksAiPicks",
+    label: "This Week's AI Picks",
+    tableId: () => ENV.teableThisWeeksAiPicksTableId,
+  },
 ];
 async function fetchGenericTools(key) {
-  const table = GENERIC_TABLES.find((t2) => t2.key === key);
+  const table = GENERIC_TABLES.find(t2 => t2.key === key);
   if (!table) return [];
   return withCache(key, async () => {
     const records = await fetchAllRecords(table.tableId());
-    const tools = records.filter((r) => r.fields["Published"] === void 0 || bool(r.fields, "Published")).filter(notQuarantined).map(mapGenericTool);
+    const tools = records
+      .filter(
+        r => r.fields["Published"] === void 0 || bool(r.fields, "Published")
+      )
+      .filter(notQuarantined)
+      .map(mapGenericTool);
     tools.sort((a, b) => a.name.localeCompare(b.name));
     return tools;
   });
@@ -622,7 +799,8 @@ var fetchAiInfraTools = () => fetchGenericTools("aiInfra");
 var fetchHardwareTools = () => fetchGenericTools("hardware");
 var fetchTestingTools = () => fetchGenericTools("testingTools");
 var fetchAiSecurityTools = () => fetchGenericTools("aiSecurity");
-var fetchBusinessProductivityTools = () => fetchGenericTools("businessProductivity");
+var fetchBusinessProductivityTools = () =>
+  fetchGenericTools("businessProductivity");
 var fetchMcpProvidersTools = () => fetchGenericTools("mcpProviders");
 var fetchVpsCloudTools = () => fetchGenericTools("vpsCloud");
 var fetchAiMediaTools = () => fetchGenericTools("aiMedia");
@@ -630,12 +808,13 @@ var fetchAiInfluencersTools = () => fetchGenericTools("aiInfluencers");
 var fetchAiSitesTools = () => fetchGenericTools("aiSites");
 var fetchAiDiscordTools = () => fetchGenericTools("aiDiscord");
 var fetchAuSeoTools = () => fetchGenericTools("auSeoTools");
-var fetchSumateTopRecommendations = () => fetchGenericTools("sumateTopRecommendations");
+var fetchSumateTopRecommendations = () =>
+  fetchGenericTools("sumateTopRecommendations");
 var fetchThisWeeksAiPicks = () => fetchGenericTools("thisWeeksAiPicks");
 async function fetchAllTools() {
   return withCache("tools", async () => {
     const records = await fetchAllRecords(ENV.teableTableId);
-    const tools = records.filter(notQuarantined).map((record) => {
+    const tools = records.filter(notQuarantined).map(record => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -654,7 +833,7 @@ async function fetchAllTools() {
         aiRelevance: cleanStr(f, "AI Relevance"),
         sponsored: bool(f, "Sponsored"),
         ...blogPostFields(f),
-        ...reviewFields(f)
+        ...reviewFields(f),
       };
     });
     tools.sort((a, b) => a.name.localeCompare(b.name));
@@ -664,21 +843,23 @@ async function fetchAllTools() {
 async function fetchGithubRepos() {
   return withCache("github", async () => {
     const records = await fetchAllRecords(ENV.teableGithubTableId);
-    const repos = records.map((record) => {
+    const repos = records.map(record => {
       const f = record.fields ?? {};
       return {
         id: record.id,
         name: str(f, "Name") || record.name || "Untitled",
         repoUrl: validUrl(str(f, "Repository URL")),
         description: cleanStr(f, "Description"),
-        descriptionEn: cleanStr(f, "Summary - EN") || cleanStr(f, "Description"),
-        descriptionEs: cleanStr(f, "Summary - ES") || cleanStr(f, "Description"),
+        descriptionEn:
+          cleanStr(f, "Summary - EN") || cleanStr(f, "Description"),
+        descriptionEs:
+          cleanStr(f, "Summary - ES") || cleanStr(f, "Description"),
         owner: str(f, "Owner"),
         language: cleanStr(f, "Language"),
         stars: num(f, "Stars"),
         status: cleanStr(f, "Status"),
         rating: num(f, "Rating 1-5"),
-        isNew: isNewRecord(record)
+        isNew: isNewRecord(record),
       };
     });
     repos.sort((a, b) => b.stars - a.stars);
@@ -688,7 +869,7 @@ async function fetchGithubRepos() {
 async function fetchWeeklyViralGithubRepos() {
   return withCache("weeklyViralGithub", async () => {
     const records = await fetchAllRecords(ENV.teableWeeklyViralGithubTableId);
-    const repos = records.map((record) => {
+    const repos = records.map(record => {
       const f = record.fields ?? {};
       const repoUrl = validUrl(str(f, "Repository URL"));
       const description = cleanStr(f, "Description");
@@ -708,7 +889,7 @@ async function fetchWeeklyViralGithubRepos() {
         whyViral: cleanStr(f, "Why Viral"),
         iconUrl: iconUrlFor(f, repoUrl),
         rating: num(f, "Rating 1-5"),
-        ...reviewFields(f)
+        ...reviewFields(f),
       };
     });
     repos.sort((a, b) => {
@@ -722,7 +903,7 @@ async function fetchWeeklyViralGithubRepos() {
 async function fetchLlmModels() {
   return withCache("llms", async () => {
     const records = await fetchAllRecords(ENV.teableLlmTableId);
-    const models = records.filter(notQuarantined).map((record) => {
+    const models = records.filter(notQuarantined).map(record => {
       const f = record.fields ?? {};
       const out = outboundUrl(f);
       return {
@@ -741,7 +922,7 @@ async function fetchLlmModels() {
         aiRelevance: cleanStr(f, "AI Relevance"),
         sponsored: bool(f, "Sponsored"),
         ...blogPostFields(f),
-        ...reviewFields(f)
+        ...reviewFields(f),
       };
     });
     models.sort((a, b) => a.name.localeCompare(b.name));
@@ -751,14 +932,17 @@ async function fetchLlmModels() {
 function normalizeDate(raw) {
   if (raw === null || raw === void 0 || raw === "") return "";
   const asNumber = Number(raw);
-  const date = !isNaN(asNumber) && asNumber > 0 ? new Date(asNumber) : new Date(String(raw));
+  const date =
+    !isNaN(asNumber) && asNumber > 0
+      ? new Date(asNumber)
+      : new Date(String(raw));
   if (isNaN(date.getTime())) return "";
   return date.toISOString();
 }
 async function fetchLtdDeals() {
   return withCache("ltds", async () => {
     const records = await fetchAllRecords(ENV.teableLtdTableId);
-    const deals = records.map((record) => {
+    const deals = records.map(record => {
       const f = record.fields ?? {};
       const website = validUrl(str(f, "Website"));
       return {
@@ -773,7 +957,7 @@ async function fetchLtdDeals() {
         iconUrl: iconUrlFor(f, website),
         rating: num(f, "Rating 1-5"),
         isNew: isNewRecord(record),
-        ...reviewFields(f)
+        ...reviewFields(f),
       };
     });
     deals.sort((a, b) => a.name.localeCompare(b.name));
@@ -790,9 +974,9 @@ async function fetchTotalToolCount() {
     // "This Week's AI Picks" is also excluded: it re-lists tools that already
     // live in the other tables (a curated shortlist, not new inventory), so
     // counting it would inflate the headline "tools indexed" figure.
-    ...GENERIC_TABLES.filter((t2) => t2.key !== "thisWeeksAiPicks").map(
-      (t2) => () => fetchGenericTools(t2.key)
-    )
+    ...GENERIC_TABLES.filter(t2 => t2.key !== "thisWeeksAiPicks").map(
+      t2 => () => fetchGenericTools(t2.key)
+    ),
   ];
   const results = await staggeredAll(tasks, 3, 200);
   return results.reduce((sum, arr) => sum + arr.length, 0);
@@ -800,29 +984,30 @@ async function fetchTotalToolCount() {
 
 // server/routers.ts
 var searchInput = z2.object({ search: z2.string().optional() }).optional();
-var searchTokens = (query) => query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+var searchTokens = query =>
+  query.toLowerCase().trim().split(/\s+/).filter(Boolean);
 var matchesQuery = (query, ...fields) => {
   const tokens = searchTokens(query);
   if (!tokens.length) return true;
-  const hay = fields.map((f) => (f ?? "").toLowerCase()).join(" ");
-  return tokens.every((t2) => hay.includes(t2));
+  const hay = fields.map(f => (f ?? "").toLowerCase()).join(" ");
+  return tokens.every(t2 => hay.includes(t2));
 };
 var searchScore = (query, name, category, ...descriptions) => {
   const tokens = searchTokens(query);
   if (!tokens.length) return 0;
   const n = name.toLowerCase();
   const c = category.toLowerCase();
-  const d = descriptions.map((x) => (x ?? "").toLowerCase()).join(" ");
+  const d = descriptions.map(x => (x ?? "").toLowerCase()).join(" ");
   const hay = `${n} ${c} ${d}`;
-  if (!tokens.every((t2) => hay.includes(t2))) return -1;
+  if (!tokens.every(t2 => hay.includes(t2))) return -1;
   const q = query.toLowerCase().trim();
   let score = 0;
   if (n === q) score += 1e3;
   else if (n.startsWith(q)) score += 600;
   else if (n.includes(q)) score += 400;
-  if (tokens.every((t2) => n.includes(t2))) score += 200;
-  else if (tokens.some((t2) => n.includes(t2))) score += 60;
-  if (tokens.every((t2) => c.includes(t2))) score += 80;
+  if (tokens.every(t2 => n.includes(t2))) score += 200;
+  else if (tokens.some(t2 => n.includes(t2))) score += 60;
+  if (tokens.every(t2 => c.includes(t2))) score += 80;
   return score;
 };
 function makeGenericListRouter(fetcher) {
@@ -832,64 +1017,70 @@ function makeGenericListRouter(fetcher) {
       let filtered = tools;
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
-        filtered = filtered.filter(
-          (t2) => matchesQuery(term, t2.name, t2.descriptionEn, t2.descriptionEs)
+        filtered = filtered.filter(t2 =>
+          matchesQuery(term, t2.name, t2.descriptionEn, t2.descriptionEs)
         );
       }
       return { tools: filtered, total: tools.length };
-    })
+    }),
   });
 }
 var appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
-    me: publicProcedure.query((opts) => opts.ctx.user),
+    me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return {
-        success: true
+        success: true,
       };
-    })
+    }),
   }),
   tools: router({
     /**
      * Public endpoint: fetch all AI tools from Teable.
      * The API key is used server-side only and never sent to the client.
      */
-    list: publicProcedure.input(
-      z2.object({
-        search: z2.string().optional(),
-        category: z2.string().optional()
-      }).optional()
-    ).query(async ({ input }) => {
-      const tools = await fetchAllTools();
-      let filtered = tools;
-      if (input?.search && input.search.trim()) {
-        const term = input.search.toLowerCase().trim();
-        filtered = filtered.filter(
-          (t2) => matchesQuery(term, t2.name, t2.descriptionEn, t2.descriptionEs)
+    list: publicProcedure
+      .input(
+        z2
+          .object({
+            search: z2.string().optional(),
+            category: z2.string().optional(),
+          })
+          .optional()
+      )
+      .query(async ({ input }) => {
+        const tools = await fetchAllTools();
+        let filtered = tools;
+        if (input?.search && input.search.trim()) {
+          const term = input.search.toLowerCase().trim();
+          filtered = filtered.filter(t2 =>
+            matchesQuery(term, t2.name, t2.descriptionEn, t2.descriptionEs)
+          );
+        }
+        if (input?.category && input.category !== "all") {
+          filtered = filtered.filter(
+            t2 => t2.category.toLowerCase() === input.category.toLowerCase()
+          );
+        }
+        const sorted = [...filtered].sort((a, b) =>
+          a.name.localeCompare(b.name)
         );
-      }
-      if (input?.category && input.category !== "all") {
-        filtered = filtered.filter(
-          (t2) => t2.category.toLowerCase() === input.category.toLowerCase()
-        );
-      }
-      const sorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
-      return {
-        tools: sorted,
-        total: tools.length
-      };
-    }),
+        return {
+          tools: sorted,
+          total: tools.length,
+        };
+      }),
     /**
      * Public endpoint: get all unique categories from the tools data.
      */
     categories: publicProcedure.query(async () => {
       const tools = await fetchAllTools();
       const categories = Array.from(
-        new Set(tools.map((t2) => t2.category).filter(Boolean))
+        new Set(tools.map(t2 => t2.category).filter(Boolean))
       ).sort();
       return { categories };
     }),
@@ -899,7 +1090,7 @@ var appRouter = router({
     totalCount: publicProcedure.query(async () => {
       const total = await fetchTotalToolCount();
       return { total };
-    })
+    }),
   }),
   github: router({
     /**
@@ -910,12 +1101,12 @@ var appRouter = router({
       let filtered = repos;
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
-        filtered = filtered.filter(
-          (r) => matchesQuery(term, r.name, r.description, r.owner)
+        filtered = filtered.filter(r =>
+          matchesQuery(term, r.name, r.description, r.owner)
         );
       }
       return { repos: filtered, total: repos.length };
-    })
+    }),
   }),
   weeklyViralGithub: router({
     /**
@@ -928,12 +1119,12 @@ var appRouter = router({
       let filtered = repos;
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
-        filtered = filtered.filter(
-          (r) => matchesQuery(term, r.name, r.description, r.owner, r.whyViral)
+        filtered = filtered.filter(r =>
+          matchesQuery(term, r.name, r.description, r.owner, r.whyViral)
         );
       }
       return { repos: filtered, total: repos.length };
-    })
+    }),
   }),
   llms: router({
     /**
@@ -944,12 +1135,12 @@ var appRouter = router({
       let filtered = models;
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
-        filtered = filtered.filter(
-          (m) => matchesQuery(term, m.name, m.summaryEn, m.summaryEs)
+        filtered = filtered.filter(m =>
+          matchesQuery(term, m.name, m.summaryEn, m.summaryEs)
         );
       }
       return { models: filtered, total: models.length };
-    })
+    }),
   }),
   ltds: router({
     /**
@@ -960,12 +1151,12 @@ var appRouter = router({
       let filtered = deals;
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
-        filtered = filtered.filter(
-          (d) => matchesQuery(term, d.name, d.summaryEn, d.summaryEs)
+        filtered = filtered.filter(d =>
+          matchesQuery(term, d.name, d.summaryEn, d.summaryEs)
         );
       }
       return { deals: filtered, total: deals.length };
-    })
+    }),
   }),
   // Generic tool sections — one factory, one line per table.
   videoImage: makeGenericListRouter(fetchVideoImageTools),
@@ -987,100 +1178,225 @@ var appRouter = router({
   aiSites: makeGenericListRouter(fetchAiSitesTools),
   aiDiscord: makeGenericListRouter(fetchAiDiscordTools),
   auSeoTools: makeGenericListRouter(fetchAuSeoTools),
-  sumateTopRecommendations: makeGenericListRouter(fetchSumateTopRecommendations),
+  sumateTopRecommendations: makeGenericListRouter(
+    fetchSumateTopRecommendations
+  ),
   thisWeeksAiPicks: makeGenericListRouter(fetchThisWeeksAiPicks),
   search: router({
     /**
      * Global search across all Teable tables.
      * Returns unified results with source table labels.
      */
-    global: publicProcedure.input(z2.object({
-      query: z2.string().min(1),
-      limit: z2.number().min(1).max(200).default(50)
-    })).query(async ({ input }) => {
-      const term = input.query.toLowerCase().trim();
-      const limit = input.limit;
-      const tableFetchers = [
-        { label: "AI Tools", key: "tools", fetch: () => fetchAllTools() },
-        { label: "GitHub Repos", key: "github", fetch: () => fetchGithubRepos() },
-        { label: "Weekly Viral GitHub", key: "weeklyViralGithub", fetch: () => fetchWeeklyViralGithubRepos() },
-        { label: "LLMs", key: "llms", fetch: () => fetchLlmModels() },
-        { label: "Video & Image", key: "videoImage", fetch: () => fetchVideoImageTools() },
-        { label: "Music & Voice", key: "musicVoice", fetch: () => fetchMusicVoiceTools() },
-        { label: "Chatbots & Agents", key: "chatbots", fetch: () => fetchChatbotsTools() },
-        { label: "Free APIs", key: "freeApis", fetch: () => fetchFreeApisTools() },
-        { label: "Free LLM & IDE", key: "freeLlmIde", fetch: () => fetchFreeLlmIdeTools() },
-        { label: "Vibe Coding", key: "vibeCoding", fetch: () => fetchVibeCodingTools() },
-        { label: "Designer Tools", key: "designerTools", fetch: () => fetchDesignerTools() },
-        { label: "AI Infrastructure", key: "aiInfra", fetch: () => fetchAiInfraTools() },
-        { label: "Hardware & Computers", key: "hardware", fetch: () => fetchHardwareTools() },
-        { label: "Testing Tools", key: "testingTools", fetch: () => fetchTestingTools() },
-        { label: "AI Security", key: "aiSecurity", fetch: () => fetchAiSecurityTools() },
-        { label: "Business Productivity", key: "businessProductivity", fetch: () => fetchBusinessProductivityTools() },
-        { label: "MCP Providers", key: "mcpProviders", fetch: () => fetchMcpProvidersTools() },
-        { label: "VPS & Cloud", key: "vpsCloud", fetch: () => fetchVpsCloudTools() },
-        { label: "AI Media", key: "aiMedia", fetch: () => fetchAiMediaTools() },
-        { label: "AI Influencers", key: "aiInfluencers", fetch: () => fetchAiInfluencersTools() },
-        { label: "AI Sites", key: "aiSites", fetch: () => fetchAiSitesTools() },
-        { label: "AI Discord", key: "aiDiscord", fetch: () => fetchAiDiscordTools() },
-        { label: "AU SEO Tools", key: "auSeoTools", fetch: () => fetchAuSeoTools() },
-        { label: "Sumate Top Recommendations", key: "sumateTopRecommendations", fetch: () => fetchSumateTopRecommendations() }
-      ];
-      const results = await staggeredAll(
-        tableFetchers.map(({ label, key, fetch: fetch2 }) => async () => {
-          try {
-            const items = await fetch2();
-            return items.map((item) => {
-              const name = item.name || item.title || "Untitled";
-              const category = item.category || item.topic || item.platform || "";
-              const descEn = item.descriptionEn || item.summaryEn || item.summary || "";
-              const descEs = item.descriptionEs || item.summaryEs || item.summary || "";
-              const base = searchScore(term, name, category, descEn, descEs);
-              const rel = item.aiRelevance;
-              const score = base < 0 ? base : base + (rel === "AI-first" ? 50 : rel === "AI-enabled" ? 15 : 0);
-              return { item, name, category, descEn, descEs, score };
-            }).filter((x) => x.score >= 0).map(({ item, name, category, descEn, descEs, score }) => ({
-              id: item.id,
-              name,
-              descriptionEn: descEn,
-              descriptionEs: descEs,
-              url: item.url || item.dealUrl || item.repoUrl || "",
-              affiliateUrl: item.affiliateUrl || "",
-              iconUrl: item.iconUrl || "",
-              category,
-              isAffiliate: item.isAffiliate || false,
-              rating: item.rating || 0,
-              isNew: item.isNew || false,
-              reviewConfidence: item.reviewConfidence || "",
-              sourceTable: label,
-              sourceTableKey: key,
-              score
-            }));
-          } catch (err) {
-            console.error(`[GlobalSearch] Error fetching table "${label}":`, err);
-            return [];
-          }
+    global: publicProcedure
+      .input(
+        z2.object({
+          query: z2.string().min(1),
+          limit: z2.number().min(1).max(200).default(50),
         })
-      );
-      const allResults = results.flat();
-      const deduped = /* @__PURE__ */ new Map();
-      for (const result of allResults) {
-        const key = (result.url || result.name).trim().toLowerCase();
-        const existing = deduped.get(key);
-        if (!existing || result.score > existing.score || result.score === existing.score && existing.sourceTable === "AI Tools") {
-          deduped.set(key, result);
+      )
+      .query(async ({ input }) => {
+        const term = input.query.toLowerCase().trim();
+        const limit = input.limit;
+        const tableFetchers = [
+          { label: "AI Tools", key: "tools", fetch: () => fetchAllTools() },
+          {
+            label: "GitHub Repos",
+            key: "github",
+            fetch: () => fetchGithubRepos(),
+          },
+          {
+            label: "Weekly Viral GitHub",
+            key: "weeklyViralGithub",
+            fetch: () => fetchWeeklyViralGithubRepos(),
+          },
+          { label: "LLMs", key: "llms", fetch: () => fetchLlmModels() },
+          {
+            label: "Video & Image",
+            key: "videoImage",
+            fetch: () => fetchVideoImageTools(),
+          },
+          {
+            label: "Music & Voice",
+            key: "musicVoice",
+            fetch: () => fetchMusicVoiceTools(),
+          },
+          {
+            label: "Chatbots & Agents",
+            key: "chatbots",
+            fetch: () => fetchChatbotsTools(),
+          },
+          {
+            label: "Free APIs",
+            key: "freeApis",
+            fetch: () => fetchFreeApisTools(),
+          },
+          {
+            label: "Free LLM & IDE",
+            key: "freeLlmIde",
+            fetch: () => fetchFreeLlmIdeTools(),
+          },
+          {
+            label: "Vibe Coding",
+            key: "vibeCoding",
+            fetch: () => fetchVibeCodingTools(),
+          },
+          {
+            label: "Designer Tools",
+            key: "designerTools",
+            fetch: () => fetchDesignerTools(),
+          },
+          {
+            label: "AI Infrastructure",
+            key: "aiInfra",
+            fetch: () => fetchAiInfraTools(),
+          },
+          {
+            label: "Hardware & Computers",
+            key: "hardware",
+            fetch: () => fetchHardwareTools(),
+          },
+          {
+            label: "Testing Tools",
+            key: "testingTools",
+            fetch: () => fetchTestingTools(),
+          },
+          {
+            label: "AI Security",
+            key: "aiSecurity",
+            fetch: () => fetchAiSecurityTools(),
+          },
+          {
+            label: "Business Productivity",
+            key: "businessProductivity",
+            fetch: () => fetchBusinessProductivityTools(),
+          },
+          {
+            label: "MCP Providers",
+            key: "mcpProviders",
+            fetch: () => fetchMcpProvidersTools(),
+          },
+          {
+            label: "VPS & Cloud",
+            key: "vpsCloud",
+            fetch: () => fetchVpsCloudTools(),
+          },
+          {
+            label: "AI Media",
+            key: "aiMedia",
+            fetch: () => fetchAiMediaTools(),
+          },
+          {
+            label: "AI Influencers",
+            key: "aiInfluencers",
+            fetch: () => fetchAiInfluencersTools(),
+          },
+          {
+            label: "AI Sites",
+            key: "aiSites",
+            fetch: () => fetchAiSitesTools(),
+          },
+          {
+            label: "AI Discord",
+            key: "aiDiscord",
+            fetch: () => fetchAiDiscordTools(),
+          },
+          {
+            label: "AU SEO Tools",
+            key: "auSeoTools",
+            fetch: () => fetchAuSeoTools(),
+          },
+          {
+            label: "Sumate Top Recommendations",
+            key: "sumateTopRecommendations",
+            fetch: () => fetchSumateTopRecommendations(),
+          },
+        ];
+        const results = await staggeredAll(
+          tableFetchers.map(({ label, key, fetch: fetch2 }) => async () => {
+            try {
+              const items = await fetch2();
+              return items
+                .map(item => {
+                  const name = item.name || item.title || "Untitled";
+                  const category =
+                    item.category || item.topic || item.platform || "";
+                  const descEn =
+                    item.descriptionEn || item.summaryEn || item.summary || "";
+                  const descEs =
+                    item.descriptionEs || item.summaryEs || item.summary || "";
+                  const base = searchScore(
+                    term,
+                    name,
+                    category,
+                    descEn,
+                    descEs
+                  );
+                  const rel = item.aiRelevance;
+                  const score =
+                    base < 0
+                      ? base
+                      : base +
+                        (rel === "AI-first"
+                          ? 50
+                          : rel === "AI-enabled"
+                            ? 15
+                            : 0);
+                  return { item, name, category, descEn, descEs, score };
+                })
+                .filter(x => x.score >= 0)
+                .map(({ item, name, category, descEn, descEs, score }) => ({
+                  id: item.id,
+                  name,
+                  descriptionEn: descEn,
+                  descriptionEs: descEs,
+                  url: item.url || item.dealUrl || item.repoUrl || "",
+                  affiliateUrl: item.affiliateUrl || "",
+                  iconUrl: item.iconUrl || "",
+                  category,
+                  isAffiliate: item.isAffiliate || false,
+                  rating: item.rating || 0,
+                  isNew: item.isNew || false,
+                  reviewConfidence: item.reviewConfidence || "",
+                  sourceTable: label,
+                  sourceTableKey: key,
+                  score,
+                }));
+            } catch (err) {
+              console.error(
+                `[GlobalSearch] Error fetching table "${label}":`,
+                err
+              );
+              return [];
+            }
+          })
+        );
+        const allResults = results.flat();
+        const deduped = /* @__PURE__ */ new Map();
+        for (const result of allResults) {
+          const key = (result.url || result.name).trim().toLowerCase();
+          const existing = deduped.get(key);
+          if (
+            !existing ||
+            result.score > existing.score ||
+            (result.score === existing.score &&
+              existing.sourceTable === "AI Tools")
+          ) {
+            deduped.set(key, result);
+          }
         }
-      }
-      const uniqueResults = Array.from(deduped.values());
-      uniqueResults.sort(
-        (a, b) => b.score - a.score || (b.rating || 0) - (a.rating || 0) || a.name.localeCompare(b.name)
-      );
-      return {
-        results: uniqueResults.slice(0, limit).map(({ score, ...r }) => r),
-        total: uniqueResults.length
-      };
-    })
-  })
+        const uniqueResults = Array.from(deduped.values());
+        uniqueResults.sort(
+          (a, b) =>
+            b.score - a.score ||
+            (b.rating || 0) - (a.rating || 0) ||
+            a.name.localeCompare(b.name)
+        );
+        return {
+          results: uniqueResults.slice(0, limit).map(({ score, ...r }) => r),
+          total: uniqueResults.length,
+        };
+      }),
+  }),
 });
 
 // shared/_core/errors.ts
@@ -1091,7 +1407,7 @@ var HttpError = class extends Error {
     this.name = "HttpError";
   }
 };
-var ForbiddenError = (msg) => new HttpError(403, msg);
+var ForbiddenError = msg => new HttpError(403, msg);
 
 // server/_core/sdk.ts
 import axios from "axios";
@@ -1103,7 +1419,14 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 
 // drizzle/schema.ts
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/mysql-core";
 var users = mysqlTable("users", {
   /**
    * Surrogate primary key. Auto-incremented numeric value managed by the database.
@@ -1118,7 +1441,7 @@ var users = mysqlTable("users", {
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull()
+  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
 // server/db.ts
@@ -1145,11 +1468,11 @@ async function upsertUser(user) {
   }
   try {
     const values = {
-      openId: user.openId
+      openId: user.openId,
     };
     const updateSet = {};
     const textFields = ["name", "email", "loginMethod"];
-    const assignNullable = (field) => {
+    const assignNullable = field => {
       const value = user[field];
       if (value === void 0) return;
       const normalized = value ?? null;
@@ -1175,7 +1498,7 @@ async function upsertUser(user) {
       updateSet.lastSignedIn = /* @__PURE__ */ new Date();
     }
     await db.insert(users).values(values).onDuplicateKeyUpdate({
-      set: updateSet
+      set: updateSet,
     });
   } catch (error) {
     console.error("[Database] Failed to upsert user:", error);
@@ -1188,12 +1511,16 @@ async function getUserByOpenId(openId) {
     console.warn("[Database] Cannot get user: database not available");
     return void 0;
   }
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.openId, openId))
+    .limit(1);
   return result.length > 0 ? result[0] : void 0;
 }
 
 // server/_core/sdk.ts
-var isNonEmptyString2 = (value) => typeof value === "string" && value.length > 0;
+var isNonEmptyString2 = value => typeof value === "string" && value.length > 0;
 var EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
 var GET_USER_INFO_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfo`;
 var GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfoWithJwt`;
@@ -1215,28 +1542,23 @@ var OAuthService = class {
       clientId: ENV.appId,
       grantType: "authorization_code",
       code,
-      redirectUri: this.decodeState(state)
+      redirectUri: this.decodeState(state),
     };
-    const { data } = await this.client.post(
-      EXCHANGE_TOKEN_PATH,
-      payload
-    );
+    const { data } = await this.client.post(EXCHANGE_TOKEN_PATH, payload);
     return data;
   }
   async getUserInfoByToken(token) {
-    const { data } = await this.client.post(
-      GET_USER_INFO_PATH,
-      {
-        accessToken: token.accessToken
-      }
-    );
+    const { data } = await this.client.post(GET_USER_INFO_PATH, {
+      accessToken: token.accessToken,
+    });
     return data;
   }
 };
-var createOAuthHttpClient = () => axios.create({
-  baseURL: ENV.oAuthServerUrl,
-  timeout: AXIOS_TIMEOUT_MS
-});
+var createOAuthHttpClient = () =>
+  axios.create({
+    baseURL: ENV.oAuthServerUrl,
+    timeout: AXIOS_TIMEOUT_MS,
+  });
 var SDKServer = class {
   client;
   oauthService;
@@ -1247,13 +1569,14 @@ var SDKServer = class {
   deriveLoginMethod(platforms, fallback) {
     if (fallback && fallback.length > 0) return fallback;
     if (!Array.isArray(platforms) || platforms.length === 0) return null;
-    const set = new Set(
-      platforms.filter((p) => typeof p === "string")
-    );
+    const set = new Set(platforms.filter(p => typeof p === "string"));
     if (set.has("REGISTERED_PLATFORM_EMAIL")) return "email";
     if (set.has("REGISTERED_PLATFORM_GOOGLE")) return "google";
     if (set.has("REGISTERED_PLATFORM_APPLE")) return "apple";
-    if (set.has("REGISTERED_PLATFORM_MICROSOFT") || set.has("REGISTERED_PLATFORM_AZURE"))
+    if (
+      set.has("REGISTERED_PLATFORM_MICROSOFT") ||
+      set.has("REGISTERED_PLATFORM_AZURE")
+    )
       return "microsoft";
     if (set.has("REGISTERED_PLATFORM_GITHUB")) return "github";
     const first = Array.from(set)[0];
@@ -1274,7 +1597,7 @@ var SDKServer = class {
    */
   async getUserInfo(accessToken) {
     const data = await this.oauthService.getUserInfoByToken({
-      accessToken
+      accessToken,
     });
     const loginMethod = this.deriveLoginMethod(
       data?.platforms,
@@ -1283,7 +1606,7 @@ var SDKServer = class {
     return {
       ...data,
       platform: loginMethod,
-      loginMethod
+      loginMethod,
     };
   }
   parseCookies(cookieHeader) {
@@ -1307,7 +1630,7 @@ var SDKServer = class {
       {
         openId,
         appId: ENV.appId,
-        name: options.name || ""
+        name: options.name || "",
       },
       options
     );
@@ -1320,8 +1643,11 @@ var SDKServer = class {
     return new SignJWT({
       openId: payload.openId,
       appId: payload.appId,
-      name: payload.name
-    }).setProtectedHeader({ alg: "HS256", typ: "JWT" }).setExpirationTime(expirationSeconds).sign(secretKey);
+      name: payload.name,
+    })
+      .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+      .setExpirationTime(expirationSeconds)
+      .sign(secretKey);
   }
   async verifySession(cookieValue) {
     if (!cookieValue) {
@@ -1331,17 +1657,21 @@ var SDKServer = class {
     try {
       const secretKey = this.getSessionSecret();
       const { payload } = await jwtVerify(cookieValue, secretKey, {
-        algorithms: ["HS256"]
+        algorithms: ["HS256"],
       });
       const { openId, appId, name } = payload;
-      if (!isNonEmptyString2(openId) || !isNonEmptyString2(appId) || !isNonEmptyString2(name)) {
+      if (
+        !isNonEmptyString2(openId) ||
+        !isNonEmptyString2(appId) ||
+        !isNonEmptyString2(name)
+      ) {
         console.warn("[Auth] Session payload missing required fields");
         return null;
       }
       return {
         openId,
         appId,
-        name
+        name,
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
@@ -1351,7 +1681,7 @@ var SDKServer = class {
   async getUserInfoWithJwt(jwtToken) {
     const payload = {
       jwtToken,
-      projectId: ENV.appId
+      projectId: ENV.appId,
     };
     const { data } = await this.client.post(
       GET_USER_INFO_WITH_JWT_PATH,
@@ -1364,7 +1694,7 @@ var SDKServer = class {
     return {
       ...data,
       platform: loginMethod,
-      loginMethod
+      loginMethod,
     };
   }
   async authenticateRequest(req) {
@@ -1399,7 +1729,7 @@ var SDKServer = class {
           name: userInfo.name || null,
           email: userInfo.email ?? null,
           loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt
+          lastSignedIn: signedInAt,
         });
         user = await getUserByOpenId(userInfo.openId);
       } catch (error) {
@@ -1412,7 +1742,7 @@ var SDKServer = class {
     }
     await upsertUser({
       openId: user.openId,
-      lastSignedIn: signedInAt
+      lastSignedIn: signedInAt,
     });
     return user;
   }
@@ -1431,7 +1761,7 @@ function buildCronUser(userInfo) {
     updatedAt: now,
     lastSignedIn: now,
     taskUid: userInfo.taskUid ?? void 0,
-    isCron: true
+    isCron: true,
   };
 }
 var sdk = new SDKServer();
@@ -1447,7 +1777,7 @@ async function createContext(opts) {
   return {
     req: opts.req,
     res: opts.res,
-    user
+    user,
   };
 }
 
@@ -1462,7 +1792,7 @@ var common = {
   legacyHeaders: false,
   // ipKeyGenerator normalises IPv6 to a /64 prefix — without it a single client
   // can rotate through its own address range and get a fresh bucket each time.
-  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "")
+  keyGenerator: req => ipKeyGenerator(req.ip ?? ""),
 };
 function registerRateLimits(app) {
   app.set("trust proxy", 1);
@@ -1471,7 +1801,7 @@ function registerRateLimits(app) {
     rateLimit({
       ...common,
       limit: SEARCH_MAX,
-      message: { error: "Too many searches, please slow down." }
+      message: { error: "Too many searches, please slow down." },
     })
   );
   app.use(
@@ -1479,7 +1809,7 @@ function registerRateLimits(app) {
     rateLimit({
       ...common,
       limit: GENERAL_MAX,
-      message: { error: "Too many requests, please try again shortly." }
+      message: { error: "Too many requests, please try again shortly." },
     })
   );
 }
@@ -1497,7 +1827,7 @@ function createApp() {
       limit: 120,
       standardHeaders: "draft-7",
       legacyHeaders: false,
-      keyGenerator: (req) => ipKeyGenerator2(req.ip ?? "")
+      keyGenerator: req => ipKeyGenerator2(req.ip ?? ""),
     }),
     imgProxyHandler
   );
@@ -1505,7 +1835,7 @@ function createApp() {
     "/api/trpc",
     createExpressMiddleware({
       router: appRouter,
-      createContext
+      createContext,
     })
   );
   return app;
@@ -1513,6 +1843,4 @@ function createApp() {
 
 // server/vercelEntry.ts
 var vercelEntry_default = createApp();
-export {
-  vercelEntry_default as default
-};
+export { vercelEntry_default as default };
