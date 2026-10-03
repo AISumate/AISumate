@@ -110,7 +110,10 @@ const pillActive =
 const pillInactive =
   "border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 data-[state=open]:text-foreground data-[state=open]:border-primary/50";
 
-export function GroupedCategoryNav({ activeTab, onChange }: GroupedCategoryNavProps) {
+export function GroupedCategoryNav({
+  activeTab,
+  onChange,
+}: GroupedCategoryNavProps) {
   const { t } = useLanguage();
 
   return (
@@ -118,7 +121,7 @@ export function GroupedCategoryNav({ activeTab, onChange }: GroupedCategoryNavPr
     <div className="sticky top-20 z-30 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="container flex flex-wrap items-center justify-center gap-1 py-2 sm:gap-1.5 sm:py-2.5">
         {/* Direct buttons: the home page and the main catalogue. */}
-        {DIRECT_TABS.map((tab) => (
+        {DIRECT_TABS.map(tab => (
           <button
             key={tab.tabValue}
             type="button"
@@ -129,8 +132,10 @@ export function GroupedCategoryNav({ activeTab, onChange }: GroupedCategoryNavPr
           </button>
         ))}
 
-        {NAV_GROUPS.map((group) => {
-          const containsActive = group.tabs.some((tab) => tab.tabValue === activeTab);
+        {NAV_GROUPS.map(group => {
+          const containsActive = group.tabs.some(
+            tab => tab.tabValue === activeTab
+          );
           return (
             <DropdownMenu key={group.labelKey}>
               <DropdownMenuTrigger
@@ -140,14 +145,16 @@ export function GroupedCategoryNav({ activeTab, onChange }: GroupedCategoryNavPr
                 <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-[200px]">
-                {group.tabs.map((tab) => {
+                {group.tabs.map(tab => {
                   const isActive = tab.tabValue === activeTab;
                   return (
                     <DropdownMenuItem
                       key={tab.tabValue}
                       onSelect={() => onChange(tab.tabValue)}
                       className={
-                        isActive ? "text-primary font-semibold data-[highlighted]:text-primary" : ""
+                        isActive
+                          ? "text-primary font-semibold data-[highlighted]:text-primary"
+                          : ""
                       }
                     >
                       <Check

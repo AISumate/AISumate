@@ -66,7 +66,8 @@ export function FilterBar({
 }: FilterBarProps) {
   const { t } = useLanguage();
 
-  const hasActiveFilters = searchTerm.trim() || filters.some((f) => f.value !== "all");
+  const hasActiveFilters =
+    searchTerm.trim() || filters.some(f => f.value !== "all");
 
   return (
     // Glass panel: the tabs' gridline background otherwise runs straight through
@@ -81,7 +82,7 @@ export function FilterBar({
             type="text"
             placeholder={t(searchPlaceholderKey as never)}
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={e => onSearchChange(e.target.value)}
             className="pl-10 pr-10 h-11"
             aria-label={t(searchPlaceholderKey as never)}
           />
@@ -99,18 +100,18 @@ export function FilterBar({
         {/* Sort dropdown */}
         {sort && (
           <div className="flex items-center gap-2">
-            <Select
-              value={sort.field}
-              onValueChange={sort.onFieldChange}
-            >
-              <SelectTrigger className="w-[180px] h-11" aria-label={t("sortBy")}>
+            <Select value={sort.field} onValueChange={sort.onFieldChange}>
+              <SelectTrigger
+                className="w-[180px] h-11"
+                aria-label={t("sortBy")}
+              >
                 <div className="flex items-center gap-2">
                   <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
                   <SelectValue />
                 </div>
               </SelectTrigger>
               <SelectContent>
-                {sort.options.map((opt) => (
+                {sort.options.map(opt => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {t(opt.labelKey as never)}
                   </SelectItem>
@@ -124,9 +125,15 @@ export function FilterBar({
               size="icon"
               className="h-11 w-11 shrink-0"
               onClick={() =>
-                sort.onDirectionChange(sort.direction === "asc" ? "desc" : "asc")
+                sort.onDirectionChange(
+                  sort.direction === "asc" ? "desc" : "asc"
+                )
               }
-              aria-label={sort.direction === "asc" ? t("sortDescending") : t("sortAscending")}
+              aria-label={
+                sort.direction === "asc"
+                  ? t("sortDescending")
+                  : t("sortAscending")
+              }
             >
               {sort.direction === "asc" ? (
                 <ArrowUp className="h-4 w-4" />
@@ -142,7 +149,10 @@ export function FilterBar({
           className="ml-auto hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap"
           title={t("ratingsLegendFull")}
         >
-          <Star className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
+          <Star
+            className="h-3 w-3 shrink-0"
+            style={{ color: "var(--primary)" }}
+          />
           {t("ratingsLegend")}
         </span>
       </div>
@@ -150,22 +160,29 @@ export function FilterBar({
       {/* Filter dropdowns row */}
       {filters.length > 0 && (
         <div className="flex flex-wrap items-center gap-3">
-          {filters.map((filter) => (
+          {filters.map(filter => (
             <Select
               key={filter.key}
               value={filter.value}
               onValueChange={filter.onChange}
             >
-              <SelectTrigger className="w-[160px] h-10" aria-label={t(filter.placeholderKey as never)}>
+              <SelectTrigger
+                className="w-[160px] h-10"
+                aria-label={t(filter.placeholderKey as never)}
+              >
                 <SelectValue placeholder={t(filter.placeholderKey as never)} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{filter.allLabel ?? t("allOption")}</SelectItem>
-                {filter.options.filter((opt) => opt.value !== "all").map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">
+                  {filter.allLabel ?? t("allOption")}
+                </SelectItem>
+                {filter.options
+                  .filter(opt => opt.value !== "all")
+                  .map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           ))}
@@ -201,12 +218,14 @@ export function FilterBar({
  */
 export function buildFilterOptions<T>(
   items: T[],
-  getter: (item: T) => string,
+  getter: (item: T) => string
 ): FilterOption[] {
   const set = new Set<string>();
-  items.forEach((item) => {
+  items.forEach(item => {
     const val = getter(item);
     if (val && val.trim()) set.add(val.trim());
   });
-  return Array.from(set).sort((a, b) => a.localeCompare(b)).map((val) => ({ value: val, label: val }));
+  return Array.from(set)
+    .sort((a, b) => a.localeCompare(b))
+    .map(val => ({ value: val, label: val }));
 }

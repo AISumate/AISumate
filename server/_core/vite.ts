@@ -65,6 +65,8 @@ export function serveStatic(app: Express) {
   // index.html as the fallback for plain `vite build` output.
   app.use("*", (_req, res) => {
     const appHtml = path.resolve(distPath, "app.html");
-    res.sendFile(fs.existsSync(appHtml) ? appHtml : path.resolve(distPath, "index.html"));
+    res.sendFile(
+      fs.existsSync(appHtml) ? appHtml : path.resolve(distPath, "index.html")
+    );
   });
 }

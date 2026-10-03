@@ -29,7 +29,10 @@ import { ToolLanding } from "./ToolLanding";
 
 // Table param -> which tRPC list router serves it, and which response field
 // holds the rows. Whitelist doubles as the 404 guard for junk table params.
-const TABLE_SOURCES: Record<string, { router: string; field: "tools" | "models" | "repos" }> = {
+const TABLE_SOURCES: Record<
+  string,
+  { router: string; field: "tools" | "models" | "repos" }
+> = {
   tools: { router: "tools", field: "tools" },
   llms: { router: "llms", field: "models" },
   github: { router: "github", field: "repos" },
@@ -53,7 +56,10 @@ const TABLE_SOURCES: Record<string, { router: string; field: "tools" | "models" 
   aiSites: { router: "aiSites", field: "tools" },
   aiDiscord: { router: "aiDiscord", field: "tools" },
   auSeoTools: { router: "auSeoTools", field: "tools" },
-  sumateTopRecommendations: { router: "sumateTopRecommendations", field: "tools" },
+  sumateTopRecommendations: {
+    router: "sumateTopRecommendations",
+    field: "tools",
+  },
   thisWeeksAiPicks: { router: "thisWeeksAiPicks", field: "tools" },
 };
 
@@ -83,16 +89,19 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
   // `table` is constant for this component instance (remounted via key on the
   // route below), so this conditional hook is stable across renders.
   const query = source
-    ? (trpc as any)[source.router].list.useQuery(undefined, { refetchOnWindowFocus: false })
+    ? (trpc as any)[source.router].list.useQuery(undefined, {
+        refetchOnWindowFocus: false,
+      })
     : null;
 
   const rows: AnyListing[] = useMemo(
-    () => (source && query?.data ? ((query.data as any)[source.field] ?? []) : []),
-    [source, query?.data],
+    () =>
+      source && query?.data ? ((query.data as any)[source.field] ?? []) : [],
+    [source, query?.data]
   );
   const item: AnyListing | undefined = useMemo(
     () => rows.find((r: AnyListing) => r.id === id),
-    [rows, id],
+    [rows, id]
   );
 
   const name = item ? item.name || item.title || "" : "";
@@ -123,16 +132,26 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
       : item.descriptionEn || item.summaryEn) ||
     item.description ||
     "";
-  const category = item.category || item.providerType || item.topic || item.platform || item.owner || "";
+  const category =
+    item.category ||
+    item.providerType ||
+    item.topic ||
+    item.platform ||
+    item.owner ||
+    "";
   const url = item.url || item.repoUrl || item.dealUrl || item.website || "";
-  const visitUrl = item.isAffiliate && item.affiliateUrl ? item.affiliateUrl : url;
+  const visitUrl =
+    item.isAffiliate && item.affiliateUrl ? item.affiliateUrl : url;
 
   return (
     <article className="mx-auto max-w-2xl">
       <div className="flex items-center gap-4">
         <div
           className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl ring-2 ring-border"
-          style={{ backgroundColor: "color-mix(in oklch, var(--primary) 12%, var(--card))" }}
+          style={{
+            backgroundColor:
+              "color-mix(in oklch, var(--primary) 12%, var(--card))",
+          }}
         >
           <ToolIcon
             iconUrl={item.iconUrl}
@@ -151,7 +170,10 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
           </h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             {category && (
-              <Badge variant="outline" className="border-primary/30 text-primary">
+              <Badge
+                variant="outline"
+                className="border-primary/30 text-primary"
+              >
                 {category}
               </Badge>
             )}
@@ -163,11 +185,15 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
       </div>
 
       {description && (
-        <p className="mt-6 text-base leading-relaxed text-foreground">{description}</p>
+        <p className="mt-6 text-base leading-relaxed text-foreground">
+          {description}
+        </p>
       )}
 
       {item.isAffiliate && item.affiliateUrl && (
-        <p className="mt-3 text-xs italic text-muted-foreground">{t("affiliateDisclosure")}</p>
+        <p className="mt-3 text-xs italic text-muted-foreground">
+          {t("affiliateDisclosure")}
+        </p>
       )}
 
       <div className="mt-6">
@@ -214,7 +240,11 @@ export default function ToolPage() {
           {t("backHome")}
         </Link>
         {/* key: remount when the target changes so the dynamic table hook stays stable */}
-        <ToolPageInner key={`${params.table}/${params.id}`} table={params.table} id={params.id} />
+        <ToolPageInner
+          key={`${params.table}/${params.id}`}
+          table={params.table}
+          id={params.id}
+        />
       </main>
       <Footer />
     </div>

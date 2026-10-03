@@ -2,20 +2,21 @@
 
 ## Record Counts (Total: 4,557)
 
-| Table | ID | Count |
-|---|---|---|
-| AI Tools | tblS7vjGSuWROZFq9r9 | 850 |
-| GitHub Repos | tblFsDHe3wZJd4bFYhE | 2,601 |
-| LLMs | tblv1YURAXKHjeBw9AP | 698 |
-| Video & Image | tblOlwqkcsmPHNOdwJq | 115 |
-| Music & Voice | tbljwEByCe3W8XOzX6O | 99 |
-| Chatbots & Agents | tble6TC5cfMmNFB7RX7 | 180 |
-| AI News | tblRHsm9twyvqImIjnO | 0 |
-| LTDs | tblDHspvIvj0Gun70CE | 14 |
+| Table             | ID                  | Count |
+| ----------------- | ------------------- | ----- |
+| AI Tools          | tblS7vjGSuWROZFq9r9 | 850   |
+| GitHub Repos      | tblFsDHe3wZJd4bFYhE | 2,601 |
+| LLMs              | tblv1YURAXKHjeBw9AP | 698   |
+| Video & Image     | tblOlwqkcsmPHNOdwJq | 115   |
+| Music & Voice     | tbljwEByCe3W8XOzX6O | 99    |
+| Chatbots & Agents | tble6TC5cfMmNFB7RX7 | 180   |
+| AI News           | tblRHsm9twyvqImIjnO | 0     |
+| LTDs              | tblDHspvIvj0Gun70CE | 14    |
 
 ## Field Structures
 
 ### AI Tools (tblS7vjGSuWROZFq9r9)
+
 - Name (string)
 - Slug (string)
 - Summary - EN (string) — English description
@@ -28,6 +29,7 @@
 - AffiliateUrl (string) — affiliate URL (when Affiliate is true)
 
 ### GitHub Repos (tblFsDHe3wZJd4bFYhE)
+
 - Name (string)
 - Repository URL (string)
 - Description (string)
@@ -40,6 +42,7 @@
 - Rating 1-5 (string/number)
 
 ### LLMs (tblv1YURAXKHjeBw9AP)
+
 - Name (string)
 - Summary - EN (string)
 - Summary - ES (string)
@@ -53,6 +56,7 @@
 - Affiliate (boolean)
 
 ### Video & Image (tblOlwqkcsmPHNOdwJq)
+
 - Name (string)
 - Slug (string)
 - OutboundUrl (string)
@@ -63,6 +67,7 @@
 - Rating 1-5 (string/number)
 
 ### Music & Voice (tbljwEByCe3W8XOzX6O)
+
 - Name (string)
 - Slug (string)
 - OutboundUrl (string)
@@ -73,6 +78,7 @@
 - Rating 1-5 (string/number)
 
 ### Chatbots & Agents (tble6TC5cfMmNFB7RX7)
+
 - Name (string)
 - Slug (string)
 - OutboundUrl (string)
@@ -85,9 +91,11 @@
 - Affiliate URL (string) — note: space in field name!
 
 ### AI News (tblRHsm9twyvqImIjnO)
+
 - No records yet
 
 ### LTDs (tblDHspvIvj0Gun70CE)
+
 - Name (string)
 - Website (string)
 - Summary (string) — legacy field

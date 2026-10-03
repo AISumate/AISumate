@@ -16,7 +16,10 @@ export default function NotFound() {
       <main className="container flex flex-1 flex-col items-center justify-center py-24 text-center">
         <div
           className="flex h-16 w-16 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: "color-mix(in oklch, var(--primary) 12%, var(--card))" }}
+          style={{
+            backgroundColor:
+              "color-mix(in oklch, var(--primary) 12%, var(--card))",
+          }}
         >
           <Compass className="h-8 w-8 text-primary" />
         </div>
@@ -26,7 +29,9 @@ export default function NotFound() {
         >
           404
         </h1>
-        <h2 className="mt-2 text-xl font-semibold text-foreground">{t("notFoundTitle")}</h2>
+        <h2 className="mt-2 text-xl font-semibold text-foreground">
+          {t("notFoundTitle")}
+        </h2>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
           {t("notFoundBody")}
         </p>

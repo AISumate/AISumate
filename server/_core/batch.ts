@@ -1,6 +1,6 @@
 /** Delay helper for staggering API calls to avoid rate limits. */
 export function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -10,11 +10,15 @@ export function delay(ms: number): Promise<void> {
  * rate limit; combined with fetchWithRetry's 429/503 backoff this stays well
  * inside the 30s function budget.
  */
-export async function staggeredAll<T>(tasks: (() => Promise<T>)[], batchSize = 2, delayMs = 350): Promise<T[]> {
+export async function staggeredAll<T>(
+  tasks: (() => Promise<T>)[],
+  batchSize = 2,
+  delayMs = 350
+): Promise<T[]> {
   const results: T[] = [];
   for (let i = 0; i < tasks.length; i += batchSize) {
     const batch = tasks.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch.map((task) => task()));
+    const batchResults = await Promise.all(batch.map(task => task()));
     results.push(...batchResults);
     if (i + batchSize < tasks.length) {
       await delay(delayMs);

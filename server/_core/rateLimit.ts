@@ -42,7 +42,7 @@ export function registerRateLimits(app: Express) {
       ...common,
       limit: SEARCH_MAX,
       message: { error: "Too many searches, please slow down." },
-    }),
+    })
   );
 
   app.use(
@@ -51,6 +51,6 @@ export function registerRateLimits(app: Express) {
       ...common,
       limit: GENERAL_MAX,
       message: { error: "Too many requests, please try again shortly." },
-    }),
+    })
   );
 }

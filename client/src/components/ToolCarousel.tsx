@@ -37,7 +37,7 @@ export function ToolCarousel({ tools }: { tools: AiTool[] }) {
             className="w-full"
           >
             <CarouselContent className="-ml-4">
-              {tools.map((tool) => (
+              {tools.map(tool => (
                 <CarouselItem
                   key={tool.id}
                   className="pl-4 basis-[160px] sm:basis-[180px] md:basis-[200px]"
@@ -46,8 +46,14 @@ export function ToolCarousel({ tools }: { tools: AiTool[] }) {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="-left-2 left-2" aria-label={t("previousSlide")} />
-            <CarouselNext className="-right-2 right-2" aria-label={t("nextSlide")} />
+            <CarouselPrevious
+              className="-left-2 left-2"
+              aria-label={t("previousSlide")}
+            />
+            <CarouselNext
+              className="-right-2 right-2"
+              aria-label={t("nextSlide")}
+            />
           </Carousel>
         </div>
       </div>

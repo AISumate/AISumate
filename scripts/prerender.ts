@@ -19,7 +19,13 @@
  * legal pages without the catalogue, and never blocks a deploy.
  */
 import "dotenv/config";
-import { readFileSync, writeFileSync, existsSync, rmSync, mkdirSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  rmSync,
+  mkdirSync,
+} from "node:fs";
 import path from "node:path";
 import {
   GENERIC_TABLES,
@@ -31,7 +37,11 @@ import {
 } from "../server/teable";
 import { PRIVACY, TERMS, type LegalDoc } from "../shared/legalContent";
 import { isLandingTable } from "../shared/simpleTables";
-import { cleanReviewText, cleanVerdict, splitReviewItems } from "../shared/reviewSanitize";
+import {
+  cleanReviewText,
+  cleanVerdict,
+  splitReviewItems,
+} from "../shared/reviewSanitize";
 import { blogSlug } from "../shared/blogSlug";
 import { mshotsUrl } from "../shared/screenshot";
 import { proxyImg } from "../server/imgProxy";
@@ -84,21 +94,36 @@ function safeUrl(u: string): string {
 }
 
 function truncate(s: string, n = 200): string {
-  const t = String(s ?? "").replace(/\s+/g, " ").trim();
+  const t = String(s ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
   return t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-function normalize(item: any, tableKey: string, fallbackCategory: string): Entry {
+function normalize(
+  item: any,
+  tableKey: string,
+  fallbackCategory: string
+): Entry {
   return {
     tableKey,
     id: String(item.id ?? ""),
     name: item.name || item.title || "",
     desc:
-      item.descriptionEn || item.summaryEn || item.description || item.whyViral || "",
+      item.descriptionEn ||
+      item.summaryEn ||
+      item.description ||
+      item.whyViral ||
+      "",
     url: item.url || item.repoUrl || item.dealUrl || item.website || "",
     category:
-      item.category || item.providerType || item.topic || item.platform || fallbackCategory || "",
+      item.category ||
+      item.providerType ||
+      item.topic ||
+      item.platform ||
+      fallbackCategory ||
+      "",
     rating: typeof item.rating === "number" ? item.rating : 0,
     pros: item.prosEn || "",
     cons: item.consEn || "",
@@ -122,9 +147,15 @@ function reviewHtml(title: string, body: string): string {
   if (!text) return "";
   const paras = text
     .split(/\n{2,}/)
-    .map((p) => p.replace(/^[#>\-*\s]+/, "").replace(/\*\*/g, "").replace(/\s+/g, " ").trim())
+    .map(p =>
+      p
+        .replace(/^[#>\-*\s]+/, "")
+        .replace(/\*\*/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+    )
     .filter(Boolean)
-    .map((p) => `<p>${esc(p)}</p>`)
+    .map(p => `<p>${esc(p)}</p>`)
     .join("");
   return `<h2>Our review</h2>${title ? `<h3>${esc(title)}</h3>` : ""}${paras}`;
 }
@@ -137,22 +168,24 @@ async function collect(): Promise<Entry[]> {
     fetchGithubRepos().catch(() => []),
     fetchWeeklyViralGithubRepos().catch(() => []),
   ]);
-  groups.push(aiTools.map((t) => normalize(t, "tools", "AI Tools")));
-  groups.push(llms.map((t) => normalize(t, "llms", "LLMs")));
-  groups.push(repos.map((t) => normalize(t, "github", "GitHub Repos")));
-  groups.push(viral.map((t) => normalize(t, "weeklyViralGithub", "GitHub Repos")));
+  groups.push(aiTools.map(t => normalize(t, "tools", "AI Tools")));
+  groups.push(llms.map(t => normalize(t, "llms", "LLMs")));
+  groups.push(repos.map(t => normalize(t, "github", "GitHub Repos")));
+  groups.push(
+    viral.map(t => normalize(t, "weeklyViralGithub", "GitHub Repos"))
+  );
 
   // Generic tables one at a time — gentle on Teable's rate limit.
   for (const table of GENERIC_TABLES) {
     try {
       const rows = await fetchGenericTools(table.key);
-      groups.push(rows.map((t) => normalize(t, table.key, table.label)));
+      groups.push(rows.map(t => normalize(t, table.key, table.label)));
     } catch {
       // skip a table that fails; keep the rest
     }
   }
 
-  return groups.flat().filter((e) => e.name && e.id);
+  return groups.flat().filter(e => e.name && e.id);
 }
 
 /* ------------------------------ shared chrome ------------------------------ */
@@ -209,7 +242,7 @@ function reviewList(label: string, raw: string): string {
   // ("unverified", "unable to verify", "domain parked") clause by clause.
   const items = splitReviewItems(raw);
   if (!items.length) return "";
-  return `<h2>${esc(label)}</h2><ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
+  return `<h2>${esc(label)}</h2><ul>${items.map(i => `<li>${esc(i)}</li>`).join("")}</ul>`;
 }
 
 /**
@@ -241,7 +274,9 @@ function toolImage(e: Entry): { shot: string; ogImage: string } {
   // URL is a resource Googlebot is forbidden to fetch. Proxied, it becomes a
   // same-origin URL our own robots.txt allows (and the edge caches it).
   const auto =
-    isLandingTable(e.tableKey) && href ? safeImgUrl(proxyImg(mshotsUrl(href, 1200))) : "";
+    isLandingTable(e.tableKey) && href
+      ? safeImgUrl(proxyImg(mshotsUrl(href, 1200)))
+      : "";
   const shot = curated[0] || auto;
   return { shot, ogImage: shot || safeImgUrl(e.iconUrl) };
 }
@@ -252,7 +287,8 @@ function toolPageHtml(e: Entry): string {
   const { shot, ogImage } = toolImage(e);
   const title = `${e.name} — aisumate`;
   const metaDesc =
-    cleanReviewText(e.desc) || `${e.name} on aisumate, the human-curated AI tools directory.`;
+    cleanReviewText(e.desc) ||
+    `${e.name} on aisumate, the human-curated AI tools directory.`;
   const canonicalPath = `/tool/${e.tableKey}/${e.id}`;
 
   // Per-listing share card, so a pasted link previews as the tool rather than
@@ -285,8 +321,12 @@ function toolPageHtml(e: Entry): string {
     reviewList("Cons", e.cons) +
     // Cost is chips on the page; join the surviving clauses back into a
     // sentence here, so a wholly-unverified cost renders nothing at all.
-    (costParts.length ? `<h2>Cost</h2><p>${esc(costParts.join("; "))}</p>` : "") +
-    (cleanedVerdict ? `<h2>Verdict</h2><p><em>${esc(cleanedVerdict)}</em></p>` : "") +
+    (costParts.length
+      ? `<h2>Cost</h2><p>${esc(costParts.join("; "))}</p>`
+      : "") +
+    (cleanedVerdict
+      ? `<h2>Verdict</h2><p><em>${esc(cleanedVerdict)}</em></p>`
+      : "") +
     reviewHtml(e.reviewTitle, e.review) +
     (href
       ? `<a class="visit" href="${esc(href)}" rel="sponsored nofollow noopener noreferrer">Visit ${esc(e.name)}</a>`
@@ -332,8 +372,8 @@ async function collectBlog(): Promise<BlogEntry[]> {
     return [];
   }
   return rows
-    .filter((r) => String(r.bodyEn ?? "").trim())
-    .map((r) => ({
+    .filter(r => String(r.bodyEn ?? "").trim())
+    .map(r => ({
       slug: blogSlug(r.slug, r.id),
       name: r.name,
       desc: r.descriptionEn || "",
@@ -369,20 +409,29 @@ function blogPageHtml(e: BlogEntry): string {
   // Markdown in, plain paragraphs out — same reasoning as reviewHtml().
   const paras = e.body
     .split(/\n{2,}/)
-    .map((p) => p.trim())
+    .map(p => p.trim())
     .filter(Boolean)
-    .map((p) => {
+    .map(p => {
       const heading = /^(#{2,6})\s+(.*)$/.exec(p.split("\n")[0]);
       if (heading) return `<h2>${esc(heading[2].replace(/\*\*/g, ""))}</h2>`;
-      return `<p>${esc(p.replace(/^[#>\-*\s]+/, "").replace(/\*\*/g, "").replace(/\s+/g, " "))}</p>`;
+      return `<p>${esc(
+        p
+          .replace(/^[#>\-*\s]+/, "")
+          .replace(/\*\*/g, "")
+          .replace(/\s+/g, " ")
+      )}</p>`;
     })
     .join("");
 
   const body =
     `<h1>${esc(e.name)}</h1>` +
-    `<p class="meta">${[e.category, e.author && `By ${e.author}`, e.publishedDate.slice(0, 10)]
+    `<p class="meta">${[
+      e.category,
+      e.author && `By ${e.author}`,
+      e.publishedDate.slice(0, 10),
+    ]
       .filter(Boolean)
-      .map((s) => esc(String(s)))
+      .map(s => esc(String(s)))
       .join(" · ")}</p>` +
     paras;
 
@@ -415,9 +464,9 @@ function legalHtml(doc: LegalDoc, canonicalPath: string): string {
     `<p>${esc(doc.intro)}</p>` +
     doc.sections
       .map(
-        (s) =>
+        s =>
           `<h2>${esc(s.heading)}</h2>` +
-          s.paragraphs.map((p) => `<p>${esc(p)}</p>`).join(""),
+          s.paragraphs.map(p => `<p>${esc(p)}</p>`).join("")
       )
       .join("");
   return staticShell({
@@ -434,7 +483,7 @@ function buildCatalogHtml(entries: Entry[], roundedTotal: string): string {
   // Dedupe by name for DISPLAY (a tool can live in several tables) — the kept
   // entry's internal page is the link target. Tool pages exist for every entry.
   const seen = new Set<string>();
-  const deduped = entries.filter((e) => {
+  const deduped = entries.filter(e => {
     const k = e.name.toLowerCase().trim();
     if (seen.has(k)) return false;
     seen.add(k);
@@ -450,11 +499,11 @@ function buildCatalogHtml(entries: Entry[], roundedTotal: string): string {
   const cats = [...byCat.keys()].sort((a, b) => a.localeCompare(b));
 
   const sections = cats
-    .map((cat) => {
+    .map(cat => {
       const items = byCat
         .get(cat)!
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((e) => {
+        .map(e => {
           const desc = e.desc ? ` — ${esc(truncate(e.desc, 110))}` : "";
           return `<li><a href="/tool/${esc(e.tableKey)}/${esc(e.id)}"><strong>${esc(e.name)}</strong></a>${desc}</li>`;
         })
@@ -517,17 +566,14 @@ function buildSitemap(entries: Entry[], posts: BlogEntry[]): string {
     `${SITE_URL}/`,
     `${SITE_URL}/privacy`,
     `${SITE_URL}/terms`,
-    ...posts.map((p) => `${SITE_URL}/blog/${p.slug}`),
-    ...entries.map((e) => `${SITE_URL}/tool/${e.tableKey}/${e.id}`),
+    ...posts.map(p => `${SITE_URL}/blog/${p.slug}`),
+    ...entries.map(e => `${SITE_URL}/tool/${e.tableKey}/${e.id}`),
   ];
   return (
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls
-      .map(
-        (u) =>
-          `  <url><loc>${esc(u)}</loc><lastmod>${today}</lastmod></url>`,
-      )
+      .map(u => `  <url><loc>${esc(u)}</loc><lastmod>${today}</lastmod></url>`)
       .join("\n") +
     `\n</urlset>\n`
   );
@@ -545,7 +591,9 @@ const kb = (s: string) => Math.round(Buffer.byteLength(s) / 1024);
 
 async function main() {
   if (!existsSync(INDEX_HTML)) {
-    console.warn(`[prerender] ${INDEX_HTML} not found — run \`vite build\` first. Skipping.`);
+    console.warn(
+      `[prerender] ${INDEX_HTML} not found — run \`vite build\` first. Skipping.`
+    );
     return;
   }
   let shell = readFileSync(INDEX_HTML, "utf8");
@@ -553,15 +601,26 @@ async function main() {
   shell = strip(shell, LD_START, LD_END);
 
   // Legal static pages never depend on Teable — always written.
-  writeFileSync(path.join(OUT, "privacy.html"), legalHtml(PRIVACY.en, "/privacy"), "utf8");
-  writeFileSync(path.join(OUT, "terms.html"), legalHtml(TERMS.en, "/terms"), "utf8");
+  writeFileSync(
+    path.join(OUT, "privacy.html"),
+    legalHtml(PRIVACY.en, "/privacy"),
+    "utf8"
+  );
+  writeFileSync(
+    path.join(OUT, "terms.html"),
+    legalHtml(TERMS.en, "/terms"),
+    "utf8"
+  );
 
   // Best-effort catalogue: a failure here means no catalogue, never a broken build.
   let entries: Entry[] = [];
   try {
     entries = await collect();
   } catch (err) {
-    console.warn("[prerender] Teable fetch failed — shipping shell without catalogue.", err);
+    console.warn(
+      "[prerender] Teable fetch failed — shipping shell without catalogue.",
+      err
+    );
   }
 
   const jsonld = buildJsonLd(entries.length);
@@ -574,7 +633,7 @@ async function main() {
   const botHtml = entries.length
     ? humanHtml.replace(
         '<div id="root">',
-        `${buildCatalogHtml(entries, roundedCount(entries.length))}<div id="root">`,
+        `${buildCatalogHtml(entries, roundedCount(entries.length))}<div id="root">`
       )
     : humanHtml;
   writeFileSync(SEO_HTML, botHtml, "utf8");
@@ -586,7 +645,11 @@ async function main() {
   let toolPages = 0;
   if (entries.length) {
     toolPages = writeToolPages(entries);
-    writeFileSync(path.join(OUT, "sitemap.xml"), buildSitemap(entries, posts), "utf8");
+    writeFileSync(
+      path.join(OUT, "sitemap.xml"),
+      buildSitemap(entries, posts),
+      "utf8"
+    );
   }
 
   // Remove index.html so "/" resolves through the vercel.json UA rewrite
@@ -597,7 +660,7 @@ async function main() {
     `[prerender] app.html ${kb(humanHtml)} KB · seo.html ${kb(botHtml)} KB · ` +
       `${toolPages} tool pages · ${blogPages} blog pages · ` +
       `sitemap ${entries.length ? entries.length + posts.length + 3 : "(kept static)"} URLs · ` +
-      `privacy/terms static · removed index.html.`,
+      `privacy/terms static · removed index.html.`
   );
 }
 

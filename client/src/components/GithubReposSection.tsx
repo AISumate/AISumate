@@ -1,6 +1,14 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Star, ExternalLink, GitBranch, ArrowUp, ArrowDown, ArrowUpDown, Loader2 } from "lucide-react";
+import {
+  Star,
+  ExternalLink,
+  GitBranch,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+  Loader2,
+} from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
@@ -34,8 +42,8 @@ export function GithubReposSection() {
   const repos = data?.repos ?? [];
 
   const statusOptions = useMemo(
-    () => buildFilterOptions(repos, (r) => r.status),
-    [repos],
+    () => buildFilterOptions(repos, r => r.status),
+    [repos]
   );
 
   // Apply filters + sorting
@@ -45,14 +53,14 @@ export function GithubReposSection() {
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       result = result.filter(
-        (r) =>
+        r =>
           r.name.toLowerCase().includes(term) ||
           r.description.toLowerCase().includes(term) ||
-          r.owner.toLowerCase().includes(term),
+          r.owner.toLowerCase().includes(term)
       );
     }
     if (statusFilter !== "all") {
-      result = result.filter((r) => r.status === statusFilter);
+      result = result.filter(r => r.status === statusFilter);
     }
 
     const sorted = [...result].sort((a, b) => {
@@ -70,7 +78,7 @@ export function GithubReposSection() {
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+      setSortDirection(prev => (prev === "asc" ? "desc" : "asc"));
     } else {
       setSortField(field);
       setSortDirection(field === "stars" ? "desc" : "asc");
@@ -96,42 +104,62 @@ export function GithubReposSection() {
     );
   };
 
-  const sortButtonClass = "inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer select-none";
+  const sortButtonClass =
+    "inline-flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer select-none";
 
   return (
     <section className="py-12">
       <div>
-        <SectionHeading title={t("githubTitle")} subtitle={t("githubSubtitle")} />
+        <SectionHeading
+          title={t("githubTitle")}
+          subtitle={t("githubSubtitle")}
+        />
 
         {/* Hide the filter bar until data loads so it doesn't flash "0 results". */}
         {!isLoading && (
-        <FilterBar
-          searchTerm={searchTerm}
-          onSearchChange={(v: string) => { setSearchTerm(v); setDisplayCount(100); }}
-          filters={[
-            ...(statusOptions.length > 0
-              ? [{
-                  key: "status",
-                  value: statusFilter,
-                  onChange: (v: string) => { setStatusFilter(v); setDisplayCount(100); },
-                  options: statusOptions,
-                  placeholderKey: "filterByStatus",
-                }]
-              : []),
-          ]}
-          sort={{
-            field: sortField,
-            direction: sortDirection,
-            onFieldChange: (f) => handleSort(f as SortField),
-            onDirectionChange: (d) => setSortDirection(d as SortDirection),
-            options: [
-              { value: "stars", labelKey: "sortByStars", defaultDirection: "desc" },
-              { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
-            ],
-          }}
-          resultCount={processedRepos.length}
-          onReset={handleReset}
-        />
+          <FilterBar
+            searchTerm={searchTerm}
+            onSearchChange={(v: string) => {
+              setSearchTerm(v);
+              setDisplayCount(100);
+            }}
+            filters={[
+              ...(statusOptions.length > 0
+                ? [
+                    {
+                      key: "status",
+                      value: statusFilter,
+                      onChange: (v: string) => {
+                        setStatusFilter(v);
+                        setDisplayCount(100);
+                      },
+                      options: statusOptions,
+                      placeholderKey: "filterByStatus",
+                    },
+                  ]
+                : []),
+            ]}
+            sort={{
+              field: sortField,
+              direction: sortDirection,
+              onFieldChange: f => handleSort(f as SortField),
+              onDirectionChange: d => setSortDirection(d as SortDirection),
+              options: [
+                {
+                  value: "stars",
+                  labelKey: "sortByStars",
+                  defaultDirection: "desc",
+                },
+                {
+                  value: "name",
+                  labelKey: "sortByName",
+                  defaultDirection: "asc",
+                },
+              ],
+            }}
+            resultCount={processedRepos.length}
+            onReset={handleReset}
+          />
         )}
 
         {/* Repos table */}
@@ -167,34 +195,64 @@ export function GithubReposSection() {
                       <SortIcon field="stars" />
                     </button>
                   </th>
-                  <th className="text-center px-4 py-3 font-semibold text-foreground">{""}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-foreground">
+                    {""}
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {processedRepos.slice(0, displayCount).map((repo, idx) => (
-                  <tr key={repo.id} className={`border-b border-border last:border-0 hover:bg-accent/5 transition-colors tool-accent-${idx % 6}`}>
+                  <tr
+                    key={repo.id}
+                    className={`border-b border-border last:border-0 hover:bg-accent/5 transition-colors tool-accent-${idx % 6}`}
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <GitBranch className="h-4 w-4 shrink-0" style={{ color: "var(--tool-accent)" }} />
+                        <GitBranch
+                          className="h-4 w-4 shrink-0"
+                          style={{ color: "var(--tool-accent)" }}
+                        />
                         <div className="min-w-0">
-                          <p className="font-medium text-foreground truncate">{repo.name}</p>
-                          <p className="text-xs text-muted-foreground">{repo.owner}</p>
+                          <p className="font-medium text-foreground truncate">
+                            {repo.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {repo.owner}
+                          </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
-                      <p className="text-muted-foreground line-clamp-2 max-w-md">{repo.description}</p>
+                      <p className="text-muted-foreground line-clamp-2 max-w-md">
+                        {repo.description}
+                      </p>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center gap-1 text-foreground font-medium">
-                        <Star className="h-3.5 w-3.5 fill-current" style={{ color: "var(--tool-accent)" }} />
+                        <Star
+                          className="h-3.5 w-3.5 fill-current"
+                          style={{ color: "var(--tool-accent)" }}
+                        />
                         {formatCompactNumber(repo.stars)}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
                       {repo.repoUrl && (
-                        <Button asChild size="sm" variant="outline" style={{ borderColor: "color-mix(in oklch, var(--tool-accent) 30%, transparent)", color: "var(--tool-accent)" }}>
-                          <a href={repo.repoUrl} target="_blank" rel="nofollow noopener noreferrer">
+                        <Button
+                          asChild
+                          size="sm"
+                          variant="outline"
+                          style={{
+                            borderColor:
+                              "color-mix(in oklch, var(--tool-accent) 30%, transparent)",
+                            color: "var(--tool-accent)",
+                          }}
+                        >
+                          <a
+                            href={repo.repoUrl}
+                            target="_blank"
+                            rel="nofollow noopener noreferrer"
+                          >
                             <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                         </Button>
@@ -206,18 +264,22 @@ export function GithubReposSection() {
             </table>
           </div>
         ) : (
-          <p className="text-center py-12 text-muted-foreground">{t("noResults")}</p>
+          <p className="text-center py-12 text-muted-foreground">
+            {t("noResults")}
+          </p>
         )}
 
         {processedRepos.length > displayCount && (
           <div className="flex flex-col items-center gap-3 mt-6">
             <p className="text-xs text-muted-foreground">
-              {t("showingResults").replace("{shown}", String(displayCount)).replace("{total}", String(processedRepos.length))}
+              {t("showingResults")
+                .replace("{shown}", String(displayCount))
+                .replace("{total}", String(processedRepos.length))}
             </p>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setDisplayCount((prev) => prev + 100)}
+              onClick={() => setDisplayCount(prev => prev + 100)}
               className="border-primary/30 text-primary hover:bg-primary/5"
             >
               {t("loadMore")}

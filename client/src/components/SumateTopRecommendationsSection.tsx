@@ -27,16 +27,21 @@ interface TopRecommendation extends ReviewInfo {
  * Visit Channel button links out. It previously used a hover card, which is
  * unusable on touch devices.
  */
-export function SumateTopRecommendationsSection({ limit }: { limit?: number } = {}) {
+export function SumateTopRecommendationsSection({
+  limit,
+}: { limit?: number } = {}) {
   const { t } = useLanguage();
-  const { data, isLoading } = trpc.sumateTopRecommendations.list.useQuery(undefined);
+  const { data, isLoading } =
+    trpc.sumateTopRecommendations.list.useQuery(undefined);
 
   const items = (data?.tools ?? []) as TopRecommendation[];
 
   if (isLoading || items.length === 0) return null;
 
   // Ranked 1..N (unranked rows sink to the bottom).
-  const ranked = [...items].sort((a, b) => (a.rank || Infinity) - (b.rank || Infinity));
+  const ranked = [...items].sort(
+    (a, b) => (a.rank || Infinity) - (b.rank || Infinity)
+  );
   const sorted = limit ? ranked.slice(0, limit) : ranked;
 
   return (

@@ -42,18 +42,28 @@ export function LegalPage({ doc }: { doc: { en: LegalDoc; es: LegalDoc } }) {
           >
             {d.title}
           </h1>
-          <p className="mt-1 text-xs text-muted-foreground" style={{ fontFamily: "var(--font-mono)" }}>
+          <p
+            className="mt-1 text-xs text-muted-foreground"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
             {t("legalUpdated")}: {d.updated}
           </p>
         </div>
 
-        <p className="mt-6 text-base leading-relaxed text-foreground">{d.intro}</p>
+        <p className="mt-6 text-base leading-relaxed text-foreground">
+          {d.intro}
+        </p>
 
-        {d.sections.map((s) => (
+        {d.sections.map(s => (
           <section key={s.heading} className="mt-8">
-            <h2 className="text-xl font-semibold text-foreground">{s.heading}</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              {s.heading}
+            </h2>
             {s.paragraphs.map((p, i) => (
-              <p key={i} className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              <p
+                key={i}
+                className="mt-3 text-sm leading-relaxed text-muted-foreground"
+              >
                 {p}
               </p>
             ))}

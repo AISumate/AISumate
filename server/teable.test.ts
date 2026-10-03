@@ -78,7 +78,9 @@ const mockFetchAiInfraTools = vi.mocked(fetchAiInfraTools);
 const mockFetchHardwareTools = vi.mocked(fetchHardwareTools);
 const mockFetchTestingTools = vi.mocked(fetchTestingTools);
 const mockFetchAiSecurityTools = vi.mocked(fetchAiSecurityTools);
-const mockFetchBusinessProductivityTools = vi.mocked(fetchBusinessProductivityTools);
+const mockFetchBusinessProductivityTools = vi.mocked(
+  fetchBusinessProductivityTools
+);
 const mockFetchMcpProvidersTools = vi.mocked(fetchMcpProvidersTools);
 const mockFetchVpsCloudTools = vi.mocked(fetchVpsCloudTools);
 const mockFetchAiMediaTools = vi.mocked(fetchAiMediaTools);
@@ -86,7 +88,9 @@ const mockFetchAiInfluencersTools = vi.mocked(fetchAiInfluencersTools);
 const mockFetchAiSitesTools = vi.mocked(fetchAiSitesTools);
 const mockFetchAiDiscordTools = vi.mocked(fetchAiDiscordTools);
 const mockFetchAuSeoTools = vi.mocked(fetchAuSeoTools);
-const mockFetchSumateTopRecommendations = vi.mocked(fetchSumateTopRecommendations);
+const mockFetchSumateTopRecommendations = vi.mocked(
+  fetchSumateTopRecommendations
+);
 const mockFetchThisWeeksAiPicks = vi.mocked(fetchThisWeeksAiPicks);
 
 function createPublicContext(): { ctx: TrpcContext } {
@@ -99,42 +103,232 @@ function createPublicContext(): { ctx: TrpcContext } {
 }
 
 const sampleTools = [
-  { id: "rec1", name: "ChatGPT", descriptionEn: "AI chat assistant", descriptionEs: "Asistente de chat IA", category: "Chatbot", url: "https://chat.openai.com", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
-  { id: "rec2", name: "Midjourney", descriptionEn: "AI image generation", descriptionEs: "Generación de imágenes IA", category: "Image", url: "https://midjourney.com", affiliateUrl: "", iconUrl: "", isAffiliate: true, rating: 0 },
-  { id: "rec3", name: "Notion AI", descriptionEn: "AI writing assistant", descriptionEs: "Asistente de escritura IA", category: "Writing", url: "https://notion.so", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
-  { id: "rec4", name: "AlphaFold", descriptionEn: "Protein structure prediction", descriptionEs: "Predicción de estructura de proteínas", category: "Research", url: "https://alphafold.com", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
+  {
+    id: "rec1",
+    name: "ChatGPT",
+    descriptionEn: "AI chat assistant",
+    descriptionEs: "Asistente de chat IA",
+    category: "Chatbot",
+    url: "https://chat.openai.com",
+    affiliateUrl: "",
+    iconUrl: "",
+    isAffiliate: false,
+    rating: 0,
+  },
+  {
+    id: "rec2",
+    name: "Midjourney",
+    descriptionEn: "AI image generation",
+    descriptionEs: "Generación de imágenes IA",
+    category: "Image",
+    url: "https://midjourney.com",
+    affiliateUrl: "",
+    iconUrl: "",
+    isAffiliate: true,
+    rating: 0,
+  },
+  {
+    id: "rec3",
+    name: "Notion AI",
+    descriptionEn: "AI writing assistant",
+    descriptionEs: "Asistente de escritura IA",
+    category: "Writing",
+    url: "https://notion.so",
+    affiliateUrl: "",
+    iconUrl: "",
+    isAffiliate: false,
+    rating: 0,
+  },
+  {
+    id: "rec4",
+    name: "AlphaFold",
+    descriptionEn: "Protein structure prediction",
+    descriptionEs: "Predicción de estructura de proteínas",
+    category: "Research",
+    url: "https://alphafold.com",
+    affiliateUrl: "",
+    iconUrl: "",
+    isAffiliate: false,
+    rating: 0,
+  },
 ];
 
 // Pre-sorted by stars descending (as fetchGithubRepos would do)
 const sampleRepos = [
-  { id: "r2", name: "langchain/langchain", repoUrl: "https://github.com/langchain/langchain", description: "Building applications with LLMs", owner: "langchain", language: "Python", stars: 80000, status: "Active" },
-  { id: "r1", name: "openai/whisper", repoUrl: "https://github.com/openai/whisper", description: "Robust speech recognition", owner: "openai", language: "Python", stars: 50000, status: "Active" },
-  { id: "r3", name: "microsoft/semantic-kernel", repoUrl: "https://github.com/microsoft/semantic-kernel", description: "Integrate AI services", owner: "microsoft", language: "C#", stars: 20000, status: "Active" },
+  {
+    id: "r2",
+    name: "langchain/langchain",
+    repoUrl: "https://github.com/langchain/langchain",
+    description: "Building applications with LLMs",
+    owner: "langchain",
+    language: "Python",
+    stars: 80000,
+    status: "Active",
+  },
+  {
+    id: "r1",
+    name: "openai/whisper",
+    repoUrl: "https://github.com/openai/whisper",
+    description: "Robust speech recognition",
+    owner: "openai",
+    language: "Python",
+    stars: 50000,
+    status: "Active",
+  },
+  {
+    id: "r3",
+    name: "microsoft/semantic-kernel",
+    repoUrl: "https://github.com/microsoft/semantic-kernel",
+    description: "Integrate AI services",
+    owner: "microsoft",
+    language: "C#",
+    stars: 20000,
+    status: "Active",
+  },
 ];
 
 // Pre-sorted by Weekly Rank ascending (as fetchWeeklyViralGithubRepos would do)
 const sampleWeeklyViralRepos = [
-  { id: "w1", name: "Zackriya-Solutions/meetily", repoUrl: "https://github.com/Zackriya-Solutions/meetily", descriptionEn: "Privacy-first AI meeting assistant", descriptionEs: "Asistente de reuniones IA que prioriza la privacidad", owner: "Zackriya-Solutions", language: "Rust", stars: 22957, starsThisWeek: 8795, weeklyRank: 1, weekEnding: "2026-07-11T00:00:00.000Z", whyViral: "Growing backlash against cloud meeting bots.", iconUrl: "", rating: 0 },
-  { id: "w2", name: "asgeirtj/system_prompts_leaks", repoUrl: "https://github.com/asgeirtj/system_prompts_leaks", descriptionEn: "Extracted system prompts from major AI providers", descriptionEs: "Prompts de sistema extraídos de los principales proveedores de IA", owner: "asgeirtj", language: "JavaScript", stars: 56033, starsThisWeek: 7765, weeklyRank: 2, weekEnding: "2026-07-11T00:00:00.000Z", whyViral: "Perennial curiosity about frontier assistants.", iconUrl: "", rating: 0 },
+  {
+    id: "w1",
+    name: "Zackriya-Solutions/meetily",
+    repoUrl: "https://github.com/Zackriya-Solutions/meetily",
+    descriptionEn: "Privacy-first AI meeting assistant",
+    descriptionEs: "Asistente de reuniones IA que prioriza la privacidad",
+    owner: "Zackriya-Solutions",
+    language: "Rust",
+    stars: 22957,
+    starsThisWeek: 8795,
+    weeklyRank: 1,
+    weekEnding: "2026-07-11T00:00:00.000Z",
+    whyViral: "Growing backlash against cloud meeting bots.",
+    iconUrl: "",
+    rating: 0,
+  },
+  {
+    id: "w2",
+    name: "asgeirtj/system_prompts_leaks",
+    repoUrl: "https://github.com/asgeirtj/system_prompts_leaks",
+    descriptionEn: "Extracted system prompts from major AI providers",
+    descriptionEs:
+      "Prompts de sistema extraídos de los principales proveedores de IA",
+    owner: "asgeirtj",
+    language: "JavaScript",
+    stars: 56033,
+    starsThisWeek: 7765,
+    weeklyRank: 2,
+    weekEnding: "2026-07-11T00:00:00.000Z",
+    whyViral: "Perennial curiosity about frontier assistants.",
+    iconUrl: "",
+    rating: 0,
+  },
 ];
 
 // Pre-sorted alphabetically (as fetchLlmModels would do)
 const sampleLlms = [
-  { id: "l2", name: "Claude", summaryEn: "AI assistant for text", summaryEs: "Asistente de IA para texto", providerType: "Model Provider", url: "https://claude.ai", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
-  { id: "l3", name: "Gemini", summaryEn: "AI platform by Google", summaryEs: "Plataforma de IA de Google", providerType: "Model Provider", url: "https://gemini.google.com", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
-  { id: "l1", name: "OpenAI", summaryEn: "GPT-based APIs", summaryEs: "APIs basadas en GPT", providerType: "Model Provider", url: "https://openai.com", affiliateUrl: "", iconUrl: "", isAffiliate: false, rating: 0 },
+  {
+    id: "l2",
+    name: "Claude",
+    summaryEn: "AI assistant for text",
+    summaryEs: "Asistente de IA para texto",
+    providerType: "Model Provider",
+    url: "https://claude.ai",
+    affiliateUrl: "",
+    iconUrl: "",
+    isAffiliate: false,
+    rating: 0,
+  },
+  {
+    id: "l3",
+    name: "Gemini",
+    summaryEn: "AI platform by Google",
+    summaryEs: "Plataforma de IA de Google",
+    providerType: "Model Provider",
+    url: "https://gemini.google.com",
+    affiliateUrl: "",
+    iconUrl: "",
+    isAffiliate: false,
+    rating: 0,
+  },
+  {
+    id: "l1",
+    name: "OpenAI",
+    summaryEn: "GPT-based APIs",
+    summaryEs: "APIs basadas en GPT",
+    providerType: "Model Provider",
+    url: "https://openai.com",
+    affiliateUrl: "",
+    iconUrl: "",
+    isAffiliate: false,
+    rating: 0,
+  },
 ];
 
 const sampleLtds = [
-  { id: "d1", name: "ToolX LTD", website: "https://toolx.com", summaryEn: "Lifetime deal for AI tool", summaryEs: "Oferta de por vida para herramienta IA", dealUrl: "https://toolx.com/deal", platform: "AppSumo", status: "Active", iconUrl: "", rating: 0 },
-  { id: "d2", name: "WriteAI LTD", website: "https://writeai.com", summaryEn: "Lifetime deal for writing AI", summaryEs: "Oferta de por vida para IA de escritura", dealUrl: "https://writeai.com/deal", platform: "StackSocial", status: "Active", iconUrl: "", rating: 0 },
+  {
+    id: "d1",
+    name: "ToolX LTD",
+    website: "https://toolx.com",
+    summaryEn: "Lifetime deal for AI tool",
+    summaryEs: "Oferta de por vida para herramienta IA",
+    dealUrl: "https://toolx.com/deal",
+    platform: "AppSumo",
+    status: "Active",
+    iconUrl: "",
+    rating: 0,
+  },
+  {
+    id: "d2",
+    name: "WriteAI LTD",
+    website: "https://writeai.com",
+    summaryEn: "Lifetime deal for writing AI",
+    summaryEs: "Oferta de por vida para IA de escritura",
+    dealUrl: "https://writeai.com/deal",
+    platform: "StackSocial",
+    status: "Active",
+    iconUrl: "",
+    rating: 0,
+  },
 ];
 
 // Pre-sorted alphabetically (as fetch functions would do)
 const sampleGenericTools = [
-  { id: "g1", name: "DALL-E", descriptionEn: "AI image generator", descriptionEs: "Generador de imágenes IA", url: "https://openai.com/dall-e", affiliateUrl: "", iconUrl: "", category: "Image", isAffiliate: false, rating: 0 },
-  { id: "g2", name: "Suno", descriptionEn: "AI music generator", descriptionEs: "Generador de música IA", url: "https://suno.com", affiliateUrl: "", iconUrl: "", category: "Music", isAffiliate: true, rating: 0 },
-  { id: "g3", name: "Synthesia", descriptionEn: "AI video creator", descriptionEs: "Creador de video IA", url: "https://synthesia.io", affiliateUrl: "", iconUrl: "", category: "Video", isAffiliate: false, rating: 0 },
+  {
+    id: "g1",
+    name: "DALL-E",
+    descriptionEn: "AI image generator",
+    descriptionEs: "Generador de imágenes IA",
+    url: "https://openai.com/dall-e",
+    affiliateUrl: "",
+    iconUrl: "",
+    category: "Image",
+    isAffiliate: false,
+    rating: 0,
+  },
+  {
+    id: "g2",
+    name: "Suno",
+    descriptionEn: "AI music generator",
+    descriptionEs: "Generador de música IA",
+    url: "https://suno.com",
+    affiliateUrl: "",
+    iconUrl: "",
+    category: "Music",
+    isAffiliate: true,
+    rating: 0,
+  },
+  {
+    id: "g3",
+    name: "Synthesia",
+    descriptionEn: "AI video creator",
+    descriptionEs: "Creador de video IA",
+    url: "https://synthesia.io",
+    affiliateUrl: "",
+    iconUrl: "",
+    category: "Video",
+    isAffiliate: false,
+    rating: 0,
+  },
 ];
 
 describe("tools.list", () => {
@@ -213,7 +407,12 @@ describe("tools.categories", () => {
 
     const result = await caller.tools.categories();
 
-    expect(result.categories).toEqual(["Chatbot", "Image", "Research", "Writing"]);
+    expect(result.categories).toEqual([
+      "Chatbot",
+      "Image",
+      "Research",
+      "Writing",
+    ]);
   });
 
   it("returns empty array when no tools exist", async () => {
@@ -473,7 +672,9 @@ describe("chatbots.list", () => {
 });
 
 describe("freeApis.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all free APIs tools sorted alphabetically", async () => {
     mockFetchFreeApisTools.mockResolvedValue(sampleGenericTools);
@@ -496,7 +697,9 @@ describe("freeApis.list", () => {
 });
 
 describe("freeLlmIde.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all free LLM & IDE tools sorted alphabetically", async () => {
     mockFetchFreeLlmIdeTools.mockResolvedValue(sampleGenericTools);
@@ -510,7 +713,9 @@ describe("freeLlmIde.list", () => {
 });
 
 describe("vibeCoding.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all vibe coding tools sorted alphabetically", async () => {
     mockFetchVibeCodingTools.mockResolvedValue(sampleGenericTools);
@@ -524,7 +729,9 @@ describe("vibeCoding.list", () => {
 });
 
 describe("designerTools.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all designer tools sorted alphabetically", async () => {
     mockFetchDesignerTools.mockResolvedValue(sampleGenericTools);
@@ -538,7 +745,9 @@ describe("designerTools.list", () => {
 });
 
 describe("aiInfra.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all AI infrastructure tools sorted alphabetically", async () => {
     mockFetchAiInfraTools.mockResolvedValue(sampleGenericTools);
@@ -552,7 +761,9 @@ describe("aiInfra.list", () => {
 });
 
 describe("hardware.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all hardware tools sorted alphabetically", async () => {
     mockFetchHardwareTools.mockResolvedValue(sampleGenericTools);
@@ -566,7 +777,9 @@ describe("hardware.list", () => {
 });
 
 describe("testingTools.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all testing tools sorted alphabetically", async () => {
     mockFetchTestingTools.mockResolvedValue(sampleGenericTools);
@@ -589,7 +802,9 @@ describe("testingTools.list", () => {
 });
 
 describe("aiSecurity.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all AI security tools sorted alphabetically", async () => {
     mockFetchAiSecurityTools.mockResolvedValue(sampleGenericTools);
@@ -602,7 +817,9 @@ describe("aiSecurity.list", () => {
 });
 
 describe("businessProductivity.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all business productivity tools sorted alphabetically", async () => {
     mockFetchBusinessProductivityTools.mockResolvedValue(sampleGenericTools);
@@ -615,7 +832,9 @@ describe("businessProductivity.list", () => {
 });
 
 describe("mcpProviders.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all MCP provider tools sorted alphabetically", async () => {
     mockFetchMcpProvidersTools.mockResolvedValue(sampleGenericTools);
@@ -628,7 +847,9 @@ describe("mcpProviders.list", () => {
 });
 
 describe("vpsCloud.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all VPS & cloud tools sorted alphabetically", async () => {
     mockFetchVpsCloudTools.mockResolvedValue(sampleGenericTools);
@@ -641,7 +862,9 @@ describe("vpsCloud.list", () => {
 });
 
 describe("aiMedia.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all AI media tools sorted alphabetically", async () => {
     mockFetchAiMediaTools.mockResolvedValue(sampleGenericTools);
@@ -654,7 +877,9 @@ describe("aiMedia.list", () => {
 });
 
 describe("aiInfluencers.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all AI influencers sorted alphabetically", async () => {
     mockFetchAiInfluencersTools.mockResolvedValue(sampleGenericTools);
@@ -667,7 +892,9 @@ describe("aiInfluencers.list", () => {
 });
 
 describe("aiSites.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all AI sites sorted alphabetically", async () => {
     mockFetchAiSitesTools.mockResolvedValue(sampleGenericTools);
@@ -680,7 +907,9 @@ describe("aiSites.list", () => {
 });
 
 describe("aiDiscord.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all AI Discord servers sorted alphabetically", async () => {
     mockFetchAiDiscordTools.mockResolvedValue(sampleGenericTools);
@@ -693,7 +922,9 @@ describe("aiDiscord.list", () => {
 });
 
 describe("auSeoTools.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all AU SEO tools sorted alphabetically", async () => {
     mockFetchAuSeoTools.mockResolvedValue(sampleGenericTools);
@@ -716,7 +947,9 @@ describe("auSeoTools.list", () => {
 });
 
 describe("sumateTopRecommendations.list", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("returns all Sumate Top Recommendations sorted alphabetically", async () => {
     mockFetchSumateTopRecommendations.mockResolvedValue(sampleGenericTools);
@@ -732,7 +965,9 @@ describe("sumateTopRecommendations.list", () => {
     mockFetchSumateTopRecommendations.mockResolvedValue(sampleGenericTools);
     const { ctx } = createPublicContext();
     const caller = appRouter.createCaller(ctx);
-    const result = await caller.sumateTopRecommendations.list({ search: "suno" });
+    const result = await caller.sumateTopRecommendations.list({
+      search: "suno",
+    });
     expect(result.tools).toHaveLength(1);
     expect(result.tools[0].name).toBe("Suno");
   });
@@ -743,14 +978,38 @@ describe("search.global", () => {
   // `.list` endpoints above — resetAllMocks (not clearAllMocks) is required so
   // an un-mocked fetcher here returns undefined (caught, treated as empty)
   // instead of silently keeping whatever another describe block last resolved.
-  beforeEach(() => { vi.resetAllMocks(); });
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
 
   it("dedupes a tool cross-listed in AI Tools and its specialized table, preferring the specialized match", async () => {
     mockFetchAllTools.mockResolvedValue([
-      { id: "g2", name: "Suno", descriptionEn: "AI music generator", descriptionEs: "Generador de música IA", url: "https://suno.com", affiliateUrl: "", iconUrl: "", category: "Music", isAffiliate: true, rating: 0 },
+      {
+        id: "g2",
+        name: "Suno",
+        descriptionEn: "AI music generator",
+        descriptionEs: "Generador de música IA",
+        url: "https://suno.com",
+        affiliateUrl: "",
+        iconUrl: "",
+        category: "Music",
+        isAffiliate: true,
+        rating: 0,
+      },
     ]);
     mockFetchMusicVoiceTools.mockResolvedValue([
-      { id: "mv1", name: "Suno", descriptionEn: "AI music generator", descriptionEs: "Generador de música IA", url: "https://suno.com", affiliateUrl: "", iconUrl: "", category: "Music & Voice", isAffiliate: true, rating: 0 },
+      {
+        id: "mv1",
+        name: "Suno",
+        descriptionEn: "AI music generator",
+        descriptionEs: "Generador de música IA",
+        url: "https://suno.com",
+        affiliateUrl: "",
+        iconUrl: "",
+        category: "Music & Voice",
+        isAffiliate: true,
+        rating: 0,
+      },
     ]);
     const { ctx } = createPublicContext();
     const caller = appRouter.createCaller(ctx);
@@ -764,10 +1023,32 @@ describe("search.global", () => {
 
   it("keeps distinct tools from different tables un-deduped", async () => {
     mockFetchAllTools.mockResolvedValue([
-      { id: "g1", name: "DALL-E", descriptionEn: "AI image generator", descriptionEs: "Generador de imágenes IA", url: "https://openai.com/dall-e", affiliateUrl: "", iconUrl: "", category: "Image", isAffiliate: false, rating: 0 },
+      {
+        id: "g1",
+        name: "DALL-E",
+        descriptionEn: "AI image generator",
+        descriptionEs: "Generador de imágenes IA",
+        url: "https://openai.com/dall-e",
+        affiliateUrl: "",
+        iconUrl: "",
+        category: "Image",
+        isAffiliate: false,
+        rating: 0,
+      },
     ]);
     mockFetchMusicVoiceTools.mockResolvedValue([
-      { id: "mv1", name: "Suno", descriptionEn: "AI music generator", descriptionEs: "Generador de música IA", url: "https://suno.com", affiliateUrl: "", iconUrl: "", category: "Music & Voice", isAffiliate: true, rating: 0 },
+      {
+        id: "mv1",
+        name: "Suno",
+        descriptionEn: "AI music generator",
+        descriptionEs: "Generador de música IA",
+        url: "https://suno.com",
+        affiliateUrl: "",
+        iconUrl: "",
+        category: "Music & Voice",
+        isAffiliate: true,
+        rating: 0,
+      },
     ]);
     const { ctx } = createPublicContext();
     const caller = appRouter.createCaller(ctx);
@@ -780,7 +1061,18 @@ describe("search.global", () => {
 
   it("matches a multi-word query when every word appears (not as one contiguous substring)", async () => {
     mockFetchFreeApisTools.mockResolvedValue([
-      { id: "fa1", name: "OpenRouter", descriptionEn: "A free LLM API gateway for many models", descriptionEs: "Una API LLM gratuita", url: "https://openrouter.ai", affiliateUrl: "", iconUrl: "", category: "Free APIs", isAffiliate: false, rating: 0 },
+      {
+        id: "fa1",
+        name: "OpenRouter",
+        descriptionEn: "A free LLM API gateway for many models",
+        descriptionEs: "Una API LLM gratuita",
+        url: "https://openrouter.ai",
+        affiliateUrl: "",
+        iconUrl: "",
+        category: "Free APIs",
+        isAffiliate: false,
+        rating: 0,
+      },
     ]);
     const { ctx } = createPublicContext();
     const caller = appRouter.createCaller(ctx);
@@ -795,10 +1087,32 @@ describe("search.global", () => {
 
   it("ranks a name match above a description-only match", async () => {
     mockFetchAllTools.mockResolvedValue([
-      { id: "d1", name: "Zebra Writer", descriptionEn: "An assistant powered by Claude under the hood", descriptionEs: "", url: "https://zebra.example", affiliateUrl: "", iconUrl: "", category: "Writing", isAffiliate: false, rating: 5 },
+      {
+        id: "d1",
+        name: "Zebra Writer",
+        descriptionEn: "An assistant powered by Claude under the hood",
+        descriptionEs: "",
+        url: "https://zebra.example",
+        affiliateUrl: "",
+        iconUrl: "",
+        category: "Writing",
+        isAffiliate: false,
+        rating: 5,
+      },
     ]);
     mockFetchChatbotsTools.mockResolvedValue([
-      { id: "c1", name: "Claude", descriptionEn: "Anthropic's AI assistant", descriptionEs: "El asistente de Anthropic", url: "https://claude.ai", affiliateUrl: "", iconUrl: "", category: "Chatbots", isAffiliate: false, rating: 0 },
+      {
+        id: "c1",
+        name: "Claude",
+        descriptionEn: "Anthropic's AI assistant",
+        descriptionEs: "El asistente de Anthropic",
+        url: "https://claude.ai",
+        affiliateUrl: "",
+        iconUrl: "",
+        category: "Chatbots",
+        isAffiliate: false,
+        rating: 0,
+      },
     ]);
     const { ctx } = createPublicContext();
     const caller = appRouter.createCaller(ctx);

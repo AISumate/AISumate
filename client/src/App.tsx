@@ -10,6 +10,7 @@ import ToolPage from "./pages/ToolPage";
 import BlogPost from "./pages/BlogPost";
 import { LegalPage } from "./pages/LegalPage";
 import { PRIVACY, TERMS } from "@shared/legalContent";
+import { Analytics } from "@vercel/analytics/react";
 
 function Router() {
   return (
@@ -35,14 +36,12 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        switchable
-      >
+      <ThemeProvider defaultTheme="light" switchable>
         <LanguageProvider>
           <TooltipProvider>
             <Toaster />
             <Router />
+            <Analytics />
           </TooltipProvider>
         </LanguageProvider>
       </ThemeProvider>

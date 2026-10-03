@@ -1,11 +1,23 @@
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Tag, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { FilterBar, buildFilterOptions } from "./FilterBar";
-import { accentClassFor, ReviewDetails, reviewHoverCardClass, SectionHeading, StarRating, ToolIcon, VisitButton } from "./toolVisuals";
+import {
+  accentClassFor,
+  ReviewDetails,
+  reviewHoverCardClass,
+  SectionHeading,
+  StarRating,
+  ToolIcon,
+  VisitButton,
+} from "./toolVisuals";
 
 export function LtdsSection() {
   const { t, language } = useLanguage();
@@ -22,12 +34,12 @@ export function LtdsSection() {
   const deals = data?.deals ?? [];
 
   const platformOptions = useMemo(
-    () => buildFilterOptions(deals, (d) => d.platform),
-    [deals],
+    () => buildFilterOptions(deals, d => d.platform),
+    [deals]
   );
   const statusOptions = useMemo(
-    () => buildFilterOptions(deals, (d) => d.status),
-    [deals],
+    () => buildFilterOptions(deals, d => d.status),
+    [deals]
   );
 
   const filteredDeals = useMemo(() => {
@@ -35,17 +47,17 @@ export function LtdsSection() {
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       result = result.filter(
-        (d) =>
+        d =>
           d.name.toLowerCase().includes(term) ||
           d.summaryEn.toLowerCase().includes(term) ||
-          d.summaryEs.toLowerCase().includes(term),
+          d.summaryEs.toLowerCase().includes(term)
       );
     }
     if (platformFilter !== "all") {
-      result = result.filter((d) => d.platform === platformFilter);
+      result = result.filter(d => d.platform === platformFilter);
     }
     if (statusFilter !== "all") {
-      result = result.filter((d) => d.status === statusFilter);
+      result = result.filter(d => d.status === statusFilter);
     }
     const sorted = [...result].sort((a, b) => {
       let cmp = 0;
@@ -64,7 +76,14 @@ export function LtdsSection() {
       return sortDirection === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [deals, searchTerm, platformFilter, statusFilter, sortField, sortDirection]);
+  }, [
+    deals,
+    searchTerm,
+    platformFilter,
+    statusFilter,
+    sortField,
+    sortDirection,
+  ]);
 
   const handleReset = () => {
     setSearchTerm("");
@@ -81,44 +100,64 @@ export function LtdsSection() {
 
         {/* Hide the filter bar until data loads so it doesn't flash "0 results". */}
         {!isLoading && (
-        <FilterBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          filters={[
-            ...(platformOptions.length > 0
-              ? [{
-                  key: "platform",
-                  value: platformFilter,
-                  onChange: setPlatformFilter,
-                  options: platformOptions,
-                  placeholderKey: "filterByPlatform",
-                }]
-              : []),
-            ...(statusOptions.length > 0
-              ? [{
-                  key: "status",
-                  value: statusFilter,
-                  onChange: setStatusFilter,
-                  options: statusOptions,
-                  placeholderKey: "filterByStatus",
-                }]
-              : []),
-          ]}
-          sort={{
-            field: sortField,
-            direction: sortDirection,
-            onFieldChange: setSortField,
-            onDirectionChange: setSortDirection,
-            options: [
-              { value: "name", labelKey: "sortByName", defaultDirection: "asc" },
-              { value: "platform", labelKey: "sortByPlatform", defaultDirection: "asc" },
-              { value: "status", labelKey: "sortByStatus", defaultDirection: "asc" },
-              { value: "rating", labelKey: "sortByRating", defaultDirection: "desc" },
-            ],
-          }}
-          resultCount={filteredDeals.length}
-          onReset={handleReset}
-        />
+          <FilterBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            filters={[
+              ...(platformOptions.length > 0
+                ? [
+                    {
+                      key: "platform",
+                      value: platformFilter,
+                      onChange: setPlatformFilter,
+                      options: platformOptions,
+                      placeholderKey: "filterByPlatform",
+                    },
+                  ]
+                : []),
+              ...(statusOptions.length > 0
+                ? [
+                    {
+                      key: "status",
+                      value: statusFilter,
+                      onChange: setStatusFilter,
+                      options: statusOptions,
+                      placeholderKey: "filterByStatus",
+                    },
+                  ]
+                : []),
+            ]}
+            sort={{
+              field: sortField,
+              direction: sortDirection,
+              onFieldChange: setSortField,
+              onDirectionChange: setSortDirection,
+              options: [
+                {
+                  value: "name",
+                  labelKey: "sortByName",
+                  defaultDirection: "asc",
+                },
+                {
+                  value: "platform",
+                  labelKey: "sortByPlatform",
+                  defaultDirection: "asc",
+                },
+                {
+                  value: "status",
+                  labelKey: "sortByStatus",
+                  defaultDirection: "asc",
+                },
+                {
+                  value: "rating",
+                  labelKey: "sortByRating",
+                  defaultDirection: "desc",
+                },
+              ],
+            }}
+            resultCount={filteredDeals.length}
+            onReset={handleReset}
+          />
         )}
 
         {/* Deals grid */}
@@ -129,7 +168,8 @@ export function LtdsSection() {
         ) : filteredDeals.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {filteredDeals.map((deal, idx) => {
-              const summary = language === "es" ? deal.summaryEs : deal.summaryEn;
+              const summary =
+                language === "es" ? deal.summaryEs : deal.summaryEn;
               const visitUrl = deal.dealUrl || deal.website;
               return (
                 <HoverCard key={deal.id} openDelay={200} closeDelay={150}>
@@ -147,7 +187,8 @@ export function LtdsSection() {
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                         style={{
-                          background: "radial-gradient(circle at 50% 0%, color-mix(in oklch, var(--tool-accent) 8%, transparent), transparent 70%)",
+                          background:
+                            "radial-gradient(circle at 50% 0%, color-mix(in oklch, var(--tool-accent) 8%, transparent), transparent 70%)",
                         }}
                       />
 
@@ -155,7 +196,8 @@ export function LtdsSection() {
                       <div
                         className="flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden shrink-0 ring-2 ring-border group-hover:ring-[var(--tool-accent)] transition-all duration-200"
                         style={{
-                          backgroundColor: "color-mix(in oklch, var(--tool-accent) 12%, var(--card))",
+                          backgroundColor:
+                            "color-mix(in oklch, var(--tool-accent) 12%, var(--card))",
                         }}
                       >
                         <ToolIcon
@@ -163,7 +205,12 @@ export function LtdsSection() {
                           siteUrl={deal.website}
                           alt={deal.name}
                           className="h-full w-full object-contain"
-                          fallback={<Tag className="h-6 w-6" style={{ color: "var(--tool-accent)" }} />}
+                          fallback={
+                            <Tag
+                              className="h-6 w-6"
+                              style={{ color: "var(--tool-accent)" }}
+                            />
+                          }
                         />
                       </div>
 
@@ -178,7 +225,8 @@ export function LtdsSection() {
                           variant="secondary"
                           className="text-xs font-normal"
                           style={{
-                            backgroundColor: "color-mix(in oklch, var(--tool-accent) 15%, transparent)",
+                            backgroundColor:
+                              "color-mix(in oklch, var(--tool-accent) 15%, transparent)",
                             color: "var(--tool-accent)",
                           }}
                         >
@@ -188,20 +236,27 @@ export function LtdsSection() {
 
                       {/* New badge pinned to the corner so it never crowds the title */}
                       {deal.isNew && (
-                        <Badge className="absolute bottom-2 right-2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">New</Badge>
+                        <Badge className="absolute bottom-2 right-2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">
+                          New
+                        </Badge>
                       )}
                     </div>
                   </HoverCardTrigger>
 
                   {/* Accent class repeated: portal content doesn't inherit --tool-accent from the card */}
-                  <HoverCardContent className={`${reviewHoverCardClass(deal)} ${accentClassFor(idx)}`} align="center" sideOffset={8}>
+                  <HoverCardContent
+                    className={`${reviewHoverCardClass(deal)} ${accentClassFor(idx)}`}
+                    align="center"
+                    sideOffset={8}
+                  >
                     <div className="space-y-3">
                       {/* Header with icon + name */}
                       <div className="flex items-center gap-3">
                         <div
                           className="flex h-10 w-10 items-center justify-center rounded-lg overflow-hidden shrink-0"
                           style={{
-                            backgroundColor: "color-mix(in oklch, var(--tool-accent) 12%, var(--popover))",
+                            backgroundColor:
+                              "color-mix(in oklch, var(--tool-accent) 12%, var(--popover))",
                           }}
                         >
                           <ToolIcon
@@ -209,7 +264,12 @@ export function LtdsSection() {
                             siteUrl={deal.website}
                             alt={deal.name}
                             className="h-full w-full object-contain"
-                            fallback={<Tag className="h-5 w-5" style={{ color: "var(--tool-accent)" }} />}
+                            fallback={
+                              <Tag
+                                className="h-5 w-5"
+                                style={{ color: "var(--tool-accent)" }}
+                              />
+                            }
                           />
                         </div>
                         <div className="min-w-0">
@@ -218,7 +278,9 @@ export function LtdsSection() {
                               {deal.name}
                             </h4>
                             {deal.isNew && (
-                              <Badge className="shrink-0 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">New</Badge>
+                              <Badge className="shrink-0 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">
+                                New
+                              </Badge>
                             )}
                           </div>
                           <div className="flex flex-wrap gap-1.5 mt-1">
@@ -227,7 +289,8 @@ export function LtdsSection() {
                                 variant="outline"
                                 className="text-xs"
                                 style={{
-                                  borderColor: "color-mix(in oklch, var(--tool-accent) 30%, transparent)",
+                                  borderColor:
+                                    "color-mix(in oklch, var(--tool-accent) 30%, transparent)",
                                   color: "var(--tool-accent)",
                                 }}
                               >
@@ -235,7 +298,9 @@ export function LtdsSection() {
                               </Badge>
                             )}
                             {deal.status && (
-                              <Badge variant="outline" className="text-xs">{deal.status}</Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {deal.status}
+                              </Badge>
                             )}
                           </div>
                         </div>
@@ -243,7 +308,10 @@ export function LtdsSection() {
 
                       {/* Rating stars — note: guard must be boolean, `rating &&` renders a literal 0 */}
                       {(deal.rating ?? 0) > 0 && (
-                        <StarRating rating={deal.rating} accent="var(--tool-accent)" />
+                        <StarRating
+                          rating={deal.rating}
+                          accent="var(--tool-accent)"
+                        />
                       )}
 
                       {/* Description in the selected language */}
@@ -268,7 +336,9 @@ export function LtdsSection() {
             })}
           </div>
         ) : (
-          <p className="text-center py-12 text-muted-foreground">{t("noDeals")}</p>
+          <p className="text-center py-12 text-muted-foreground">
+            {t("noDeals")}
+          </p>
         )}
       </div>
     </section>

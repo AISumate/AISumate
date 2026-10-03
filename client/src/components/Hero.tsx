@@ -9,17 +9,26 @@ import { useLanguage } from "@/contexts/LanguageContext";
 function useHeroVideo(): boolean {
   const [enabled, setEnabled] = useState(false);
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
     // navigator.connection is non-standard; guard it.
     const saveData = Boolean(
-      (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData,
+      (navigator as unknown as { connection?: { saveData?: boolean } })
+        .connection?.saveData
     );
     setEnabled(!reduce && !saveData);
   }, []);
   return enabled;
 }
 
-export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: boolean }) {
+export function Hero({
+  toolCount,
+  isLoading,
+}: {
+  toolCount: number;
+  isLoading?: boolean;
+}) {
   const { t } = useLanguage();
   const showVideo = useHeroVideo();
 
@@ -68,46 +77,50 @@ export function Hero({ toolCount, isLoading }: { toolCount: number; isLoading?: 
 
         {/* Content sits above the frosted panel. */}
         <div className="relative z-10">
-        {/* Tools-indexed pill */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 backdrop-blur-sm px-3.5 py-1.5 text-xs font-semibold text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--chart-2)] pulse-dot" />
-          {isLoading ? (
-            <span className="h-4 w-10 animate-pulse rounded bg-muted-foreground/20" />
-          ) : (
-            <span className="text-foreground font-extrabold tabular-nums" style={{ fontFamily: "var(--font-mono)" }}>
-              {toolCount.toLocaleString()}
-            </span>
-          )}{" "}
-          {t("heroBadgeSuffix")}
-        </div>
+          {/* Tools-indexed pill */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 backdrop-blur-sm px-3.5 py-1.5 text-xs font-semibold text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--chart-2)] pulse-dot" />
+            {isLoading ? (
+              <span className="h-4 w-10 animate-pulse rounded bg-muted-foreground/20" />
+            ) : (
+              <span
+                className="text-foreground font-extrabold tabular-nums"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                {toolCount.toLocaleString()}
+              </span>
+            )}{" "}
+            {t("heroBadgeSuffix")}
+          </div>
 
-        {/* Headline */}
-        <h1 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.06] tracking-tight text-foreground fade-up">
-          {t("heroHeadlineLine1")} <span className="text-primary">{t("heroHeadlineHighlight")}</span>.
-          <br />
-          {t("heroHeadlineLine2")}
-        </h1>
+          {/* Headline */}
+          <h1 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.06] tracking-tight text-foreground fade-up">
+            {t("heroHeadlineLine1")}{" "}
+            <span className="text-primary">{t("heroHeadlineHighlight")}</span>.
+            <br />
+            {t("heroHeadlineLine2")}
+          </h1>
 
-        {/* Description */}
-        <p className="mt-4 max-w-xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed fade-up fade-up-delay-1">
-          {t("heroDescription")}
-        </p>
+          {/* Description */}
+          <p className="mt-4 max-w-xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed fade-up fade-up-delay-1">
+            {t("heroDescription")}
+          </p>
 
-        {/* Search and its quick-search chips moved to the Home tab, where hits
+          {/* Search and its quick-search chips moved to the Home tab, where hits
             render as full cards with Description and Open page instead of a
             dropdown that could only link out. */}
 
-        {/* Trust row */}
-        <div
-          className="mt-7 flex flex-wrap items-center justify-center gap-5 text-xs font-semibold text-muted-foreground fade-up fade-up-delay-2"
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <span className="text-[color:var(--chart-2)]">✓</span> {t("trustCurated")}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="text-[color:var(--chart-2)]">✓</span> {t("trustBilingual")}
-          </span>
-        </div>
+          {/* Trust row */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-5 text-xs font-semibold text-muted-foreground fade-up fade-up-delay-2">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-[color:var(--chart-2)]">✓</span>{" "}
+              {t("trustCurated")}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-[color:var(--chart-2)]">✓</span>{" "}
+              {t("trustBilingual")}
+            </span>
+          </div>
         </div>
       </div>
     </section>

@@ -68,15 +68,18 @@ export const translations = {
     legalUpdated: "Last updated",
     backHome: "Back to the directory",
     notFoundTitle: "Page not found",
-    notFoundBody: "That page doesn't exist — the whole directory lives on the home page.",
+    notFoundBody:
+      "That page doesn't exist — the whole directory lives on the home page.",
     goHome: "Go to the directory",
     openToolPage: "Open page",
     copyLink: "Copy link",
     linkCopied: "Link copied",
-    toolNotFound: "Listing not found — it may have been removed from the directory.",
+    toolNotFound:
+      "Listing not found — it may have been removed from the directory.",
     relatedIn: "Related in",
     fromTheMaker: "From the maker",
-    makerReserved: "This space is reserved for {name} — makers can add their own note, screenshots and a video here.",
+    makerReserved:
+      "This space is reserved for {name} — makers can add their own note, screenshots and a video here.",
     claimPage: "Claim this page",
     ourVerdict: "Our verdict",
     verdictSignature: "— aisumate editors",
@@ -131,14 +134,16 @@ export const translations = {
 
     // Weekly Viral GitHub Repos section
     weeklyViralGithubTitle: "This Week's Viral GitHub Repos",
-    weeklyViralGithubSubtitle: "The AI repos exploding on GitHub this week, ranked by trending velocity",
+    weeklyViralGithubSubtitle:
+      "The AI repos exploding on GitHub this week, ranked by trending velocity",
     weeklyViralWeekOf: "Week of",
     weeklyViralWhyViral: "Why it's viral",
     weeklyViralStarsThisWeek: "this week",
 
     // AU SEO Tools section
     auSeoToolsTitle: "AU SEO Tools",
-    auSeoToolsSubtitle: "AI-powered SEO and GEO/AEO tools for content optimization and search visibility",
+    auSeoToolsSubtitle:
+      "AI-powered SEO and GEO/AEO tools for content optimization and search visibility",
 
     // LLMs section
     llmTitle: "Large Language Models",
@@ -174,7 +179,8 @@ export const translations = {
 
     // Free LLM & IDE section
     freeLlmIdeTitle: "Free LLM & IDE",
-    freeLlmIdeSubtitle: "Free large language models and integrated development environments",
+    freeLlmIdeSubtitle:
+      "Free large language models and integrated development environments",
 
     // Vibe Coding section
     vibeCodingTitle: "Vibe Coding",
@@ -186,53 +192,66 @@ export const translations = {
 
     // AI Infrastructure section
     aiInfraTitle: "AI Infrastructure",
-    aiInfraSubtitle: "Infrastructure and platform tools for building AI applications",
+    aiInfraSubtitle:
+      "Infrastructure and platform tools for building AI applications",
 
     // Hardware & Computers section
     hardwareTitle: "Hardware & Computers",
-    hardwareSubtitle: "Hardware and computing devices optimized for AI workloads",
+    hardwareSubtitle:
+      "Hardware and computing devices optimized for AI workloads",
 
     // Testing Tools section
     testingToolsTitle: "Testing Tools",
-    testingToolsSubtitle: "AI-powered testing tools for QA and software testing teams",
+    testingToolsSubtitle:
+      "AI-powered testing tools for QA and software testing teams",
 
     // AI Security section
     aiSecurityTitle: "AI Security",
-    aiSecuritySubtitle: "Security tools and platforms for protecting AI systems and data",
+    aiSecuritySubtitle:
+      "Security tools and platforms for protecting AI systems and data",
 
     // Business Productivity section
     businessProductivityTitle: "Business Productivity",
-    businessProductivitySubtitle: "AI tools for boosting business productivity and team collaboration",
+    businessProductivitySubtitle:
+      "AI tools for boosting business productivity and team collaboration",
 
     // MCP Providers section
     mcpProvidersTitle: "MCP Providers",
-    mcpProvidersSubtitle: "Model Context Protocol providers and integration platforms",
+    mcpProvidersSubtitle:
+      "Model Context Protocol providers and integration platforms",
 
     // VPS & Cloud Providers section
     vpsCloudTitle: "VPS & Cloud Providers",
-    vpsCloudSubtitle: "Cloud hosting and VPS providers optimized for AI workloads",
+    vpsCloudSubtitle:
+      "Cloud hosting and VPS providers optimized for AI workloads",
 
     // AI Media section
     aiMediaTitle: "Blog",
-    aiMediaSubtitle: "Long-form comparisons and reports on the AI models and tools we test",
+    aiMediaSubtitle:
+      "Long-form comparisons and reports on the AI models and tools we test",
 
     // AI Influencers section
     aiInfluencersTitle: "AI Influencers",
-    aiInfluencersSubtitle: "Key voices and influencers shaping the AI industry and community",
+    aiInfluencersSubtitle:
+      "Key voices and influencers shaping the AI industry and community",
 
     // Sumate Top Recommendations — English-only, hidden entirely in Spanish
     sumateTopRecommendationsTitle: "Sumate Top Recommendations",
-    sumateTopRecommendationsSubtitle: "Our editors' picks — the creators and channels we rate highest",
+    sumateTopRecommendationsSubtitle:
+      "Our editors' picks — the creators and channels we rate highest",
     thisWeeksAiPicksTitle: "This Week's AI Picks",
-    thisWeeksAiPicksSubtitle: "Our top 5 tools this week — hand-picked, tested and reviewed",
+    thisWeeksAiPicksSubtitle:
+      "Our top 5 tools this week — hand-picked, tested and reviewed",
 
     // AI Sites section
     aiSitesTitle: "AI Sites",
-    aiSitesSubtitle: "Curated directories and websites dedicated to AI tools and resources",
+    aiSitesSubtitle:
+      "Curated directories and websites dedicated to AI tools and resources",
 
     // AI Discord section
     aiDiscordTitle: "AI Discord",
-    aiDiscordSubtitle: "Active Discord communities and servers for AI discussions and networking",
+    aiDiscordSubtitle:
+      "Active Discord communities and servers for AI discussions and networking",
 
     // Misc
     loading: "Loading...",
@@ -300,7 +319,8 @@ export const translations = {
     heroHeadlineLine1: "Find the right",
     heroHeadlineHighlight: "AI tool",
     heroHeadlineLine2: "Skip the noise.",
-    heroDescription: "Every tool is tested, rated, and reviewed in English and Spanish — updated daily to save you time and money.",
+    heroDescription:
+      "Every tool is tested, rated, and reviewed in English and Spanish — updated daily to save you time and money.",
     heroSearchPlaceholder: "Search a tool, task, or category…",
     heroTryLabel: "Try:",
     heroChipVoiceCloning: "voice cloning",
@@ -331,8 +351,10 @@ export const translations = {
   es: {
     // Hero section
     brandName: "aisumate",
-    tagline: "Descubre las mejores herramientas de productividad con IA en un solo lugar",
-    subtitle: "Explora, busca y encuentra la herramienta de IA perfecta para tu flujo de trabajo",
+    tagline:
+      "Descubre las mejores herramientas de productividad con IA en un solo lugar",
+    subtitle:
+      "Explora, busca y encuentra la herramienta de IA perfecta para tu flujo de trabajo",
     ctaExplore: "Explorar Herramientas",
 
     // Search & Filter
@@ -395,15 +417,18 @@ export const translations = {
     legalUpdated: "Última actualización",
     backHome: "Volver al directorio",
     notFoundTitle: "Página no encontrada",
-    notFoundBody: "Esa página no existe — todo el directorio vive en la página de inicio.",
+    notFoundBody:
+      "Esa página no existe — todo el directorio vive en la página de inicio.",
     goHome: "Ir al directorio",
     openToolPage: "Abrir página",
     copyLink: "Copiar enlace",
     linkCopied: "Enlace copiado",
-    toolNotFound: "Ficha no encontrada — puede haber sido retirada del directorio.",
+    toolNotFound:
+      "Ficha no encontrada — puede haber sido retirada del directorio.",
     relatedIn: "Relacionados en",
     fromTheMaker: "Del creador",
-    makerReserved: "Este espacio está reservado para {name} — los creadores pueden añadir aquí su propia nota, capturas y un vídeo.",
+    makerReserved:
+      "Este espacio está reservado para {name} — los creadores pueden añadir aquí su propia nota, capturas y un vídeo.",
     claimPage: "Reclamar esta página",
     ourVerdict: "Nuestro veredicto",
     verdictSignature: "— editores de aisumate",
@@ -443,7 +468,8 @@ export const translations = {
 
     // GitHub Repos section
     githubTitle: "Repositorios de GitHub",
-    githubSubtitle: "Explora repositorios populares relacionados con IA ordenados por estrellas",
+    githubSubtitle:
+      "Explora repositorios populares relacionados con IA ordenados por estrellas",
     repoName: "Repositorio",
     repoStars: "Estrellas",
     repoOwner: "Propietario",
@@ -454,14 +480,16 @@ export const translations = {
 
     // Weekly Viral GitHub Repos section
     weeklyViralGithubTitle: "Repos Virales de GitHub de la Semana",
-    weeklyViralGithubSubtitle: "Los repos de IA que están explotando en GitHub esta semana, ordenados por velocidad de tendencia",
+    weeklyViralGithubSubtitle:
+      "Los repos de IA que están explotando en GitHub esta semana, ordenados por velocidad de tendencia",
     weeklyViralWeekOf: "Semana de",
     weeklyViralWhyViral: "Por qué es viral",
     weeklyViralStarsThisWeek: "esta semana",
 
     // Sección AU SEO Tools
     auSeoToolsTitle: "Herramientas SEO AU",
-    auSeoToolsSubtitle: "Herramientas de SEO y GEO/AEO con IA para optimización de contenido y visibilidad en buscadores",
+    auSeoToolsSubtitle:
+      "Herramientas de SEO y GEO/AEO con IA para optimización de contenido y visibilidad en buscadores",
 
     // LLMs section
     llmTitle: "Modelos de Lenguaje Grande",
@@ -471,7 +499,8 @@ export const translations = {
 
     // LTDs section
     ltdTitle: "Ofertas de por Vida",
-    ltdSubtitle: "Ofertas exclusivas de por vida en herramientas y software de IA",
+    ltdSubtitle:
+      "Ofertas exclusivas de por vida en herramientas y software de IA",
     ltdPlatform: "Plataforma",
     ltdStatus: "Estado",
     visitDeal: "Visitar Oferta",
@@ -479,83 +508,103 @@ export const translations = {
 
     // Video & Image section
     videoImageTitle: "Creadores de Video e Imagen",
-    videoImageSubtitle: "Herramientas de IA para generar y editar videos e imágenes",
+    videoImageSubtitle:
+      "Herramientas de IA para generar y editar videos e imágenes",
     visitToolGeneric: "Visitar Herramienta",
     noResultsGeneric: "No hay herramientas disponibles aún",
 
     // Music & Voice section
     musicVoiceTitle: "Música y Voz",
-    musicVoiceSubtitle: "Herramientas de IA para generación de música y síntesis de voz",
+    musicVoiceSubtitle:
+      "Herramientas de IA para generación de música y síntesis de voz",
 
     // Chatbots & Agents section
     chatbotsTitle: "Chatbots y Agentes",
-    chatbotsSubtitle: "Chatbots de IA y agentes autónomos para cada caso de uso",
+    chatbotsSubtitle:
+      "Chatbots de IA y agentes autónomos para cada caso de uso",
 
     // Free APIs section
     freeApisTitle: "APIs Gratis",
-    freeApisSubtitle: "Recursos y endpoints de API gratuitos para desarrolladores",
+    freeApisSubtitle:
+      "Recursos y endpoints de API gratuitos para desarrolladores",
 
     // Free LLM & IDE section
     freeLlmIdeTitle: "LLM e IDE Gratis",
-    freeLlmIdeSubtitle: "Modelos de lenguaje gratuitos y entornos de desarrollo integrados",
+    freeLlmIdeSubtitle:
+      "Modelos de lenguaje gratuitos y entornos de desarrollo integrados",
 
     // Vibe Coding section
     vibeCodingTitle: "Vibe Coding",
-    vibeCodingSubtitle: "Herramientas de programación con IA para el movimiento vibe coding",
+    vibeCodingSubtitle:
+      "Herramientas de programación con IA para el movimiento vibe coding",
 
     // Designer Tools section
     designerToolsTitle: "Herramientas para Diseñadores",
-    designerToolsSubtitle: "Herramientas de IA para diseñadores y profesionales creativos",
+    designerToolsSubtitle:
+      "Herramientas de IA para diseñadores y profesionales creativos",
 
     // AI Infrastructure section
     aiInfraTitle: "Infraestructura IA",
-    aiInfraSubtitle: "Herramientas de infraestructura y plataforma para construir aplicaciones de IA",
+    aiInfraSubtitle:
+      "Herramientas de infraestructura y plataforma para construir aplicaciones de IA",
 
     // Hardware & Computers section
     hardwareTitle: "Hardware y Computadoras",
-    hardwareSubtitle: "Hardware y dispositivos de cómputo optimizados para cargas de trabajo de IA",
+    hardwareSubtitle:
+      "Hardware y dispositivos de cómputo optimizados para cargas de trabajo de IA",
 
     // Testing Tools section
     testingToolsTitle: "Herramientas de Testing",
-    testingToolsSubtitle: "Herramientas de testing con IA para equipos de QA y pruebas de software",
+    testingToolsSubtitle:
+      "Herramientas de testing con IA para equipos de QA y pruebas de software",
 
     // AI Security section
     aiSecurityTitle: "Seguridad IA",
-    aiSecuritySubtitle: "Herramientas y plataformas de seguridad para proteger sistemas y datos de IA",
+    aiSecuritySubtitle:
+      "Herramientas y plataformas de seguridad para proteger sistemas y datos de IA",
 
     // Business Productivity section
     businessProductivityTitle: "Productividad Empresarial",
-    businessProductivitySubtitle: "Herramientas de IA para impulsar la productividad empresarial y la colaboración en equipo",
+    businessProductivitySubtitle:
+      "Herramientas de IA para impulsar la productividad empresarial y la colaboración en equipo",
 
     // MCP Providers section
     mcpProvidersTitle: "Proveedores MCP",
-    mcpProvidersSubtitle: "Proveedores de Model Context Protocol y plataformas de integración",
+    mcpProvidersSubtitle:
+      "Proveedores de Model Context Protocol y plataformas de integración",
 
     // VPS & Cloud Providers section
     vpsCloudTitle: "VPS y Proveedores Cloud",
-    vpsCloudSubtitle: "Proveedores de hosting en la nube y VPS optimizados para cargas de trabajo de IA",
+    vpsCloudSubtitle:
+      "Proveedores de hosting en la nube y VPS optimizados para cargas de trabajo de IA",
 
     // AI Media section
     aiMediaTitle: "Blog",
-    aiMediaSubtitle: "Comparativas e informes a fondo sobre los modelos y herramientas de IA que probamos",
+    aiMediaSubtitle:
+      "Comparativas e informes a fondo sobre los modelos y herramientas de IA que probamos",
 
     // AI Influencers section
     aiInfluencersTitle: "IA Influencers",
-    aiInfluencersSubtitle: "Voces clave e influencers que dan forma a la industria y comunidad de IA",
+    aiInfluencersSubtitle:
+      "Voces clave e influencers que dan forma a la industria y comunidad de IA",
 
     // Sumate Top Recommendations — solo en inglés, se oculta por completo en español
     sumateTopRecommendationsTitle: "Sumate Top Recommendations",
-    sumateTopRecommendationsSubtitle: "Las selecciones de nuestros editores — los creadores y canales mejor valorados",
+    sumateTopRecommendationsSubtitle:
+      "Las selecciones de nuestros editores — los creadores y canales mejor valorados",
     thisWeeksAiPicksTitle: "Selecciones IA de la Semana",
-    thisWeeksAiPicksSubtitle: "Nuestras 5 mejores herramientas de la semana — elegidas, probadas y reseñadas",
+    thisWeeksAiPicksSubtitle:
+      "Nuestras 5 mejores herramientas de la semana — elegidas, probadas y reseñadas",
 
     // AI Sites section
     aiSitesTitle: "Sitios IA",
-    aiSitesSubtitle: "Directorios y sitios web curados dedicados a herramientas y recursos de IA",
+    aiSitesSubtitle:
+      "Directorios y sitios web curados dedicados a herramientas y recursos de IA",
 
     // AI Discord section
     aiDiscordTitle: "IA Discord",
-    aiDiscordSubtitle: "Comunidades y servidores de Discord activos para discusiones y networking de IA",
+    aiDiscordSubtitle:
+      "Comunidades y servidores de Discord activos para discusiones y networking de IA",
 
     // Misc
     loading: "Cargando...",
@@ -575,7 +624,8 @@ export const translations = {
     sortAscending: "Ascendente",
     sortDescending: "Descendente",
     ratingsLegend: "1 = Indie · 5 = Líder del mercado",
-    ratingsLegendFull: "Las calificaciones van de 1 (Indie) a 5 (Líder del mercado)",
+    ratingsLegendFull:
+      "Las calificaciones van de 1 (Indie) a 5 (Líder del mercado)",
     loadMore: "Cargar más",
     showingResults: "Mostrando {shown} de {total}",
     allOption: "Todos",
@@ -613,7 +663,8 @@ export const translations = {
     // Global search
     globalSearchPlaceholder: "Buscar en todas las herramientas...",
     globalSearchResults: "resultados encontrados en todas las categorías",
-    globalSearchNoResults: "No se encontraron herramientas. Prueba con otro término de búsqueda.",
+    globalSearchNoResults:
+      "No se encontraron herramientas. Prueba con otro término de búsqueda.",
     globalSearchLoading: "Buscando en todas las tablas...",
     globalSearchTitle: "Resultados de búsqueda global",
     sourceTable: "Categoría",
@@ -623,7 +674,8 @@ export const translations = {
     heroHeadlineLine1: "Encuentra la",
     heroHeadlineHighlight: "herramienta de IA correcta",
     heroHeadlineLine2: "Sin el ruido.",
-    heroDescription: "Cada herramienta es probada, calificada y reseñada en inglés y español — actualizada a diario para ahorrarte tiempo y dinero.",
+    heroDescription:
+      "Cada herramienta es probada, calificada y reseñada en inglés y español — actualizada a diario para ahorrarte tiempo y dinero.",
     heroSearchPlaceholder: "Busca una herramienta, tarea o categoría…",
     heroTryLabel: "Prueba:",
     heroChipVoiceCloning: "clonación de voz",

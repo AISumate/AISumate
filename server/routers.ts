@@ -47,11 +47,14 @@ const searchTokens = (query: string): string[] =>
  * so any multi-word query ("free LLM API") matched nothing. Tokenising fixes
  * that while still narrowing as the user adds words.
  */
-const matchesQuery = (query: string, ...fields: (string | undefined)[]): boolean => {
+const matchesQuery = (
+  query: string,
+  ...fields: (string | undefined)[]
+): boolean => {
   const tokens = searchTokens(query);
   if (!tokens.length) return true;
-  const hay = fields.map((f) => (f ?? "").toLowerCase()).join(" ");
-  return tokens.every((t) => hay.includes(t));
+  const hay = fields.map(f => (f ?? "").toLowerCase()).join(" ");
+  return tokens.every(t => hay.includes(t));
 };
 
 /**
@@ -70,17 +73,18 @@ const searchScore = (
   if (!tokens.length) return 0;
   const n = name.toLowerCase();
   const c = category.toLowerCase();
-  const d = descriptions.map((x) => (x ?? "").toLowerCase()).join(" ");
+  const d = descriptions.map(x => (x ?? "").toLowerCase()).join(" ");
   const hay = `${n} ${c} ${d}`;
-  if (!tokens.every((t) => hay.includes(t))) return -1;
+  if (!tokens.every(t => hay.includes(t))) return -1;
   const q = query.toLowerCase().trim();
   let score = 0;
   if (n === q) score += 1000;
   else if (n.startsWith(q)) score += 600;
   else if (n.includes(q)) score += 400;
-  if (tokens.every((t) => n.includes(t))) score += 200; // all words in the name
-  else if (tokens.some((t) => n.includes(t))) score += 60; // some words in the name
-  if (tokens.every((t) => c.includes(t))) score += 80; // all words in the category
+  if (tokens.every(t => n.includes(t)))
+    score += 200; // all words in the name
+  else if (tokens.some(t => n.includes(t))) score += 60; // some words in the name
+  if (tokens.every(t => c.includes(t))) score += 80; // all words in the category
   return score;
 };
 
@@ -95,7 +99,7 @@ function makeGenericListRouter(fetcher: () => Promise<GenericTool[]>) {
       let filtered = tools;
       if (input?.search && input.search.trim()) {
         const term = input.search.toLowerCase().trim();
-        filtered = filtered.filter((t) =>
+        filtered = filtered.filter(t =>
           matchesQuery(term, t.name, t.descriptionEn, t.descriptionEs)
         );
       }
@@ -105,7 +109,7 @@ function makeGenericListRouter(fetcher: () => Promise<GenericTool[]>) {
 }
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
+  // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -125,10 +129,12 @@ export const appRouter = router({
      */
     list: publicProcedure
       .input(
-        z.object({
-          search: z.string().optional(),
-          category: z.string().optional(),
-        }).optional()
+        z
+          .object({
+            search: z.string().optional(),
+            category: z.string().optional(),
+          })
+          .optional()
       )
       .query(async ({ input }) => {
         const tools = await fetchAllTools();
@@ -137,19 +143,21 @@ export const appRouter = router({
 
         if (input?.search && input.search.trim()) {
           const term = input.search.toLowerCase().trim();
-          filtered = filtered.filter((t) =>
+          filtered = filtered.filter(t =>
             matchesQuery(term, t.name, t.descriptionEn, t.descriptionEs)
           );
         }
 
         if (input?.category && input.category !== "all") {
           filtered = filtered.filter(
-            (t) => t.category.toLowerCase() === input.category!.toLowerCase()
+            t => t.category.toLowerCase() === input.category!.toLowerCase()
           );
         }
 
         // Copy before sorting — `filtered` may be the shared cache array.
-        const sorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+        const sorted = [...filtered].sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
 
         return {
           tools: sorted,
@@ -163,7 +171,7 @@ export const appRouter = router({
     categories: publicProcedure.query(async () => {
       const tools = await fetchAllTools();
       const categories = Array.from(
-        new Set(tools.map((t) => t.category).filter(Boolean))
+        new Set(tools.map(t => t.category).filter(Boolean))
       ).sort();
       return { categories };
     }),
@@ -181,19 +189,17 @@ export const appRouter = router({
     /**
      * Public endpoint: fetch all GitHub repos from Teable, sorted by stars.
      */
-    list: publicProcedure
-      .input(searchInput)
-      .query(async ({ input }) => {
-        const repos = await fetchGithubRepos();
-        let filtered = repos;
-        if (input?.search && input.search.trim()) {
-          const term = input.search.toLowerCase().trim();
-          filtered = filtered.filter((r) =>
-            matchesQuery(term, r.name, r.description, r.owner)
-          );
-        }
-        return { repos: filtered, total: repos.length };
-      }),
+    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+      const repos = await fetchGithubRepos();
+      let filtered = repos;
+      if (input?.search && input.search.trim()) {
+        const term = input.search.toLowerCase().trim();
+        filtered = filtered.filter(r =>
+          matchesQuery(term, r.name, r.description, r.owner)
+        );
+      }
+      return { repos: filtered, total: repos.length };
+    }),
   }),
 
   weeklyViralGithub: router({
@@ -202,57 +208,51 @@ export const appRouter = router({
      * Weekly Rank (1 = most viral). Shown as a highlight strip above the
      * full GitHub Repos table.
      */
-    list: publicProcedure
-      .input(searchInput)
-      .query(async ({ input }) => {
-        const repos = await fetchWeeklyViralGithubRepos();
-        let filtered = repos;
-        if (input?.search && input.search.trim()) {
-          const term = input.search.toLowerCase().trim();
-          filtered = filtered.filter((r) =>
-            matchesQuery(term, r.name, r.description, r.owner, r.whyViral)
-          );
-        }
-        return { repos: filtered, total: repos.length };
-      }),
+    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+      const repos = await fetchWeeklyViralGithubRepos();
+      let filtered = repos;
+      if (input?.search && input.search.trim()) {
+        const term = input.search.toLowerCase().trim();
+        filtered = filtered.filter(r =>
+          matchesQuery(term, r.name, r.description, r.owner, r.whyViral)
+        );
+      }
+      return { repos: filtered, total: repos.length };
+    }),
   }),
 
   llms: router({
     /**
      * Public endpoint: fetch all LLM models from Teable.
      */
-    list: publicProcedure
-      .input(searchInput)
-      .query(async ({ input }) => {
-        const models = await fetchLlmModels();
-        let filtered = models;
-        if (input?.search && input.search.trim()) {
-          const term = input.search.toLowerCase().trim();
-          filtered = filtered.filter((m) =>
-            matchesQuery(term, m.name, m.summaryEn, m.summaryEs)
-          );
-        }
-        return { models: filtered, total: models.length };
-      }),
+    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+      const models = await fetchLlmModels();
+      let filtered = models;
+      if (input?.search && input.search.trim()) {
+        const term = input.search.toLowerCase().trim();
+        filtered = filtered.filter(m =>
+          matchesQuery(term, m.name, m.summaryEn, m.summaryEs)
+        );
+      }
+      return { models: filtered, total: models.length };
+    }),
   }),
 
   ltds: router({
     /**
      * Public endpoint: fetch all lifetime deals from Teable.
      */
-    list: publicProcedure
-      .input(searchInput)
-      .query(async ({ input }) => {
-        const deals = await fetchLtdDeals();
-        let filtered = deals;
-        if (input?.search && input.search.trim()) {
-          const term = input.search.toLowerCase().trim();
-          filtered = filtered.filter((d) =>
-            matchesQuery(term, d.name, d.summaryEn, d.summaryEs)
-          );
-        }
-        return { deals: filtered, total: deals.length };
-      }),
+    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+      const deals = await fetchLtdDeals();
+      let filtered = deals;
+      if (input?.search && input.search.trim()) {
+        const term = input.search.toLowerCase().trim();
+        filtered = filtered.filter(d =>
+          matchesQuery(term, d.name, d.summaryEn, d.summaryEs)
+        );
+      }
+      return { deals: filtered, total: deals.length };
+    }),
   }),
 
   // Generic tool sections — one factory, one line per table.
@@ -275,7 +275,9 @@ export const appRouter = router({
   aiSites: makeGenericListRouter(fetchAiSitesTools),
   aiDiscord: makeGenericListRouter(fetchAiDiscordTools),
   auSeoTools: makeGenericListRouter(fetchAuSeoTools),
-  sumateTopRecommendations: makeGenericListRouter(fetchSumateTopRecommendations),
+  sumateTopRecommendations: makeGenericListRouter(
+    fetchSumateTopRecommendations
+  ),
   thisWeeksAiPicks: makeGenericListRouter(fetchThisWeeksAiPicks),
 
   search: router({
@@ -284,10 +286,12 @@ export const appRouter = router({
      * Returns unified results with source table labels.
      */
     global: publicProcedure
-      .input(z.object({
-        query: z.string().min(1),
-        limit: z.number().min(1).max(200).default(50),
-      }))
+      .input(
+        z.object({
+          query: z.string().min(1),
+          limit: z.number().min(1).max(200).default(50),
+        })
+      )
       .query(async ({ input }) => {
         const term = input.query.toLowerCase().trim();
         const limit = input.limit;
@@ -318,31 +322,123 @@ export const appRouter = router({
 
         // key is the /tool/<key>/<id> route segment, carried into each result so a
         // search hit can link to the listing's own page.
-        const tableFetchers: Array<{ label: string; key: string; fetch: () => Promise<SearchSourceItem[]> }> = [
+        const tableFetchers: Array<{
+          label: string;
+          key: string;
+          fetch: () => Promise<SearchSourceItem[]>;
+        }> = [
           { label: "AI Tools", key: "tools", fetch: () => fetchAllTools() },
-          { label: "GitHub Repos", key: "github", fetch: () => fetchGithubRepos() },
-          { label: "Weekly Viral GitHub", key: "weeklyViralGithub", fetch: () => fetchWeeklyViralGithubRepos() },
+          {
+            label: "GitHub Repos",
+            key: "github",
+            fetch: () => fetchGithubRepos(),
+          },
+          {
+            label: "Weekly Viral GitHub",
+            key: "weeklyViralGithub",
+            fetch: () => fetchWeeklyViralGithubRepos(),
+          },
           { label: "LLMs", key: "llms", fetch: () => fetchLlmModels() },
-          { label: "Video & Image", key: "videoImage", fetch: () => fetchVideoImageTools() },
-          { label: "Music & Voice", key: "musicVoice", fetch: () => fetchMusicVoiceTools() },
-          { label: "Chatbots & Agents", key: "chatbots", fetch: () => fetchChatbotsTools() },
-          { label: "Free APIs", key: "freeApis", fetch: () => fetchFreeApisTools() },
-          { label: "Free LLM & IDE", key: "freeLlmIde", fetch: () => fetchFreeLlmIdeTools() },
-          { label: "Vibe Coding", key: "vibeCoding", fetch: () => fetchVibeCodingTools() },
-          { label: "Designer Tools", key: "designerTools", fetch: () => fetchDesignerTools() },
-          { label: "AI Infrastructure", key: "aiInfra", fetch: () => fetchAiInfraTools() },
-          { label: "Hardware & Computers", key: "hardware", fetch: () => fetchHardwareTools() },
-          { label: "Testing Tools", key: "testingTools", fetch: () => fetchTestingTools() },
-          { label: "AI Security", key: "aiSecurity", fetch: () => fetchAiSecurityTools() },
-          { label: "Business Productivity", key: "businessProductivity", fetch: () => fetchBusinessProductivityTools() },
-          { label: "MCP Providers", key: "mcpProviders", fetch: () => fetchMcpProvidersTools() },
-          { label: "VPS & Cloud", key: "vpsCloud", fetch: () => fetchVpsCloudTools() },
-          { label: "AI Media", key: "aiMedia", fetch: () => fetchAiMediaTools() },
-          { label: "AI Influencers", key: "aiInfluencers", fetch: () => fetchAiInfluencersTools() },
-          { label: "AI Sites", key: "aiSites", fetch: () => fetchAiSitesTools() },
-          { label: "AI Discord", key: "aiDiscord", fetch: () => fetchAiDiscordTools() },
-          { label: "AU SEO Tools", key: "auSeoTools", fetch: () => fetchAuSeoTools() },
-          { label: "Sumate Top Recommendations", key: "sumateTopRecommendations", fetch: () => fetchSumateTopRecommendations() },
+          {
+            label: "Video & Image",
+            key: "videoImage",
+            fetch: () => fetchVideoImageTools(),
+          },
+          {
+            label: "Music & Voice",
+            key: "musicVoice",
+            fetch: () => fetchMusicVoiceTools(),
+          },
+          {
+            label: "Chatbots & Agents",
+            key: "chatbots",
+            fetch: () => fetchChatbotsTools(),
+          },
+          {
+            label: "Free APIs",
+            key: "freeApis",
+            fetch: () => fetchFreeApisTools(),
+          },
+          {
+            label: "Free LLM & IDE",
+            key: "freeLlmIde",
+            fetch: () => fetchFreeLlmIdeTools(),
+          },
+          {
+            label: "Vibe Coding",
+            key: "vibeCoding",
+            fetch: () => fetchVibeCodingTools(),
+          },
+          {
+            label: "Designer Tools",
+            key: "designerTools",
+            fetch: () => fetchDesignerTools(),
+          },
+          {
+            label: "AI Infrastructure",
+            key: "aiInfra",
+            fetch: () => fetchAiInfraTools(),
+          },
+          {
+            label: "Hardware & Computers",
+            key: "hardware",
+            fetch: () => fetchHardwareTools(),
+          },
+          {
+            label: "Testing Tools",
+            key: "testingTools",
+            fetch: () => fetchTestingTools(),
+          },
+          {
+            label: "AI Security",
+            key: "aiSecurity",
+            fetch: () => fetchAiSecurityTools(),
+          },
+          {
+            label: "Business Productivity",
+            key: "businessProductivity",
+            fetch: () => fetchBusinessProductivityTools(),
+          },
+          {
+            label: "MCP Providers",
+            key: "mcpProviders",
+            fetch: () => fetchMcpProvidersTools(),
+          },
+          {
+            label: "VPS & Cloud",
+            key: "vpsCloud",
+            fetch: () => fetchVpsCloudTools(),
+          },
+          {
+            label: "AI Media",
+            key: "aiMedia",
+            fetch: () => fetchAiMediaTools(),
+          },
+          {
+            label: "AI Influencers",
+            key: "aiInfluencers",
+            fetch: () => fetchAiInfluencersTools(),
+          },
+          {
+            label: "AI Sites",
+            key: "aiSites",
+            fetch: () => fetchAiSitesTools(),
+          },
+          {
+            label: "AI Discord",
+            key: "aiDiscord",
+            fetch: () => fetchAiDiscordTools(),
+          },
+          {
+            label: "AU SEO Tools",
+            key: "auSeoTools",
+            fetch: () => fetchAuSeoTools(),
+          },
+          {
+            label: "Sumate Top Recommendations",
+            key: "sumateTopRecommendations",
+            fetch: () => fetchSumateTopRecommendations(),
+          },
         ];
 
         // Staggered fetch: the cache serves most of these instantly, but on a
@@ -352,20 +448,36 @@ export const appRouter = router({
             try {
               const items = await fetch();
               return items
-                .map((item) => {
+                .map(item => {
                   const name = item.name || item.title || "Untitled";
-                  const category = item.category || item.topic || item.platform || "";
-                  const descEn = item.descriptionEn || item.summaryEn || item.summary || "";
-                  const descEs = item.descriptionEs || item.summaryEs || item.summary || "";
-                  const base = searchScore(term, name, category, descEn, descEs);
+                  const category =
+                    item.category || item.topic || item.platform || "";
+                  const descEn =
+                    item.descriptionEn || item.summaryEn || item.summary || "";
+                  const descEs =
+                    item.descriptionEs || item.summaryEs || item.summary || "";
+                  const base = searchScore(
+                    term,
+                    name,
+                    category,
+                    descEn,
+                    descEs
+                  );
                   // Genuinely-AI products outrank same-relevance general tools
                   // (a tiebreak nudge — never enough to beat a name match).
                   const rel = (item as { aiRelevance?: string }).aiRelevance;
                   const score =
-                    base < 0 ? base : base + (rel === "AI-first" ? 50 : rel === "AI-enabled" ? 15 : 0);
+                    base < 0
+                      ? base
+                      : base +
+                        (rel === "AI-first"
+                          ? 50
+                          : rel === "AI-enabled"
+                            ? 15
+                            : 0);
                   return { item, name, category, descEn, descEs, score };
                 })
-                .filter((x) => x.score >= 0)
+                .filter(x => x.score >= 0)
                 .map(({ item, name, category, descEn, descEs, score }) => ({
                   id: item.id,
                   name,
@@ -384,7 +496,10 @@ export const appRouter = router({
                   score,
                 }));
             } catch (err) {
-              console.error(`[GlobalSearch] Error fetching table "${label}":`, err);
+              console.error(
+                `[GlobalSearch] Error fetching table "${label}":`,
+                err
+              );
               return [];
             }
           })
@@ -405,7 +520,8 @@ export const appRouter = router({
           if (
             !existing ||
             result.score > existing.score ||
-            (result.score === existing.score && existing.sourceTable === "AI Tools")
+            (result.score === existing.score &&
+              existing.sourceTable === "AI Tools")
           ) {
             deduped.set(key, result);
           }
@@ -416,7 +532,7 @@ export const appRouter = router({
           (a, b) =>
             b.score - a.score ||
             (b.rating || 0) - (a.rating || 0) ||
-            a.name.localeCompare(b.name),
+            a.name.localeCompare(b.name)
         );
 
         return {

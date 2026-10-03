@@ -58,8 +58,8 @@ export function splitReviewItems(text: string | undefined): string[] {
   if (!text) return [];
   return text
     .split(/;|\n/)
-    .map((s) => s.trim().replace(/^[•\-–]\s*/, ""))
-    .filter((s) => s.length > 1 && !isJunkReviewText(s));
+    .map(s => s.trim().replace(/^[•\-–]\s*/, ""))
+    .filter(s => s.length > 1 && !isJunkReviewText(s));
 }
 
 /** Clean a single review text value (cost etc.) — "" when junk. */
@@ -72,7 +72,9 @@ export function cleanReviewText(text: string | undefined): string {
 export function cleanVerdict(text: string | undefined): string {
   const t = cleanReviewText(text);
   if (!t) return "";
-  return /^(cannot|can't|could not|couldn't|unable|product details)\b/i.test(t) ? "" : t;
+  return /^(cannot|can't|could not|couldn't|unable|product details)\b/i.test(t)
+    ? ""
+    : t;
 }
 
 /** Only real http(s) URLs pass — "Unknown"/"N/A" in a URL cell is not a link. */
