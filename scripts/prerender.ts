@@ -29,6 +29,8 @@ import {
 import path from "node:path";
 import {
   GENERIC_TABLES,
+  // Full rows, on purpose. Public tRPC lists are paged and slim; sitemap and
+  // the static tool pages need every record, and they only run at build time.
   fetchGenericTools,
   fetchAllTools,
   fetchLlmModels,

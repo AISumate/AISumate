@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { isLandingTable } from "@shared/simpleTables";
-import { Check, Link2 } from "lucide-react";
+import { Check, Link2, Loader2 } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,6 +45,8 @@ export interface AiTool extends ReviewInfo {
   /** Hand-written personal review; presence drives the mark next to the rating. */
   blogPostEn?: string;
   blogPostEs?: string;
+  /** Set on list payloads, which no longer include the review text itself. */
+  hasReview?: boolean;
   /** Paid placement — renders the neutral Sponsored badge. */
   sponsored?: boolean;
 }
@@ -94,9 +97,20 @@ export function ToolCard({
   const goesToPage = Boolean(
     pageHref && !onOpenDetails && tableKey && isLandingTable(tableKey)
   );
+  // List responses are slim. The dialog asks for the full row only when it opens.
+  const detail = trpc.listing.get.useQuery(
+    { table: tableKey ?? "", id: tool.id },
+    {
+      enabled: open && !goesToPage && !onOpenDetails && Boolean(tableKey),
+      refetchOnWindowFocus: false,
+    }
+  );
+  const detailItem = detail.data?.item ?? undefined;
   // The English review is the source of truth for "a review exists" — a Spanish
   // one is only ever written alongside it, never on its own.
-  const hasReview = Boolean(tool.blogPostEn?.trim());
+  const hasReview = Boolean(
+    tool.hasReview || tool.blogPostEn?.trim() || detailItem?.blogPostEn?.trim()
+  );
 
   const copyPageLink = async () => {
     if (!pageHref) return;
@@ -112,8 +126,13 @@ export function ToolCard({
   };
   const accentClass = accentClassFor(index);
 
-  const description =
-    language === "es" ? tool.descriptionEs : tool.descriptionEn;
+  const description = detailItem
+    ? language === "es"
+      ? detailItem.descriptionEs || tool.descriptionEs
+      : detailItem.descriptionEn || tool.descriptionEn
+    : language === "es"
+      ? tool.descriptionEs
+      : tool.descriptionEn;
   const visitUrl =
     tool.isAffiliate && tool.affiliateUrl ? tool.affiliateUrl : tool.url;
   const label = visitLabel ?? t("visitTool");
@@ -333,7 +352,13 @@ export function ToolCard({
 
           {detailExtra}
 
-          <ReviewDetails review={tool} />
+          {detail.isLoading ? (
+            <div className="flex justify-center py-3">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <ReviewDetails review={detailItem ?? tool} />
+          )}
 
           <VisitButton url={visitUrl} label={label} />
 

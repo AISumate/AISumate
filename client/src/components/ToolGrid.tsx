@@ -1,29 +1,45 @@
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { keepPreviousData } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { LIST_PAGE_SIZE_DEFAULT } from "@shared/listPage";
+import { trpc } from "@/lib/trpc";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { ToolCard } from "./ToolCard";
-import type { AiTool } from "./ToolCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { FilterBar } from "./FilterBar";
 import { ThisWeeksAiPicksSection } from "./ThisWeeksAiPicksSection";
+import { LoadMoreButton } from "./LoadMoreButton";
 
-interface ToolGridProps {
-  tools: AiTool[];
-  categories: string[];
-}
-
-export function ToolGrid({ tools, categories }: ToolGridProps) {
+export function ToolGrid() {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [displayCount, setDisplayCount] = useState(100);
   const [aiFilter, setAiFilter] = useState("all");
+  const debouncedSearch = useDebouncedValue(searchTerm);
 
-  const categoryOptions = useMemo(
-    () => categories.map(cat => ({ value: cat, label: cat })),
-    [categories]
+  const query = trpc.tools.list.useInfiniteQuery(
+    {
+      search: debouncedSearch.trim() || undefined,
+      category: activeCategory,
+      sort: sortField as "name" | "category" | "rating",
+      order: sortDirection,
+      ai: aiFilter as "all" | "ai" | "aiFirst",
+      limit: LIST_PAGE_SIZE_DEFAULT,
+    },
+    {
+      initialCursor: 1,
+      getNextPageParam: last => last.nextCursor ?? undefined,
+      placeholderData: keepPreviousData,
+      refetchOnWindowFocus: false,
+    }
   );
+
+  const tools = query.data?.pages.flatMap(page => page.tools) ?? [];
+  const total = query.data?.pages[0]?.total ?? 0;
+  const categories = query.data?.pages[0]?.categories ?? [];
+  const categoryOptions = categories.map(cat => ({ value: cat, label: cat }));
 
   const sortOptions = [
     { value: "name", labelKey: "sortByName", defaultDirection: "asc" as const },
@@ -39,78 +55,12 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
     },
   ];
 
-  const filteredTools = useMemo(() => {
-    let result = tools;
-
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase().trim();
-      result = result.filter(
-        tool =>
-          tool.name.toLowerCase().includes(term) ||
-          tool.descriptionEn.toLowerCase().includes(term) ||
-          tool.descriptionEs.toLowerCase().includes(term)
-      );
-    }
-
-    if (activeCategory !== "all") {
-      result = result.filter(
-        tool => tool.category.toLowerCase() === activeCategory.toLowerCase()
-      );
-    }
-
-    if (aiFilter === "ai") {
-      result = result.filter(
-        tool =>
-          tool.aiRelevance === "AI-first" || tool.aiRelevance === "AI-enabled"
-      );
-    } else if (aiFilter === "aiFirst") {
-      result = result.filter(tool => tool.aiRelevance === "AI-first");
-    }
-
-    const sorted = [...result].sort((a, b) => {
-      let cmp = 0;
-      if (sortField === "name") {
-        cmp = a.name.localeCompare(b.name);
-      } else if (sortField === "category") {
-        cmp = (a.category || "").localeCompare(b.category || "");
-        if (cmp === 0) cmp = a.name.localeCompare(b.name);
-      } else if (sortField === "rating") {
-        cmp = (b.rating || 0) - (a.rating || 0);
-        if (cmp === 0) cmp = a.name.localeCompare(b.name);
-      }
-      return sortDirection === "asc" ? cmp : -cmp;
-    });
-
-    return sorted;
-  }, [tools, searchTerm, activeCategory, aiFilter, sortField, sortDirection]);
-
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-    setDisplayCount(100);
-  };
-
-  const handleCategoryChange = (value: string) => {
-    setActiveCategory(value);
-    setDisplayCount(100);
-  };
-
-  const handleSortFieldChange = (field: string) => {
-    setSortField(field);
-    setDisplayCount(100);
-  };
-
-  const handleSortDirectionChange = (dir: "asc" | "desc") => {
-    setSortDirection(dir);
-    setDisplayCount(100);
-  };
-
   const handleReset = () => {
     setSearchTerm("");
     setActiveCategory("all");
     setAiFilter("all");
     setSortField("name");
     setSortDirection("asc");
-    setDisplayCount(100);
   };
 
   return (
@@ -122,91 +72,92 @@ export function ToolGrid({ tools, categories }: ToolGridProps) {
           another one here (or capping with max-w-5xl, as this once did) eats
           64px of width and gives tabs mismatched page widths. */}
       <div>
-        <FilterBar
-          searchTerm={searchTerm}
-          onSearchChange={handleSearchChange}
-          filters={[
-            ...(categories.length > 0
-              ? [
-                  {
-                    key: "category",
-                    value: activeCategory,
-                    onChange: handleCategoryChange,
-                    options: categoryOptions,
-                    placeholderKey: "filterByCategory",
-                  },
-                ]
-              : []),
-            {
-              key: "aiRelevance",
-              value: aiFilter,
-              onChange: (v: string) => {
-                setAiFilter(v);
-                setDisplayCount(100);
-              },
-              options: [
-                { value: "ai", label: t("aiRelevanceAiOnly") },
-                { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
-              ],
-              placeholderKey: "aiRelevanceFilter",
-              allLabel: t("aiRelevanceAll"),
-            },
-          ]}
-          sort={{
-            field: sortField,
-            direction: sortDirection,
-            onFieldChange: handleSortFieldChange,
-            onDirectionChange: handleSortDirectionChange,
-            options: sortOptions,
-          }}
-          resultCount={filteredTools.length}
-          onReset={handleReset}
-        />
-
-        {/* Curated top-5 strip, between the search bar and the main grid. */}
-        <ThisWeeksAiPicksSection />
-
-        {filteredTools.length > 0 ? (
+        {query.isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : query.isError ? (
+          <p className="text-center py-20 text-sm text-destructive">
+            {t("errorLoading")}
+          </p>
+        ) : (
           <>
-            {/* Matches GenericToolSection: 5-up at xl (1216px container → 218px cards),
-                4 at lg (960px container → 228px). */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredTools.slice(0, displayCount).map((tool, idx) => (
-                <ToolCard
-                  key={tool.id}
-                  tool={tool}
-                  index={idx}
-                  tableKey="tools"
+            <FilterBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              filters={[
+                ...(categories.length > 0
+                  ? [
+                      {
+                        key: "category",
+                        value: activeCategory,
+                        onChange: setActiveCategory,
+                        options: categoryOptions,
+                        placeholderKey: "filterByCategory",
+                      },
+                    ]
+                  : []),
+                {
+                  key: "aiRelevance",
+                  value: aiFilter,
+                  onChange: setAiFilter,
+                  options: [
+                    { value: "ai", label: t("aiRelevanceAiOnly") },
+                    { value: "aiFirst", label: t("aiRelevanceAiFirstOnly") },
+                  ],
+                  placeholderKey: "aiRelevanceFilter",
+                  allLabel: t("aiRelevanceAll"),
+                },
+              ]}
+              sort={{
+                field: sortField,
+                direction: sortDirection,
+                onFieldChange: setSortField,
+                onDirectionChange: setSortDirection,
+                options: sortOptions,
+              }}
+              resultCount={total}
+              onReset={handleReset}
+            />
+
+            {/* Curated top-5 strip, between the search bar and the main grid. */}
+            <ThisWeeksAiPicksSection />
+
+            {tools.length > 0 ? (
+              <>
+                {/* Matches GenericToolSection: 5-up at xl (1216px container → 218px cards),
+                    4 at lg (960px container → 228px). */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {tools.map((tool, idx) => (
+                    <ToolCard
+                      key={tool.id}
+                      tool={tool}
+                      index={idx}
+                      tableKey="tools"
+                    />
+                  ))}
+                </div>
+                <LoadMoreButton
+                  shown={tools.length}
+                  total={total}
+                  hasMore={Boolean(query.hasNextPage)}
+                  pending={query.isFetchingNextPage}
+                  onClick={() => {
+                    void query.fetchNextPage();
+                  }}
                 />
-              ))}
-            </div>
-            {filteredTools.length > displayCount && (
-              <div className="flex flex-col items-center gap-3 mt-8">
-                <p className="text-xs text-muted-foreground">
-                  {t("showingResults")
-                    .replace("{shown}", String(displayCount))
-                    .replace("{total}", String(filteredTools.length))}
+              </>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-lg font-medium text-foreground mb-1">
+                  {t("noResults")}
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setDisplayCount(prev => prev + 100)}
-                  className="border-primary/30 text-primary hover:bg-primary/5"
-                >
-                  {t("loadMore")}
-                </Button>
+                <p className="text-sm text-muted-foreground">
+                  {t("noResultsDesc")}
+                </p>
               </div>
             )}
           </>
-        ) : (
-          <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-1">
-              {t("noResults")}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {t("noResultsDesc")}
-            </p>
-          </div>
         )}
       </div>
     </section>

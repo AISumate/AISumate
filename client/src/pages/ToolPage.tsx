@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { ArrowLeft, Bot, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -23,45 +23,39 @@ import { ToolLanding } from "./ToolLanding";
  * Every listing the site shows in a modal is also reachable at a real URL, so
  * people can share/bookmark it and crawlers can index it (bots get a static
  * prerendered twin of this page — see scripts/prerender.ts + vercel.json).
- * Data comes from the same cached table list the tabs use, so opening a tool
- * page costs at most one table fetch.
+ * Data comes from `listing.get` — one full row, plus up to three related cards.
+ * The catalogue lists are paged and do not carry review text.
  */
 
-// Table param -> which tRPC list router serves it, and which response field
-// holds the rows. Whitelist doubles as the 404 guard for junk table params.
-const TABLE_SOURCES: Record<
-  string,
-  { router: string; field: "tools" | "models" | "repos" }
-> = {
-  tools: { router: "tools", field: "tools" },
-  llms: { router: "llms", field: "models" },
-  github: { router: "github", field: "repos" },
-  weeklyViralGithub: { router: "weeklyViralGithub", field: "repos" },
-  videoImage: { router: "videoImage", field: "tools" },
-  musicVoice: { router: "musicVoice", field: "tools" },
-  chatbots: { router: "chatbots", field: "tools" },
-  freeApis: { router: "freeApis", field: "tools" },
-  freeLlmIde: { router: "freeLlmIde", field: "tools" },
-  vibeCoding: { router: "vibeCoding", field: "tools" },
-  designerTools: { router: "designerTools", field: "tools" },
-  aiInfra: { router: "aiInfra", field: "tools" },
-  hardware: { router: "hardware", field: "tools" },
-  testingTools: { router: "testingTools", field: "tools" },
-  aiSecurity: { router: "aiSecurity", field: "tools" },
-  businessProductivity: { router: "businessProductivity", field: "tools" },
-  mcpProviders: { router: "mcpProviders", field: "tools" },
-  vpsCloud: { router: "vpsCloud", field: "tools" },
-  aiMedia: { router: "aiMedia", field: "tools" },
-  aiInfluencers: { router: "aiInfluencers", field: "tools" },
-  aiSites: { router: "aiSites", field: "tools" },
-  aiDiscord: { router: "aiDiscord", field: "tools" },
-  auSeoTools: { router: "auSeoTools", field: "tools" },
-  sumateTopRecommendations: {
-    router: "sumateTopRecommendations",
-    field: "tools",
-  },
-  thisWeeksAiPicks: { router: "thisWeeksAiPicks", field: "tools" },
-};
+// Whitelist doubles as the 404 guard for junk table params. The row itself
+// comes from listing.get, not from paging through a list.
+const LISTING_TABLES = new Set([
+  "tools",
+  "llms",
+  "github",
+  "weeklyViralGithub",
+  "videoImage",
+  "musicVoice",
+  "chatbots",
+  "freeApis",
+  "freeLlmIde",
+  "vibeCoding",
+  "designerTools",
+  "aiInfra",
+  "hardware",
+  "testingTools",
+  "aiSecurity",
+  "businessProductivity",
+  "mcpProviders",
+  "vpsCloud",
+  "aiMedia",
+  "aiInfluencers",
+  "aiSites",
+  "aiDiscord",
+  "auSeoTools",
+  "sumateTopRecommendations",
+  "thisWeeksAiPicks",
+]);
 
 // Which tables get the rich landing layout lives in shared/simpleTables.ts so
 // the crawler twins in scripts/prerender.ts stay in step with this page.
@@ -76,7 +70,6 @@ const HOME_TAB: Record<string, string> = {
   ltds: "tools",
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface AnyListing extends ReviewInfo {
   id: string;
   [k: string]: any;
@@ -84,25 +77,15 @@ export interface AnyListing extends ReviewInfo {
 
 function ToolPageInner({ table, id }: { table: string; id: string }) {
   const { t, language } = useLanguage();
-  const source = TABLE_SOURCES[table];
+  const source = LISTING_TABLES.has(table);
 
-  // `table` is constant for this component instance (remounted via key on the
-  // route below), so this conditional hook is stable across renders.
-  const query = source
-    ? (trpc as any)[source.router].list.useQuery(undefined, {
-        refetchOnWindowFocus: false,
-      })
-    : null;
+  const query = trpc.listing.get.useQuery(
+    { table, id },
+    { enabled: Boolean(source), refetchOnWindowFocus: false }
+  );
 
-  const rows: AnyListing[] = useMemo(
-    () =>
-      source && query?.data ? ((query.data as any)[source.field] ?? []) : [],
-    [source, query?.data]
-  );
-  const item: AnyListing | undefined = useMemo(
-    () => rows.find((r: AnyListing) => r.id === id),
-    [rows, id]
-  );
+  const item = (query.data?.item ?? undefined) as AnyListing | undefined;
+  const related = (query.data?.related ?? []) as AnyListing[];
 
   const name = item ? item.name || item.title || "" : "";
   useEffect(() => {
@@ -113,7 +96,7 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
   }, [name]);
 
   if (!source) return <NotFoundBlock />;
-  if (query?.isLoading) {
+  if (query.isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -123,7 +106,7 @@ function ToolPageInner({ table, id }: { table: string; id: string }) {
   if (!item) return <NotFoundBlock />;
 
   if (isLandingTable(table)) {
-    return <ToolLanding table={table} id={id} item={item} rows={rows} />;
+    return <ToolLanding table={table} id={id} item={item} related={related} />;
   }
 
   const description =

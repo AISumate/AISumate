@@ -18,9 +18,10 @@ export function ThisWeeksAiPicksSection({
   divider = true,
 }: { divider?: boolean } = {}) {
   const { t } = useLanguage();
-  const { data, isLoading } = trpc.thisWeeksAiPicks.list.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data, isLoading } = trpc.thisWeeksAiPicks.list.useQuery(
+    {},
+    { refetchOnWindowFocus: false }
+  );
 
   const picks = (data?.tools ?? []) as AiTool[];
 

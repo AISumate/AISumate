@@ -4,10 +4,10 @@ import type { Express } from "express";
 /**
  * Rate limiting for the public API.
  *
- * Why: every endpoint is unauthenticated by design, and `tools.list` returns the
- * whole catalogue (~2.5 MB) in one response. Without a limit, a trivial loop
- * against it burns the Vercel bandwidth quota. `search.global` is worse per call
- * — it fans out to every Teable table on a cold cache.
+ * Why: every endpoint is unauthenticated by design. List procedures are paged
+ * and slim now, but a script can still walk the pages, and `search.global`
+ * fans out to every Teable table on a cold cache. Without a limit that walk
+ * burns the Vercel bandwidth quota.
  *
  * Caveat worth knowing: the store is in-memory, so on Vercel each warm serverless
  * instance keeps its own counters and the effective ceiling is (limit x instances).

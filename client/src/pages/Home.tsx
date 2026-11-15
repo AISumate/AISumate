@@ -5,32 +5,19 @@ import { SectionTabs } from "@/components/SectionTabs";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
-  const {
-    data: toolsData,
-    isLoading: toolsLoading,
-    error: toolsError,
-  } = trpc.tools.list.useQuery(undefined);
-
-  const { data: categoriesData } = trpc.tools.categories.useQuery();
   const { data: totalCountData, isLoading: countLoading } =
     trpc.tools.totalCount.useQuery();
 
-  const tools = toolsData?.tools ?? [];
-  const categories = categoriesData?.categories ?? [];
   const totalTools = totalCountData?.total ?? 0;
 
   // Render the page shell immediately — each section owns its loading state,
-  // so one slow table never blanks the whole site.
+  // so one slow table never blanks the whole site. The AI Tools grid pages
+  // its own catalogue instead of receiving the whole table as props.
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <Hero toolCount={totalTools} isLoading={countLoading} />
-      <SectionTabs
-        tools={tools}
-        categories={categories}
-        toolsLoading={toolsLoading}
-        toolsError={!!toolsError}
-      />
+      <SectionTabs />
       <Footer />
     </div>
   );

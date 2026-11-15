@@ -44,12 +44,12 @@ export function ToolLanding({
   table,
   id,
   item,
-  rows,
+  related,
 }: {
   table: string;
   id: string;
   item: AnyListing;
-  rows: AnyListing[];
+  related: AnyListing[];
 }) {
   const { t, language } = useLanguage();
   const [failedShots, setFailedShots] = useState<Set<string>>(new Set());
@@ -133,21 +133,6 @@ export function ToolLanding({
     }
     window.setTimeout(() => setMshotsTry(n => n + 1), 3500);
   };
-
-  // Same-category neighbours from the already-cached table list — internal
-  // links, zero extra fetches. Rating-first so the strongest tools show.
-  const related = rows
-    .filter(
-      r =>
-        r.id !== id &&
-        (r.category || r.providerType) === (item.category || item.providerType)
-    )
-    .sort(
-      (a, b) =>
-        (b.rating || 0) - (a.rating || 0) ||
-        String(a.name).localeCompare(String(b.name))
-    )
-    .slice(0, 3);
 
   const copyPageLink = async () => {
     try {
