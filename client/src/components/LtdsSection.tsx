@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { keepPreviousData } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
@@ -6,9 +7,12 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Tag, Loader2 } from "lucide-react";
+import { LIST_PAGE_SIZE_DEFAULT } from "@shared/listPage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { FilterBar, buildFilterOptions } from "./FilterBar";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { FilterBar } from "./FilterBar";
+import { LoadMoreButton } from "./LoadMoreButton";
 import {
   accentClassFor,
   ReviewDetails,
@@ -19,6 +23,15 @@ import {
   VisitButton,
 } from "./toolVisuals";
 
+function LtdReviewDetails({ id, open }: { id: string; open: boolean }) {
+  const detail = trpc.listing.get.useQuery(
+    { table: "ltds", id },
+    { enabled: open, refetchOnWindowFocus: false }
+  );
+  if (!open || !detail.data?.item) return null;
+  return <ReviewDetails review={detail.data.item} />;
+}
+
 export function LtdsSection() {
   const { t, language } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,64 +39,38 @@ export function LtdsSection() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [openDealId, setOpenDealId] = useState<string | null>(null);
+  const debouncedSearch = useDebouncedValue(searchTerm);
 
-  // Fetch the full (server-cached) list once; search/filter/sort client-side
-  // so typing doesn't fire a request per keystroke.
-  const { data, isLoading } = trpc.ltds.list.useQuery(undefined);
-
-  const deals = data?.deals ?? [];
-
-  const platformOptions = useMemo(
-    () => buildFilterOptions(deals, d => d.platform),
-    [deals]
+  // The LTDs tab is hidden. The procedure is still public, so it is paged
+  // like the others; this component follows that contract if the tab returns.
+  const query = trpc.ltds.list.useInfiniteQuery(
+    {
+      search: debouncedSearch.trim() || undefined,
+      platform: platformFilter,
+      status: statusFilter,
+      sort: sortField as "name" | "platform" | "status" | "rating",
+      order: sortDirection,
+      limit: LIST_PAGE_SIZE_DEFAULT,
+    },
+    {
+      initialCursor: 1,
+      getNextPageParam: last => last.nextCursor ?? undefined,
+      placeholderData: keepPreviousData,
+      refetchOnWindowFocus: false,
+    }
   );
-  const statusOptions = useMemo(
-    () => buildFilterOptions(deals, d => d.status),
-    [deals]
-  );
 
-  const filteredDeals = useMemo(() => {
-    let result = deals;
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase().trim();
-      result = result.filter(
-        d =>
-          d.name.toLowerCase().includes(term) ||
-          d.summaryEn.toLowerCase().includes(term) ||
-          d.summaryEs.toLowerCase().includes(term)
-      );
-    }
-    if (platformFilter !== "all") {
-      result = result.filter(d => d.platform === platformFilter);
-    }
-    if (statusFilter !== "all") {
-      result = result.filter(d => d.status === statusFilter);
-    }
-    const sorted = [...result].sort((a, b) => {
-      let cmp = 0;
-      if (sortField === "name") {
-        cmp = a.name.localeCompare(b.name);
-      } else if (sortField === "platform") {
-        cmp = (a.platform || "").localeCompare(b.platform || "");
-        if (cmp === 0) cmp = a.name.localeCompare(b.name);
-      } else if (sortField === "status") {
-        cmp = (a.status || "").localeCompare(b.status || "");
-        if (cmp === 0) cmp = a.name.localeCompare(b.name);
-      } else if (sortField === "rating") {
-        cmp = (b.rating || 0) - (a.rating || 0);
-        if (cmp === 0) cmp = a.name.localeCompare(b.name);
-      }
-      return sortDirection === "asc" ? cmp : -cmp;
-    });
-    return sorted;
-  }, [
-    deals,
-    searchTerm,
-    platformFilter,
-    statusFilter,
-    sortField,
-    sortDirection,
-  ]);
+  const filteredDeals = query.data?.pages.flatMap(page => page.deals) ?? [];
+  const total = query.data?.pages[0]?.total ?? 0;
+  const isLoading = query.isLoading;
+  const platformOptions = (query.data?.pages[0]?.platforms ?? []).map(
+    platform => ({ value: platform, label: platform })
+  );
+  const statusOptions = (query.data?.pages[0]?.statuses ?? []).map(status => ({
+    value: status,
+    label: status,
+  }));
 
   const handleReset = () => {
     setSearchTerm("");
@@ -155,7 +142,7 @@ export function LtdsSection() {
                 },
               ],
             }}
-            resultCount={filteredDeals.length}
+            resultCount={total}
             onReset={handleReset}
           />
         )}
@@ -172,7 +159,12 @@ export function LtdsSection() {
                 language === "es" ? deal.summaryEs : deal.summaryEn;
               const visitUrl = deal.dealUrl || deal.website;
               return (
-                <HoverCard key={deal.id} openDelay={200} closeDelay={150}>
+                <HoverCard
+                  key={deal.id}
+                  openDelay={200}
+                  closeDelay={150}
+                  onOpenChange={open => setOpenDealId(open ? deal.id : null)}
+                >
                   <HoverCardTrigger asChild>
                     <div
                       className={`group relative flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card p-6 text-center transition-all duration-200 hover:shadow-2xl hover:-translate-y-1.5 hover:border-[var(--tool-accent)] cursor-pointer min-h-[160px] overflow-hidden ${accentClassFor(idx)}`}
@@ -245,7 +237,7 @@ export function LtdsSection() {
 
                   {/* Accent class repeated: portal content doesn't inherit --tool-accent from the card */}
                   <HoverCardContent
-                    className={`${reviewHoverCardClass(deal)} ${accentClassFor(idx)}`}
+                    className={`${reviewHoverCardClass({})} ${accentClassFor(idx)}`}
                     align="center"
                     sideOffset={8}
                   >
@@ -324,8 +316,11 @@ export function LtdsSection() {
                         </p>
                       </div>
 
-                      {/* Verified review: pros / cons / cost / verdict in the active language */}
-                      <ReviewDetails review={deal} />
+                      {/* Review prose is not on the list payload. */}
+                      <LtdReviewDetails
+                        id={deal.id}
+                        open={openDealId === deal.id}
+                      />
 
                       {/* Visit button — the only link out, so affiliate URLs can't be bypassed */}
                       <VisitButton url={visitUrl} label={t("visitDeal")} />
@@ -339,6 +334,17 @@ export function LtdsSection() {
           <p className="text-center py-12 text-muted-foreground">
             {t("noDeals")}
           </p>
+        )}
+        {!isLoading && (
+          <LoadMoreButton
+            shown={filteredDeals.length}
+            total={total}
+            hasMore={Boolean(query.hasNextPage)}
+            pending={query.isFetchingNextPage}
+            onClick={() => {
+              void query.fetchNextPage();
+            }}
+          />
         )}
       </div>
     </section>

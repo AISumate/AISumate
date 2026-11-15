@@ -1,9 +1,8 @@
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
-import { Loader2, PanelTopClose, PanelTopOpen } from "lucide-react";
+import { PanelTopClose, PanelTopOpen } from "lucide-react";
 import { ToolGrid } from "./ToolGrid";
-import { type AiTool } from "./ToolCard";
 import { GithubReposSection } from "./GithubReposSection";
 import { WeeklyViralGithubSection } from "./WeeklyViralGithubSection";
 import { SumateTopRecommendationsSection } from "./SumateTopRecommendationsSection";
@@ -13,19 +12,7 @@ import { GroupedCategoryNav } from "./GroupedCategoryNav";
 import { HomeSection } from "./HomeSection";
 import { rememberTab } from "@/lib/lastTab";
 
-interface SectionTabsProps {
-  tools: AiTool[];
-  categories: string[];
-  toolsLoading?: boolean;
-  toolsError?: boolean;
-}
-
-export function SectionTabs({
-  tools,
-  categories,
-  toolsLoading,
-  toolsError,
-}: SectionTabsProps) {
+export function SectionTabs() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("home");
   // The 3-row category bar can feel bulky — a floating toggle hides it, remembered per browser.
@@ -114,17 +101,7 @@ export function SectionTabs({
           </TabsContent>
 
           <TabsContent value="tools" className="mt-0 grid-pattern-bg">
-            {toolsLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
-            ) : toolsError ? (
-              <p className="text-center py-20 text-sm text-destructive">
-                {t("errorLoading")}
-              </p>
-            ) : (
-              <ToolGrid tools={tools} categories={categories} />
-            )}
+            <ToolGrid />
           </TabsContent>
 
           <TabsContent value="aiMedia" className="mt-0 grid-pattern-bg">

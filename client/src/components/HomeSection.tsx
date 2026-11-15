@@ -1,8 +1,12 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { keepPreviousData } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { LIST_PAGE_SIZE_DEFAULT } from "@shared/listPage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { LoadMoreButton } from "./LoadMoreButton";
 import { FilterBar } from "./FilterBar";
 import { SectionHeading } from "./toolVisuals";
 import { ToolCard, type AiTool } from "./ToolCard";
@@ -18,7 +22,7 @@ interface BlogRow {
   slug?: string;
   descriptionEn?: string;
   descriptionEs?: string;
-  bodyEn?: string;
+  hasBody?: boolean;
   author?: string;
   category?: string;
   readingTimeMinutes?: number;
@@ -31,22 +35,12 @@ interface BlogRow {
  */
 function BlogRowSection() {
   const { t, language } = useLanguage();
-  const { data, isLoading } = trpc.aiMedia.list.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data, isLoading } = trpc.aiMedia.list.useQuery(
+    { sort: "newest", order: "desc", hasBody: true, limit: 3 },
+    { refetchOnWindowFocus: false }
+  );
 
-  const posts = ((data?.tools ?? []) as BlogRow[])
-    .filter(p => p.bodyEn?.trim())
-    .map((p, i) => ({ ...p, _pos: i }))
-    // Newest first; undated posts sink, and posts sharing a date fall back to
-    // whichever was entered into Teable last.
-    .sort(
-      (a, b) =>
-        String(b.publishedDate ?? "").localeCompare(
-          String(a.publishedDate ?? "")
-        ) || (b._pos ?? 0) - (a._pos ?? 0)
-    )
-    .slice(0, 3);
+  const posts = ((data?.tools ?? []) as BlogRow[]).filter(p => p.hasBody);
 
   if (isLoading || posts.length === 0) return null;
 
@@ -146,29 +140,36 @@ export function HomeSection() {
     if (typeof window === "undefined") return "";
     return new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
   });
-  const [sortField, setSortField] = useState("relevance");
+  const [sortField, setSortField] = useState<"relevance" | "name" | "rating">(
+    "relevance"
+  );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const term = search.trim();
+  const debouncedTerm = useDebouncedValue(term);
   const searching = term.length > 0;
 
   // Searches every table, not just this page — the reason it lives here rather
   // than inside one section. Skipped entirely until something is typed.
-  const query = trpc.search.global.useQuery(
-    { query: term, limit: 100 },
-    { enabled: searching, refetchOnWindowFocus: false }
+  const query = trpc.search.global.useInfiniteQuery(
+    {
+      query: debouncedTerm || "ai",
+      limit: LIST_PAGE_SIZE_DEFAULT,
+      sort: sortField,
+      order: sortDirection,
+    },
+    {
+      enabled: debouncedTerm.length > 0,
+      initialCursor: 1,
+      getNextPageParam: last => last.nextCursor ?? undefined,
+      placeholderData: keepPreviousData,
+      refetchOnWindowFocus: false,
+    }
   );
 
-  const results = useMemo(() => {
-    const rows = (query.data?.results ?? []) as SearchHit[];
-    if (sortField === "relevance") return rows; // server order is by score
-    const sorted = [...rows].sort((a, b) =>
-      sortField === "rating"
-        ? (b.rating ?? 0) - (a.rating ?? 0) || a.name.localeCompare(b.name)
-        : a.name.localeCompare(b.name)
-    );
-    return sortDirection === "asc" ? sorted : sorted.reverse();
-  }, [query.data, sortField, sortDirection]);
+  const results = (query.data?.pages.flatMap(page => page.results) ??
+    []) as SearchHit[];
+  const total = query.data?.pages[0]?.total ?? 0;
 
   const chips = [
     { label: t("heroChipVoiceCloning"), value: "voice cloning" },
@@ -185,7 +186,8 @@ export function HomeSection() {
         sort={{
           field: sortField,
           direction: sortDirection,
-          onFieldChange: setSortField,
+          onFieldChange: field =>
+            setSortField(field as "relevance" | "name" | "rating"),
           onDirectionChange: setSortDirection,
           options: [
             { value: "relevance", labelKey: "sortByRelevance" },
@@ -197,7 +199,7 @@ export function HomeSection() {
             },
           ],
         }}
-        resultCount={searching ? results.length : undefined}
+        resultCount={searching ? total : undefined}
         searchPlaceholderKey="homeSearchPlaceholder"
       />
 
@@ -220,7 +222,7 @@ export function HomeSection() {
       )}
 
       {searching ? (
-        query.isLoading ? (
+        query.isLoading || debouncedTerm.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
@@ -229,21 +231,32 @@ export function HomeSection() {
             {t("globalSearchNoResults")}
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-            {results.map((hit, idx) => (
-              <ToolCard
-                key={`${hit.sourceTableKey}/${hit.id}`}
-                tool={hit}
-                index={idx}
-                tableKey={hit.sourceTableKey}
-                cornerBadge={
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                    {hit.sourceTable}
-                  </span>
-                }
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+              {results.map((hit, idx) => (
+                <ToolCard
+                  key={`${hit.sourceTableKey}/${hit.id}`}
+                  tool={hit}
+                  index={idx}
+                  tableKey={hit.sourceTableKey}
+                  cornerBadge={
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                      {hit.sourceTable}
+                    </span>
+                  }
+                />
+              ))}
+            </div>
+            <LoadMoreButton
+              shown={results.length}
+              total={total}
+              hasMore={Boolean(query.hasNextPage)}
+              pending={query.isFetchingNextPage}
+              onClick={() => {
+                void query.fetchNextPage();
+              }}
+            />
+          </>
         )
       ) : (
         <>

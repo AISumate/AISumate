@@ -393,6 +393,63 @@ describe("tools.list", () => {
     expect(result.tools).toHaveLength(0);
     expect(result.total).toBe(0);
   });
+
+  it("pages an omitted request at 24 and refuses a limit above 50", async () => {
+    const many = Array.from({ length: 60 }, (_, i) => ({
+      id: `t${String(i).padStart(2, "0")}`,
+      name: `Tool ${String(i).padStart(2, "0")}`,
+      descriptionEn: "x",
+      descriptionEs: "",
+      category: "Chatbot",
+      url: `https://example.com/${i}`,
+      affiliateUrl: "",
+      iconUrl: "",
+      isAffiliate: false,
+      rating: 0,
+      prosEn: "should not leak",
+      verdictEn: "a long verdict that cards do not render",
+      blogPostEn: "a hands-on review",
+      images: ["https://example.com/shot.png"],
+    }));
+    mockFetchAllTools.mockResolvedValue(many);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const first = await caller.tools.list({});
+    expect(first.tools).toHaveLength(24);
+    expect(first.limit).toBe(24);
+    expect(first.page).toBe(1);
+    expect(first.hasMore).toBe(true);
+    expect(first.nextCursor).toBe(2);
+    expect(first.total).toBe(60);
+    expect(first.tools[0]).not.toHaveProperty("prosEn");
+    expect(first.tools[0]).not.toHaveProperty("verdictEn");
+    expect(first.tools[0]).not.toHaveProperty("blogPostEn");
+    expect(first.tools[0]).not.toHaveProperty("images");
+    expect(first.tools[0].hasReview).toBe(true);
+    expect(JSON.stringify(first)).not.toContain("should not leak");
+    expect(JSON.stringify(first)).not.toContain("long verdict");
+
+    const second = await caller.tools.list({ cursor: 2 });
+    expect(second.tools).toHaveLength(24);
+    expect(second.tools[0].id).toBe("t24");
+    expect(second.tools.map(t => t.id)).not.toEqual(first.tools.map(t => t.id));
+
+    const capped = await caller.tools.list({ limit: 50 });
+    expect(capped.tools).toHaveLength(50);
+
+    await expect(caller.tools.list({ limit: 51 })).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+    });
+
+    const detail = await caller.listing.get({ table: "tools", id: "t00" });
+    expect(detail.item?.verdictEn).toContain("long verdict");
+    expect(detail.item?.prosEn).toBe("should not leak");
+    expect(detail.item?.blogPostEn).toContain("hands-on");
+    expect(detail.related.length).toBeGreaterThan(0);
+    expect(detail.related.length).toBeLessThanOrEqual(3);
+    expect(detail.related[0]).not.toHaveProperty("verdictEn");
+  });
 });
 
 describe("tools.categories", () => {
@@ -1123,5 +1180,36 @@ describe("search.global", () => {
     // The tool literally named "Claude" must rank first, ahead of the
     // higher-rated tool that only mentions Claude in its description.
     expect(result.results[0].name).toBe("Claude");
+  });
+
+  it("returns at most one page and drops review prose from each hit", async () => {
+    const many = Array.from({ length: 30 }, (_, i) => ({
+      id: `s${i}`,
+      name: `Match ${i}`,
+      descriptionEn: "chat tool",
+      descriptionEs: "",
+      url: `https://example.com/s${i}`,
+      affiliateUrl: "",
+      iconUrl: "",
+      category: "Chat",
+      isAffiliate: false,
+      rating: 0,
+      verdictEn: "secret verdict",
+    }));
+    mockFetchAllTools.mockResolvedValue(many);
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.search.global({ query: "chat" });
+    expect(result.results.length).toBeLessThanOrEqual(24);
+    expect(result.results).toHaveLength(24);
+    expect(result.total).toBe(30);
+    expect(result.hasMore).toBe(true);
+    expect(result.results[0]).not.toHaveProperty("verdictEn");
+    expect(JSON.stringify(result.results)).not.toContain("secret verdict");
+
+    await expect(
+      caller.search.global({ query: "chat", limit: 200 })
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
 });

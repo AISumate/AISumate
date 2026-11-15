@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { keepPreviousData } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Star,
@@ -9,9 +10,12 @@ import {
   ArrowUpDown,
   Loader2,
 } from "lucide-react";
+import { LIST_PAGE_SIZE_DEFAULT } from "@shared/listPage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { FilterBar, buildFilterOptions } from "./FilterBar";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { FilterBar } from "./FilterBar";
+import { LoadMoreButton } from "./LoadMoreButton";
 import { formatCompactNumber, SectionHeading } from "./toolVisuals";
 
 export interface GithubRepo {
@@ -33,48 +37,31 @@ export function GithubReposSection() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortField, setSortField] = useState<SortField>("stars");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [displayCount, setDisplayCount] = useState(100);
+  const debouncedSearch = useDebouncedValue(searchTerm);
 
-  // Fetch the full (server-cached) list once; search/filter/sort client-side
-  // so typing doesn't fire a request per keystroke.
-  const { data, isLoading } = trpc.github.list.useQuery(undefined);
-
-  const repos = data?.repos ?? [];
-
-  const statusOptions = useMemo(
-    () => buildFilterOptions(repos, r => r.status),
-    [repos]
+  const query = trpc.github.list.useInfiniteQuery(
+    {
+      search: debouncedSearch.trim() || undefined,
+      status: statusFilter,
+      sort: sortField,
+      order: sortDirection,
+      limit: LIST_PAGE_SIZE_DEFAULT,
+    },
+    {
+      initialCursor: 1,
+      getNextPageParam: last => last.nextCursor ?? undefined,
+      placeholderData: keepPreviousData,
+      refetchOnWindowFocus: false,
+    }
   );
 
-  // Apply filters + sorting
-  const processedRepos = useMemo(() => {
-    let result = repos;
-
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase().trim();
-      result = result.filter(
-        r =>
-          r.name.toLowerCase().includes(term) ||
-          r.description.toLowerCase().includes(term) ||
-          r.owner.toLowerCase().includes(term)
-      );
-    }
-    if (statusFilter !== "all") {
-      result = result.filter(r => r.status === statusFilter);
-    }
-
-    const sorted = [...result].sort((a, b) => {
-      let cmp = 0;
-      if (sortField === "stars") {
-        cmp = a.stars - b.stars;
-      } else if (sortField === "name") {
-        cmp = a.name.localeCompare(b.name);
-      }
-      return sortDirection === "asc" ? cmp : -cmp;
-    });
-
-    return sorted;
-  }, [repos, searchTerm, statusFilter, sortField, sortDirection]);
+  const repos = query.data?.pages.flatMap(page => page.repos) ?? [];
+  const total = query.data?.pages[0]?.total ?? 0;
+  const isLoading = query.isLoading;
+  const statusOptions = (query.data?.pages[0]?.statuses ?? []).map(status => ({
+    value: status,
+    label: status,
+  }));
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -90,7 +77,6 @@ export function GithubReposSection() {
     setStatusFilter("all");
     setSortField("stars");
     setSortDirection("desc");
-    setDisplayCount(100);
   };
 
   const SortIcon = ({ field }: { field: SortField }) => {
@@ -119,20 +105,14 @@ export function GithubReposSection() {
         {!isLoading && (
           <FilterBar
             searchTerm={searchTerm}
-            onSearchChange={(v: string) => {
-              setSearchTerm(v);
-              setDisplayCount(100);
-            }}
+            onSearchChange={setSearchTerm}
             filters={[
               ...(statusOptions.length > 0
                 ? [
                     {
                       key: "status",
                       value: statusFilter,
-                      onChange: (v: string) => {
-                        setStatusFilter(v);
-                        setDisplayCount(100);
-                      },
+                      onChange: setStatusFilter,
                       options: statusOptions,
                       placeholderKey: "filterByStatus",
                     },
@@ -157,7 +137,7 @@ export function GithubReposSection() {
                 },
               ],
             }}
-            resultCount={processedRepos.length}
+            resultCount={total}
             onReset={handleReset}
           />
         )}
@@ -167,7 +147,7 @@ export function GithubReposSection() {
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
-        ) : processedRepos.length > 0 ? (
+        ) : repos.length > 0 ? (
           <div className="overflow-x-auto rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-secondary/50 border-b border-border">
@@ -201,7 +181,7 @@ export function GithubReposSection() {
                 </tr>
               </thead>
               <tbody>
-                {processedRepos.slice(0, displayCount).map((repo, idx) => (
+                {repos.map((repo, idx) => (
                   <tr
                     key={repo.id}
                     className={`border-b border-border last:border-0 hover:bg-accent/5 transition-colors tool-accent-${idx % 6}`}
@@ -269,23 +249,15 @@ export function GithubReposSection() {
           </p>
         )}
 
-        {processedRepos.length > displayCount && (
-          <div className="flex flex-col items-center gap-3 mt-6">
-            <p className="text-xs text-muted-foreground">
-              {t("showingResults")
-                .replace("{shown}", String(displayCount))
-                .replace("{total}", String(processedRepos.length))}
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setDisplayCount(prev => prev + 100)}
-              className="border-primary/30 text-primary hover:bg-primary/5"
-            >
-              {t("loadMore")}
-            </Button>
-          </div>
-        )}
+        <LoadMoreButton
+          shown={repos.length}
+          total={total}
+          hasMore={Boolean(query.hasNextPage)}
+          pending={query.isFetchingNextPage}
+          onClick={() => {
+            void query.fetchNextPage();
+          }}
+        />
       </div>
     </section>
   );

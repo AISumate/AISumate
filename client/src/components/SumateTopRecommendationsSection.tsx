@@ -1,7 +1,9 @@
+import { LIST_PAGE_SIZE_MAX } from "@shared/listPage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { SectionHeading, type ReviewInfo } from "./toolVisuals";
 import { ToolCard, type AiTool } from "./ToolCard";
+import { LoadMoreButton } from "./LoadMoreButton";
 
 interface TopRecommendation extends ReviewInfo {
   id: string;
@@ -12,7 +14,7 @@ interface TopRecommendation extends ReviewInfo {
   iconUrl: string;
   category: string;
   rating: number;
-  rank: number;
+  hasReview?: boolean;
 }
 
 /**
@@ -31,18 +33,24 @@ export function SumateTopRecommendationsSection({
   limit,
 }: { limit?: number } = {}) {
   const { t } = useLanguage();
-  const { data, isLoading } =
-    trpc.sumateTopRecommendations.list.useQuery(undefined);
-
-  const items = (data?.tools ?? []) as TopRecommendation[];
-
-  if (isLoading || items.length === 0) return null;
-
-  // Ranked 1..N (unranked rows sink to the bottom).
-  const ranked = [...items].sort(
-    (a, b) => (a.rank || Infinity) - (b.rank || Infinity)
+  const pageSize = limit
+    ? Math.min(limit, LIST_PAGE_SIZE_MAX)
+    : LIST_PAGE_SIZE_MAX;
+  const query = trpc.sumateTopRecommendations.list.useInfiniteQuery(
+    { sort: "rank", order: "asc", limit: pageSize },
+    {
+      initialCursor: 1,
+      // A caller that asked for a fixed handful (the home row) stops after one page.
+      getNextPageParam: last =>
+        limit ? undefined : (last.nextCursor ?? undefined),
+      refetchOnWindowFocus: false,
+    }
   );
-  const sorted = limit ? ranked.slice(0, limit) : ranked;
+
+  const items: TopRecommendation[] =
+    query.data?.pages.flatMap(page => page.tools) ?? [];
+
+  if (query.isLoading || items.length === 0) return null;
 
   return (
     <section className="pt-10 pb-2">
@@ -54,7 +62,7 @@ export function SumateTopRecommendationsSection({
 
         {/* Compact tiles, matching the AI Influencers grid this strip sits above. */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {sorted.map((item, idx) => (
+          {items.map((item, idx) => (
             <ToolCard
               key={item.id}
               index={idx}
@@ -65,6 +73,15 @@ export function SumateTopRecommendationsSection({
             />
           ))}
         </div>
+        <LoadMoreButton
+          shown={items.length}
+          total={query.data?.pages[0]?.total ?? items.length}
+          hasMore={Boolean(query.hasNextPage)}
+          pending={query.isFetchingNextPage}
+          onClick={() => {
+            void query.fetchNextPage();
+          }}
+        />
       </div>
     </section>
   );

@@ -1,9 +1,30 @@
 import { COOKIE_NAME } from "@shared/const";
+import { blogSlug } from "@shared/blogSlug";
+import { LIST_PAGE_SIZE_DEFAULT, LIST_PAGE_SIZE_MAX } from "@shared/listPage";
 import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { staggeredAll } from "./_core/batch";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
+import {
+  categoryKey,
+  chosen,
+  listInput,
+  matchesAi,
+  matchesLanguage,
+  matchesQuery,
+  pageOf,
+  resolvePage,
+  searchScore,
+  sortCatalogue,
+  toDealCard,
+  toLlmCard,
+  toRelatedCard,
+  toRepoCard,
+  toToolCard,
+  toWeeklyCard,
+  uniqueSorted,
+} from "./catalogueQuery";
 import {
   fetchAllTools,
   fetchGithubRepos,
@@ -35,78 +56,141 @@ import {
   type GenericTool,
 } from "./teable";
 
-const searchInput = z.object({ search: z.string().optional() }).optional();
-
-/** Split a query into lowercased word tokens. "Free LLM API" -> ["free","llm","api"]. */
-const searchTokens = (query: string): string[] =>
-  query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-
-/**
- * An item matches when EVERY query word appears somewhere in its searchable
- * text. The old matcher required the whole query as one contiguous substring,
- * so any multi-word query ("free LLM API") matched nothing. Tokenising fixes
- * that while still narrowing as the user adds words.
- */
-const matchesQuery = (
-  query: string,
-  ...fields: (string | undefined)[]
-): boolean => {
-  const tokens = searchTokens(query);
-  if (!tokens.length) return true;
-  const hay = fields.map(f => (f ?? "").toLowerCase()).join(" ");
-  return tokens.every(t => hay.includes(t));
-};
-
-/**
- * Relevance score for global search — higher is better; -1 means no match.
- * Name matches beat description matches, and exact/prefix name matches beat
- * partial ones, so "claude" surfaces the Claude entry instead of alphabetically
- * whatever happens to mention Claude in its description.
- */
-const searchScore = (
-  query: string,
-  name: string,
-  category: string,
-  ...descriptions: (string | undefined)[]
-): number => {
-  const tokens = searchTokens(query);
-  if (!tokens.length) return 0;
-  const n = name.toLowerCase();
-  const c = category.toLowerCase();
-  const d = descriptions.map(x => (x ?? "").toLowerCase()).join(" ");
-  const hay = `${n} ${c} ${d}`;
-  if (!tokens.every(t => hay.includes(t))) return -1;
-  const q = query.toLowerCase().trim();
-  let score = 0;
-  if (n === q) score += 1000;
-  else if (n.startsWith(q)) score += 600;
-  else if (n.includes(q)) score += 400;
-  if (tokens.every(t => n.includes(t)))
-    score += 200; // all words in the name
-  else if (tokens.some(t => n.includes(t))) score += 60; // some words in the name
-  if (tokens.every(t => c.includes(t))) score += 80; // all words in the category
-  return score;
-};
-
 /**
  * All generic tool tables share one list endpoint shape: fetch (cached
- * server-side), optionally filter by search term across name + descriptions.
+ * server-side), filter, sort, then return one slim page. The full rows stay
+ * in the Teable cache for `listing.get` and for scripts/prerender.ts, which
+ * imports the fetchers directly and never goes through this public procedure.
  */
 function makeGenericListRouter(fetcher: () => Promise<GenericTool[]>) {
   return router({
-    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+    list: publicProcedure.input(listInput).query(async ({ input }) => {
       const tools = await fetcher();
+      const { page, limit } = resolvePage(input);
+      const categories = uniqueSorted(tools.map(t => t.category));
       let filtered = tools;
-      if (input?.search && input.search.trim()) {
-        const term = input.search.toLowerCase().trim();
+      const search = input?.search?.trim();
+      if (search) {
         filtered = filtered.filter(t =>
-          matchesQuery(term, t.name, t.descriptionEn, t.descriptionEs)
+          matchesQuery(search, t.name, t.descriptionEn, t.descriptionEs)
         );
       }
-      return { tools: filtered, total: tools.length };
+      const category = chosen(input?.category);
+      if (category) {
+        filtered = filtered.filter(t => t.category === category);
+      }
+      filtered = filtered.filter(t => matchesAi(t.aiRelevance, input?.ai));
+      filtered = filtered.filter(t => matchesLanguage(t, input?.language));
+      if (input?.hasBody) {
+        filtered = filtered.filter(t => Boolean(t.bodyEn?.trim()));
+      }
+      const sorted = sortCatalogue(filtered, input?.sort, input?.order);
+      const paged = pageOf(sorted, page, limit);
+      return {
+        tools: paged.slice.map(toToolCard),
+        categories,
+        total: paged.total,
+        page: paged.page,
+        limit: paged.limit,
+        hasMore: paged.hasMore,
+        nextPage: paged.nextPage,
+        nextCursor: paged.nextCursor,
+      };
     }),
   });
 }
+
+/**
+ * Fields a detail page reads. The cached row is returned as-is; this type
+ * names the ones the UI touches so the procedure isn't typed as the whole
+ * union of every table.
+ */
+interface ListingDetail {
+  id: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  descriptionEn?: string;
+  descriptionEs?: string;
+  summaryEn?: string;
+  summaryEs?: string;
+  category?: string;
+  providerType?: string;
+  topic?: string;
+  platform?: string;
+  owner?: string;
+  url?: string;
+  repoUrl?: string;
+  dealUrl?: string;
+  website?: string;
+  affiliateUrl?: string;
+  iconUrl?: string;
+  isAffiliate?: boolean;
+  rating?: number;
+  isNew?: boolean;
+  aiRelevance?: string;
+  sponsored?: boolean;
+  prosEn?: string;
+  consEn?: string;
+  costEn?: string;
+  verdictEn?: string;
+  prosEs?: string;
+  consEs?: string;
+  costEs?: string;
+  verdictEs?: string;
+  reviewConfidence?: string;
+  blogTitleEn?: string;
+  blogTitleEs?: string;
+  blogPostEn?: string;
+  blogPostEs?: string;
+  images?: string[];
+  slug?: string;
+  bodyEn?: string;
+  bodyEs?: string;
+  author?: string;
+  tags?: string[];
+  readingTimeMinutes?: number;
+  publishedDate?: string;
+  providerNoteEn?: string;
+  providerNoteEs?: string;
+  language?: string;
+  stars?: number;
+  starsThisWeek?: number;
+  whyViral?: string;
+}
+
+/**
+ * One record, not a table. Prerender and these lookups are the only readers
+ * of a full row; the public `*.list` procedures above are paged and slim.
+ */
+const listingFetchers: Record<string, () => Promise<ListingDetail[]>> = {
+  tools: fetchAllTools,
+  llms: fetchLlmModels,
+  github: fetchGithubRepos,
+  weeklyViralGithub: fetchWeeklyViralGithubRepos,
+  videoImage: fetchVideoImageTools,
+  musicVoice: fetchMusicVoiceTools,
+  chatbots: fetchChatbotsTools,
+  freeApis: fetchFreeApisTools,
+  freeLlmIde: fetchFreeLlmIdeTools,
+  vibeCoding: fetchVibeCodingTools,
+  designerTools: fetchDesignerTools,
+  aiInfra: fetchAiInfraTools,
+  hardware: fetchHardwareTools,
+  testingTools: fetchTestingTools,
+  aiSecurity: fetchAiSecurityTools,
+  businessProductivity: fetchBusinessProductivityTools,
+  mcpProviders: fetchMcpProvidersTools,
+  vpsCloud: fetchVpsCloudTools,
+  aiMedia: fetchAiMediaTools,
+  aiInfluencers: fetchAiInfluencersTools,
+  aiSites: fetchAiSitesTools,
+  aiDiscord: fetchAiDiscordTools,
+  auSeoTools: fetchAuSeoTools,
+  sumateTopRecommendations: fetchSumateTopRecommendations,
+  thisWeeksAiPicks: fetchThisWeeksAiPicks,
+  ltds: fetchLtdDeals,
+} as Record<string, () => Promise<ListingDetail[]>>;
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -127,43 +211,46 @@ export const appRouter = router({
      * Public endpoint: fetch all AI tools from Teable.
      * The API key is used server-side only and never sent to the client.
      */
-    list: publicProcedure
-      .input(
-        z
-          .object({
-            search: z.string().optional(),
-            category: z.string().optional(),
-          })
-          .optional()
-      )
-      .query(async ({ input }) => {
-        const tools = await fetchAllTools();
+    /**
+     * One page of card fields. Omitting page/limit still returns the default
+     * page (24), never the whole table. Full rows: `listing.get`.
+     */
+    list: publicProcedure.input(listInput).query(async ({ input }) => {
+      const tools = await fetchAllTools();
+      const { page, limit } = resolvePage(input);
+      const categories = uniqueSorted(tools.map(t => t.category));
+      let filtered = tools;
 
-        let filtered = tools;
-
-        if (input?.search && input.search.trim()) {
-          const term = input.search.toLowerCase().trim();
-          filtered = filtered.filter(t =>
-            matchesQuery(term, t.name, t.descriptionEn, t.descriptionEs)
-          );
-        }
-
-        if (input?.category && input.category !== "all") {
-          filtered = filtered.filter(
-            t => t.category.toLowerCase() === input.category!.toLowerCase()
-          );
-        }
-
-        // Copy before sorting — `filtered` may be the shared cache array.
-        const sorted = [...filtered].sort((a, b) =>
-          a.name.localeCompare(b.name)
+      const search = input?.search?.trim();
+      if (search) {
+        filtered = filtered.filter(t =>
+          matchesQuery(search, t.name, t.descriptionEn, t.descriptionEs)
         );
+      }
 
-        return {
-          tools: sorted,
-          total: tools.length,
-        };
-      }),
+      const category = chosen(input?.category);
+      if (category) {
+        filtered = filtered.filter(
+          t => t.category.toLowerCase() === category.toLowerCase()
+        );
+      }
+      filtered = filtered.filter(t => matchesAi(t.aiRelevance, input?.ai));
+
+      // Copy via sort — `filtered` may be the shared cache array.
+      const sorted = sortCatalogue(filtered, input?.sort, input?.order);
+      const paged = pageOf(sorted, page, limit);
+
+      return {
+        tools: paged.slice.map(toToolCard),
+        categories,
+        total: paged.total,
+        page: paged.page,
+        limit: paged.limit,
+        hasMore: paged.hasMore,
+        nextPage: paged.nextPage,
+        nextCursor: paged.nextCursor,
+      };
+    }),
 
     /**
      * Public endpoint: get all unique categories from the tools data.
@@ -189,16 +276,42 @@ export const appRouter = router({
     /**
      * Public endpoint: fetch all GitHub repos from Teable, sorted by stars.
      */
-    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+    list: publicProcedure.input(listInput).query(async ({ input }) => {
       const repos = await fetchGithubRepos();
+      const { page, limit } = resolvePage(input);
+      const statuses = uniqueSorted(repos.map(r => r.status));
       let filtered = repos;
-      if (input?.search && input.search.trim()) {
-        const term = input.search.toLowerCase().trim();
+      const search = input?.search?.trim();
+      if (search) {
         filtered = filtered.filter(r =>
-          matchesQuery(term, r.name, r.description, r.owner)
+          matchesQuery(search, r.name, r.description, r.owner)
         );
       }
-      return { repos: filtered, total: repos.length };
+      const status = chosen(input?.status);
+      if (status) filtered = filtered.filter(r => r.status === status);
+      const sorted =
+        input?.sort === "name" || input?.sort === "stars"
+          ? [...filtered].sort((a, b) => {
+              const cmp =
+                input.sort === "stars"
+                  ? a.stars - b.stars
+                  : a.name.localeCompare(b.name);
+              const dir =
+                input.order ?? (input.sort === "stars" ? "desc" : "asc");
+              return dir === "asc" ? cmp : -cmp;
+            })
+          : filtered;
+      const paged = pageOf(sorted, page, limit);
+      return {
+        repos: paged.slice.map(toRepoCard),
+        statuses,
+        total: paged.total,
+        page: paged.page,
+        limit: paged.limit,
+        hasMore: paged.hasMore,
+        nextPage: paged.nextPage,
+        nextCursor: paged.nextCursor,
+      };
     }),
   }),
 
@@ -208,16 +321,27 @@ export const appRouter = router({
      * Weekly Rank (1 = most viral). Shown as a highlight strip above the
      * full GitHub Repos table.
      */
-    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+    list: publicProcedure.input(listInput).query(async ({ input }) => {
       const repos = await fetchWeeklyViralGithubRepos();
+      const { page, limit } = resolvePage(input);
       let filtered = repos;
-      if (input?.search && input.search.trim()) {
-        const term = input.search.toLowerCase().trim();
+      const search = input?.search?.trim();
+      if (search) {
         filtered = filtered.filter(r =>
-          matchesQuery(term, r.name, r.description, r.owner, r.whyViral)
+          matchesQuery(search, r.name, r.description, r.owner, r.whyViral)
         );
       }
-      return { repos: filtered, total: repos.length };
+      // Fetch order is Weekly Rank. Don't re-sort — a page must stay in that order.
+      const paged = pageOf(filtered, page, limit);
+      return {
+        repos: paged.slice.map(toWeeklyCard),
+        total: paged.total,
+        page: paged.page,
+        limit: paged.limit,
+        hasMore: paged.hasMore,
+        nextPage: paged.nextPage,
+        nextCursor: paged.nextCursor,
+      };
     }),
   }),
 
@@ -225,16 +349,37 @@ export const appRouter = router({
     /**
      * Public endpoint: fetch all LLM models from Teable.
      */
-    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+    list: publicProcedure.input(listInput).query(async ({ input }) => {
       const models = await fetchLlmModels();
+      const { page, limit } = resolvePage(input);
+      const providers = uniqueSorted(models.map(m => m.providerType));
       let filtered = models;
-      if (input?.search && input.search.trim()) {
-        const term = input.search.toLowerCase().trim();
+      const search = input?.search?.trim();
+      if (search) {
         filtered = filtered.filter(m =>
-          matchesQuery(term, m.name, m.summaryEn, m.summaryEs)
+          matchesQuery(search, m.name, m.summaryEn, m.summaryEs)
         );
       }
-      return { models: filtered, total: models.length };
+      const provider = chosen(input?.provider);
+      if (provider)
+        filtered = filtered.filter(m => m.providerType === provider);
+      filtered = filtered.filter(m => matchesAi(m.aiRelevance, input?.ai));
+      const sorted = sortCatalogue(
+        filtered.map(m => ({ ...m, category: m.providerType })),
+        input?.sort === "provider" ? "category" : input?.sort,
+        input?.order
+      );
+      const paged = pageOf(sorted, page, limit);
+      return {
+        models: paged.slice.map(toLlmCard),
+        providers,
+        total: paged.total,
+        page: paged.page,
+        limit: paged.limit,
+        hasMore: paged.hasMore,
+        nextPage: paged.nextPage,
+        nextCursor: paged.nextCursor,
+      };
     }),
   }),
 
@@ -242,16 +387,51 @@ export const appRouter = router({
     /**
      * Public endpoint: fetch all lifetime deals from Teable.
      */
-    list: publicProcedure.input(searchInput).query(async ({ input }) => {
+    list: publicProcedure.input(listInput).query(async ({ input }) => {
       const deals = await fetchLtdDeals();
+      const { page, limit } = resolvePage(input);
+      const platforms = uniqueSorted(deals.map(d => d.platform));
+      const statuses = uniqueSorted(deals.map(d => d.status));
       let filtered = deals;
-      if (input?.search && input.search.trim()) {
-        const term = input.search.toLowerCase().trim();
+      const search = input?.search?.trim();
+      if (search) {
         filtered = filtered.filter(d =>
-          matchesQuery(term, d.name, d.summaryEn, d.summaryEs)
+          matchesQuery(search, d.name, d.summaryEn, d.summaryEs)
         );
       }
-      return { deals: filtered, total: deals.length };
+      const platform = chosen(input?.platform);
+      if (platform) filtered = filtered.filter(d => d.platform === platform);
+      const status = chosen(input?.status);
+      if (status) filtered = filtered.filter(d => d.status === status);
+      const sortField =
+        input?.sort === "platform" || input?.sort === "status"
+          ? "category"
+          : input?.sort;
+      const sorted = sortCatalogue(
+        filtered.map(d => ({
+          ...d,
+          category:
+            input?.sort === "status"
+              ? d.status
+              : input?.sort === "platform"
+                ? d.platform
+                : d.platform,
+        })),
+        sortField,
+        input?.order
+      );
+      const paged = pageOf(sorted, page, limit);
+      return {
+        deals: paged.slice.map(toDealCard),
+        platforms,
+        statuses,
+        total: paged.total,
+        page: paged.page,
+        limit: paged.limit,
+        hasMore: paged.hasMore,
+        nextPage: paged.nextPage,
+        nextCursor: paged.nextCursor,
+      };
     }),
   }),
 
@@ -288,12 +468,22 @@ export const appRouter = router({
     global: publicProcedure
       .input(
         z.object({
-          query: z.string().min(1),
-          limit: z.number().min(1).max(200).default(50),
+          query: z.string().min(1).max(200),
+          limit: z
+            .number()
+            .int()
+            .min(1)
+            .max(LIST_PAGE_SIZE_MAX)
+            .default(LIST_PAGE_SIZE_DEFAULT),
+          cursor: z.number().int().min(1).max(10_000).nullish(),
+          page: z.number().int().min(1).max(10_000).optional(),
+          sort: z.enum(["relevance", "name", "rating"]).optional(),
+          order: z.enum(["asc", "desc"]).optional(),
         })
       )
       .query(async ({ input }) => {
         const term = input.query.toLowerCase().trim();
+        const page = input.page ?? input.cursor ?? 1;
         const limit = input.limit;
 
         // Every table normalized into one search-result shape.
@@ -317,7 +507,7 @@ export const appRouter = router({
           isAffiliate?: boolean;
           rating?: number;
           isNew?: boolean;
-          reviewConfidence?: string;
+          blogPostEn?: string;
         };
 
         // key is the /tool/<key>/<id> route segment, carried into each result so a
@@ -490,7 +680,7 @@ export const appRouter = router({
                   isAffiliate: item.isAffiliate || false,
                   rating: item.rating || 0,
                   isNew: item.isNew || false,
-                  reviewConfidence: item.reviewConfidence || "",
+                  hasReview: Boolean(item.blogPostEn?.trim()),
                   sourceTable: label,
                   sourceTableKey: key,
                   score,
@@ -528,17 +718,93 @@ export const appRouter = router({
         }
         const uniqueResults = Array.from(deduped.values());
         // Rank by relevance score (name matches first), then rating, then name.
-        uniqueResults.sort(
-          (a, b) =>
-            b.score - a.score ||
-            (b.rating || 0) - (a.rating || 0) ||
-            a.name.localeCompare(b.name)
-        );
+        // Name/rating sorts match the home-page control, including its
+        // direction flip (rating's comparator is already high-to-low).
+        const sort = input.sort ?? "relevance";
+        const dir = input.order ?? "asc";
+        uniqueResults.sort((a, b) => {
+          switch (sort) {
+            case "relevance":
+              return (
+                b.score - a.score ||
+                (b.rating || 0) - (a.rating || 0) ||
+                a.name.localeCompare(b.name)
+              );
+            case "rating": {
+              const cmp =
+                (b.rating || 0) - (a.rating || 0) ||
+                a.name.localeCompare(b.name);
+              return dir === "asc" ? cmp : -cmp;
+            }
+            case "name": {
+              const cmp = a.name.localeCompare(b.name);
+              return dir === "asc" ? cmp : -cmp;
+            }
+            default: {
+              const _exhaustive: never = sort;
+              return _exhaustive;
+            }
+          }
+        });
 
+        const paged = pageOf(uniqueResults, page, limit);
         return {
-          results: uniqueResults.slice(0, limit).map(({ score, ...r }) => r),
-          total: uniqueResults.length,
+          results: paged.slice.map(({ score, ...r }) => r),
+          total: paged.total,
+          page: paged.page,
+          limit: paged.limit,
+          hasMore: paged.hasMore,
+          nextPage: paged.nextPage,
+          nextCursor: paged.nextCursor,
         };
+      }),
+  }),
+
+  listing: router({
+    /**
+     * Full row for one listing: verdict, pros/cons, review text, gallery.
+     * Related cards are a fixed handful, not the rest of the table.
+     */
+    get: publicProcedure
+      .input(
+        z.object({
+          table: z.string().min(1).max(64),
+          id: z.string().min(1).max(200),
+        })
+      )
+      .query(async ({ input }) => {
+        const fetcher = listingFetchers[input.table];
+        if (!fetcher) return { item: null, related: [] };
+        const rows = await fetcher();
+        const item = rows.find(row => row.id === input.id) ?? null;
+        if (!item) return { item: null, related: [] };
+        const key = categoryKey(item);
+        const related = rows
+          .filter(
+            row => row.id !== item.id && (key ? categoryKey(row) === key : true)
+          )
+          .sort(
+            (a, b) =>
+              (b.rating || 0) - (a.rating || 0) ||
+              String(a.name || a.title || "").localeCompare(
+                String(b.name || b.title || "")
+              )
+          )
+          .slice(0, 3)
+          .map(toRelatedCard);
+        return { item, related };
+      }),
+
+    /** Blog posts are addressed by slug, not by the table list. */
+    bySlug: publicProcedure
+      .input(z.object({ slug: z.string().min(1).max(200) }))
+      .query(async ({ input }) => {
+        const rows = await fetchAiMediaTools();
+        const post =
+          rows.find(row => blogSlug(row.slug, row.id) === input.slug) ??
+          rows.find(row => row.id === input.slug) ??
+          null;
+        return { post };
       }),
   }),
 });

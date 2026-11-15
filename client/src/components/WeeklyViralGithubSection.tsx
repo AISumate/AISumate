@@ -1,7 +1,9 @@
 import { Flame, Star, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { LIST_PAGE_SIZE_MAX } from "@shared/listPage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
+import { LoadMoreButton } from "./LoadMoreButton";
 import {
   formatCompactNumber,
   SectionHeading,
@@ -24,6 +26,7 @@ interface WeeklyViralRepo extends ReviewInfo {
   whyViral: string;
   iconUrl: string;
   rating: number;
+  hasReview?: boolean;
 }
 
 function formatWeekOf(dateStr: string): string {
@@ -49,13 +52,21 @@ function formatWeekOf(dateStr: string): string {
  */
 export function WeeklyViralGithubSection() {
   const { t, language } = useLanguage();
-  const { data, isLoading } = trpc.weeklyViralGithub.list.useQuery(undefined);
+  const query = trpc.weeklyViralGithub.list.useInfiniteQuery(
+    { limit: LIST_PAGE_SIZE_MAX },
+    {
+      initialCursor: 1,
+      getNextPageParam: last => last.nextCursor ?? undefined,
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  const repos = (data?.repos ?? []) as WeeklyViralRepo[];
+  const repos = (query.data?.pages.flatMap(page => page.repos) ??
+    []) as WeeklyViralRepo[];
 
   // Supplementary content: while loading or if the table is empty, render
   // nothing rather than an empty box above the real GitHub Repos table.
-  if (isLoading || repos.length === 0) return null;
+  if (query.isLoading || repos.length === 0) return null;
 
   const weekOf = formatWeekOf(repos[0]?.weekEnding);
 
@@ -157,6 +168,15 @@ export function WeeklyViralGithubSection() {
             );
           })}
         </div>
+        <LoadMoreButton
+          shown={repos.length}
+          total={query.data?.pages[0]?.total ?? repos.length}
+          hasMore={Boolean(query.hasNextPage)}
+          pending={query.isFetchingNextPage}
+          onClick={() => {
+            void query.fetchNextPage();
+          }}
+        />
       </div>
     </section>
   );

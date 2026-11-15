@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Header } from "@/components/Header";
@@ -6,7 +6,6 @@ import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { BlogArticle, type BlogPostToolInfo } from "@/components/BlogArticle";
-import { blogSlug } from "@shared/blogSlug";
 import { lastTab } from "@/lib/lastTab";
 
 /**
@@ -25,21 +24,14 @@ export default function BlogPost() {
   const { t } = useLanguage();
   const slug = params.slug ?? "";
 
-  const query = trpc.aiMedia.list.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const query = trpc.listing.bySlug.useQuery(
+    { slug },
+    { enabled: slug.length > 0, refetchOnWindowFocus: false }
+  );
 
-  const post = useMemo(() => {
-    const rows = (query.data?.tools ?? []) as (BlogPostToolInfo & {
-      id: string;
-    })[];
-    // Compare on the normalised slug, so the page resolves for exactly the
-    // addresses the links and the crawler twins use.
-    return (
-      rows.find(r => blogSlug(r.slug, r.id) === slug) ??
-      rows.find(r => r.id === slug)
-    );
-  }, [query.data, slug]);
+  const post = (query.data?.post ?? undefined) as
+    | (BlogPostToolInfo & { id: string })
+    | undefined;
 
   useEffect(() => {
     window.scrollTo(0, 0);

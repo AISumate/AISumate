@@ -17,6 +17,29 @@ export function createApp() {
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ limit: "1mb", extended: true }));
   registerRateLimits(app);
+  // A bare GET /api/trpc/<something>.list has no input object. That used to
+  // mean "the whole table". It now means the default page. Batch calls already
+  // send an input map, and procedures that aren't lists are left alone
+  // (tools.categories, for example, takes no object).
+  app.use("/api/trpc", (req, _res, next) => {
+    if (req.method !== "GET" || !req.url) return next();
+    const qIndex = req.url.indexOf("?");
+    const path = qIndex === -1 ? req.url : req.url.slice(0, qIndex);
+    if (path.includes(",") || !path.includes(".list")) return next();
+    const params = new URLSearchParams(
+      qIndex === -1 ? "" : req.url.slice(qIndex + 1)
+    );
+    const current = params.get("input");
+    const missing =
+      current == null ||
+      current === "" ||
+      current === "null" ||
+      current === '{"json":null}';
+    if (!missing) return next();
+    params.set("input", JSON.stringify({ json: {} }));
+    req.url = `${path}?${params.toString()}`;
+    next();
+  });
   // The Manus-era /manus-storage/* proxy and /api/oauth/callback route used to be
   // mounted here. Both were publicly reachable, permanently inert (their forge /
   // OAuth env vars are never set outside Manus), and the storage proxy forwarded
