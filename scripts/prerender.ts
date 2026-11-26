@@ -13,7 +13,9 @@
  *                       bots at /tool/<table>/<id>; humans get the SPA there.
  *   • privacy.html / terms.html — static twins of the legal pages, from the
  *                       same shared/legalContent.ts the React pages render.
- *   • sitemap.xml     — home + legal + every tool URL.
+ *   • sitemap.xml     — home + legal + every tool URL, except a This Week's
+ *                       AI Picks page whose product already has a main tools
+ *                       row (that picks page canonicalizes to the tools URL).
  *
  * Best-effort: if Teable is unreachable at build time it ships the shell and
  * legal pages without the catalogue, and never blocks a deploy.
@@ -47,6 +49,13 @@ import {
 import { blogSlug } from "../shared/blogSlug";
 import { mshotsUrl } from "../shared/screenshot";
 import { proxyImg } from "../server/imgProxy";
+import {
+  indexCanonicalTools,
+  isDuplicatePickPage,
+  listingCanonicalPath,
+  matchCanonicalTool,
+  type CanonicalToolIndex,
+} from "../shared/toolCanonical";
 
 const SITE_URL = "https://www.aisumate.com";
 const OUT = path.resolve(process.cwd(), "dist/public");
@@ -283,7 +292,7 @@ function toolImage(e: Entry): { shot: string; ogImage: string } {
   return { shot, ogImage: shot || safeImgUrl(e.iconUrl) };
 }
 
-function toolPageHtml(e: Entry): string {
+function toolPageHtml(e: Entry, canonicalPath: string): string {
   const href = safeUrl(e.url);
   const stars = e.rating > 0 ? `★ ${e.rating}/5 · ` : "";
   const { shot, ogImage } = toolImage(e);
@@ -291,7 +300,6 @@ function toolPageHtml(e: Entry): string {
   const metaDesc =
     cleanReviewText(e.desc) ||
     `${e.name} on aisumate, the human-curated AI tools directory.`;
-  const canonicalPath = `/tool/${e.tableKey}/${e.id}`;
 
   // Per-listing share card, so a pasted link previews as the tool rather than
   // as the site. esc() does not escape "'", so every value sits in "quotes".
@@ -337,12 +345,21 @@ function toolPageHtml(e: Entry): string {
   return staticShell({ title, metaDesc, canonicalPath, body, head });
 }
 
-function writeToolPages(entries: Entry[]): number {
+function writeToolPages(
+  entries: Entry[],
+  toolsIndex: CanonicalToolIndex
+): number {
   let written = 0;
   for (const e of entries) {
     const dir = path.join(OUT, "tools-static", e.tableKey);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(path.join(dir, `${e.id}.html`), toolPageHtml(e), "utf8");
+    // The picks file is still written. Only its canonical (and og:url) moves
+    // when the same product already lives in the main tools table.
+    writeFileSync(
+      path.join(dir, `${e.id}.html`),
+      toolPageHtml(e, listingCanonicalPath(e, toolsIndex)),
+      "utf8"
+    );
     written++;
   }
   return written;
@@ -645,13 +662,29 @@ async function main() {
   const posts = await collectBlog();
   const blogPages = writeBlogPages(posts);
   let toolPages = 0;
+  let sitemapLabel = "(kept static)";
   if (entries.length) {
-    toolPages = writeToolPages(entries);
+    const toolsIndex = indexCanonicalTools(entries);
+    for (const entry of entries) {
+      if (entry.tableKey !== "thisWeeksAiPicks") continue;
+      const match = matchCanonicalTool(entry, toolsIndex);
+      if (!match) continue;
+      console.log(
+        `[prerender] ${entry.name}: /tool/thisWeeksAiPicks/${entry.id} canonical -> /tool/tools/${match.id} (${match.reason})`
+      );
+    }
+    toolPages = writeToolPages(entries, toolsIndex);
+    // The duplicate picks URL stays out of the sitemap. The tools URL is
+    // already listed via that row. Unmatched picks stay in the sitemap.
+    const sitemapEntries = entries.filter(
+      e => !isDuplicatePickPage(e, toolsIndex)
+    );
     writeFileSync(
       path.join(OUT, "sitemap.xml"),
-      buildSitemap(entries, posts),
+      buildSitemap(sitemapEntries, posts),
       "utf8"
     );
+    sitemapLabel = String(sitemapEntries.length + posts.length + 3);
   }
 
   // Remove index.html so "/" resolves through the vercel.json UA rewrite
@@ -661,7 +694,7 @@ async function main() {
   console.log(
     `[prerender] app.html ${kb(humanHtml)} KB · seo.html ${kb(botHtml)} KB · ` +
       `${toolPages} tool pages · ${blogPages} blog pages · ` +
-      `sitemap ${entries.length ? entries.length + posts.length + 3 : "(kept static)"} URLs · ` +
+      `sitemap ${sitemapLabel} URLs · ` +
       `privacy/terms static · removed index.html.`
   );
 }
