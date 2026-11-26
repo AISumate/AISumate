@@ -223,7 +223,7 @@ function staticShell(opts: {
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(opts.title)}</title>
 <meta name="description" content="${esc(truncate(opts.metaDesc, 160))}" />
-<link rel="canonical" href="${SITE_URL}${opts.canonicalPath}" />
+<link rel="canonical" href="${SITE_URL}${esc(opts.canonicalPath)}" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 ${opts.head ?? ""}<style>${STATIC_CSS}</style>
 </head>
@@ -235,6 +235,117 @@ ${opts.body}
 </div>
 </body>
 </html>`;
+}
+
+/* ------------------------- canonical de-duplication ------------------------ */
+
+/**
+ * The same product is often listed in more than one table — a music tool sits
+ * in both "AI Tools" and "Music & Voice", and the weekly picks / viral strips
+ * re-list rows that already live elsewhere. Every copy used to get a static
+ * page canonicalising to itself and its own sitemap entry, so crawlers saw
+ * ~180 duplicate URLs and had to pick a winner themselves (Search Console
+ * reports these as "duplicate without user-selected canonical"). Now one copy
+ * is the canonical; the others point at it and stay out of the sitemap.
+ */
+
+/** Rotating/promo surfaces: still real pages, but never the canonical copy. */
+const DEMOTED_TABLES = new Set([
+  "thisWeeksAiPicks",
+  "weeklyViralGithub",
+  "sumateTopRecommendations",
+  "ltds",
+]);
+
+/** Tie-break order when a listing sits in several evergreen tables. */
+const CANONICAL_RANK = [
+  "tools", "llms", "github", "videoImage", "musicVoice", "chatbots",
+  "freeApis", "freeLlmIde", "vibeCoding", "designerTools", "aiInfra",
+  "hardware", "testingTools", "aiSecurity", "businessProductivity",
+  "mcpProviders", "vpsCloud", "auSeoTools", "aiMedia", "aiInfluencers",
+  "aiSites", "aiDiscord",
+];
+
+/**
+ * Identity of a listing: its outbound URL (host + path, normalised), because
+ * two rows for the same product point at the same site. Falls back to the
+ * name. Empty means "cannot be matched" — such a row is always its own
+ * canonical, which is the safe direction to fail in.
+ */
+function identityKey(e: Entry): string {
+  const raw = safeUrl(e.url);
+  if (raw) {
+    try {
+      const u = new URL(raw);
+      const host = u.hostname.replace(/^www\./, "").toLowerCase();
+      return `u:${host}${u.pathname.replace(/\/+$/, "").toLowerCase()}`;
+    } catch {
+      /* unparseable — fall through to the name */
+    }
+  }
+  const n = e.name.trim().toLowerCase();
+  return n ? `n:${n}` : "";
+}
+
+/**
+ * A path segment reduced to characters that cannot escape a directory or
+ * break out of an HTML attribute — the same reasoning as blogSlug(). Table
+ * keys come from our own registry and Teable record ids are already
+ * [A-Za-z0-9]+, so in practice this changes nothing; it is here because the
+ * value lands in both `writeFileSync` and a `href`, and a single bad record
+ * should not be able to write outside dist/public.
+ */
+function safeSegment(s: string): string {
+  return String(s ?? "").replace(/[^A-Za-z0-9_-]/g, "");
+}
+
+function toolPath(e: Entry): string {
+  return `/tool/${safeSegment(e.tableKey)}/${safeSegment(e.id)}`;
+}
+
+/**
+ * Which copy wins. Structural signals first — a demoted surface never wins,
+ * then a fixed table order, then the record id — so a canonical does not flip
+ * between builds when someone edits a description. "Has a review" is the one
+ * content signal, kept as a coarse boolean for the same reason.
+ */
+function betterCanonical(a: Entry, b: Entry): number {
+  const demoted = (e: Entry) => (DEMOTED_TABLES.has(e.tableKey) ? 1 : 0);
+  if (demoted(a) !== demoted(b)) return demoted(a) - demoted(b);
+  const unreviewed = (e: Entry) =>
+    cleanVerdict(e.verdict) || splitReviewItems(e.pros).length ? 0 : 1;
+  if (unreviewed(a) !== unreviewed(b)) return unreviewed(a) - unreviewed(b);
+  const rank = (e: Entry) => {
+    const i = CANONICAL_RANK.indexOf(e.tableKey);
+    return i === -1 ? CANONICAL_RANK.length : i;
+  };
+  if (rank(a) !== rank(b)) return rank(a) - rank(b);
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/**
+ * "<table>/<id>" -> the canonical path that copy must point at. Only the
+ * losing copies appear; a listing with no duplicate is absent and keeps its
+ * own path.
+ */
+function canonicalMap(entries: Entry[]): Map<string, string> {
+  const groups = new Map<string, Entry[]>();
+  for (const e of entries) {
+    const key = identityKey(e);
+    if (!key) continue;
+    const g = groups.get(key);
+    if (g) g.push(e);
+    else groups.set(key, [e]);
+  }
+  const out = new Map<string, string>();
+  for (const group of groups.values()) {
+    if (group.length < 2) continue;
+    const winner = [...group].sort(betterCanonical)[0];
+    for (const e of group) {
+      if (e !== winner) out.set(`${e.tableKey}/${e.id}`, toolPath(winner));
+    }
+  }
+  return out;
 }
 
 /* ------------------------------- tool pages -------------------------------- */
@@ -283,7 +394,7 @@ function toolImage(e: Entry): { shot: string; ogImage: string } {
   return { shot, ogImage: shot || safeImgUrl(e.iconUrl) };
 }
 
-function toolPageHtml(e: Entry): string {
+function toolPageHtml(e: Entry, canonicalOverride?: string): string {
   const href = safeUrl(e.url);
   const stars = e.rating > 0 ? `★ ${e.rating}/5 · ` : "";
   const { shot, ogImage } = toolImage(e);
@@ -291,7 +402,9 @@ function toolPageHtml(e: Entry): string {
   const metaDesc =
     cleanReviewText(e.desc) ||
     `${e.name} on aisumate, the human-curated AI tools directory.`;
-  const canonicalPath = `/tool/${e.tableKey}/${e.id}`;
+  // A duplicate listing points at the copy that owns the content; og:url
+  // follows the canonical so shares consolidate on the same URL too.
+  const canonicalPath = canonicalOverride ?? toolPath(e);
 
   // Per-listing share card, so a pasted link previews as the tool rather than
   // as the site. esc() does not escape "'", so every value sits in "quotes".
@@ -337,12 +450,24 @@ function toolPageHtml(e: Entry): string {
   return staticShell({ title, metaDesc, canonicalPath, body, head });
 }
 
-function writeToolPages(entries: Entry[]): number {
+function writeToolPages(
+  entries: Entry[],
+  canonicals: Map<string, string>
+): number {
   let written = 0;
   for (const e of entries) {
-    const dir = path.join(OUT, "tools-static", e.tableKey);
+    // Must use the same segments as toolPath(), or the canonical and the
+    // sitemap would point at a filename that was never written.
+    const table = safeSegment(e.tableKey);
+    const id = safeSegment(e.id);
+    if (!table || !id) continue;
+    const dir = path.join(OUT, "tools-static", table);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(path.join(dir, `${e.id}.html`), toolPageHtml(e), "utf8");
+    writeFileSync(
+      path.join(dir, `${id}.html`),
+      toolPageHtml(e, canonicals.get(`${e.tableKey}/${e.id}`)),
+      "utf8"
+    );
     written++;
   }
   return written;
@@ -562,14 +687,23 @@ function buildJsonLd(count: number): string {
 
 /* --------------------------------- sitemap --------------------------------- */
 
-function buildSitemap(entries: Entry[], posts: BlogEntry[]): string {
+function buildSitemap(
+  entries: Entry[],
+  posts: BlogEntry[],
+  canonicals: Map<string, string>
+): string {
   const today = new Date().toISOString().slice(0, 10);
   const urls: string[] = [
     `${SITE_URL}/`,
     `${SITE_URL}/privacy`,
     `${SITE_URL}/terms`,
     ...posts.map(p => `${SITE_URL}/blog/${p.slug}`),
-    ...entries.map(e => `${SITE_URL}/tool/${e.tableKey}/${e.id}`),
+    // Only canonical URLs belong in a sitemap — listing a page that
+    // canonicalises elsewhere asks the crawler to index a URL we have just
+    // told it to ignore.
+    ...entries
+      .filter(e => !canonicals.has(`${e.tableKey}/${e.id}`))
+      .map(e => `${SITE_URL}${toolPath(e)}`),
   ];
   return (
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
@@ -645,11 +779,12 @@ async function main() {
   const posts = await collectBlog();
   const blogPages = writeBlogPages(posts);
   let toolPages = 0;
+  const canonicals = canonicalMap(entries);
   if (entries.length) {
-    toolPages = writeToolPages(entries);
+    toolPages = writeToolPages(entries, canonicals);
     writeFileSync(
       path.join(OUT, "sitemap.xml"),
-      buildSitemap(entries, posts),
+      buildSitemap(entries, posts, canonicals),
       "utf8"
     );
   }
@@ -660,8 +795,9 @@ async function main() {
 
   console.log(
     `[prerender] app.html ${kb(humanHtml)} KB · seo.html ${kb(botHtml)} KB · ` +
-      `${toolPages} tool pages · ${blogPages} blog pages · ` +
-      `sitemap ${entries.length ? entries.length + posts.length + 3 : "(kept static)"} URLs · ` +
+      `${toolPages} tool pages (${canonicals.size} canonicalised to a duplicate) · ` +
+      `${blogPages} blog pages · ` +
+      `sitemap ${entries.length ? entries.length - canonicals.size + posts.length + 3 : "(kept static)"} URLs · ` +
       `privacy/terms static · removed index.html.`
   );
 }
