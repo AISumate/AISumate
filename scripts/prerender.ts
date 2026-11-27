@@ -38,6 +38,7 @@ import {
   fetchWeeklyViralGithubRepos,
 } from "../server/teable";
 import { PRIVACY, TERMS, type LegalDoc } from "../shared/legalContent";
+import { metaDescription } from "../shared/metaDescription";
 import { isLandingTable } from "../shared/simpleTables";
 import {
   cleanReviewText,
@@ -93,13 +94,6 @@ function esc(s: string): string {
 function safeUrl(u: string): string {
   const t = String(u ?? "").trim();
   return /^https?:\/\//i.test(t) ? t : "";
-}
-
-function truncate(s: string, n = 200): string {
-  const t = String(s ?? "")
-    .replace(/\s+/g, " ")
-    .trim();
-  return t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -222,7 +216,7 @@ function staticShell(opts: {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(opts.title)}</title>
-<meta name="description" content="${esc(truncate(opts.metaDesc, 160))}" />
+<meta name="description" content="${esc(metaDescription(opts.metaDesc))}" />
 <link rel="canonical" href="${SITE_URL}${esc(opts.canonicalPath)}" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 ${opts.head ?? ""}<style>${STATIC_CSS}</style>
@@ -412,12 +406,12 @@ function toolPageHtml(e: Entry, canonicalOverride?: string): string {
     `<meta property="og:type" content="website" />` +
     `<meta property="og:site_name" content="aisumate" />` +
     `<meta property="og:title" content="${esc(title)}" />` +
-    `<meta property="og:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    `<meta property="og:description" content="${esc(metaDescription(metaDesc))}" />` +
     `<meta property="og:url" content="${SITE_URL}${esc(canonicalPath)}" />` +
     (ogImage ? `<meta property="og:image" content="${esc(ogImage)}" />` : "") +
     `<meta name="twitter:card" content="${shot ? "summary_large_image" : "summary"}" />` +
     `<meta name="twitter:title" content="${esc(title)}" />` +
-    `<meta name="twitter:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    `<meta name="twitter:description" content="${esc(metaDescription(metaDesc))}" />` +
     (ogImage ? `<meta name="twitter:image" content="${esc(ogImage)}" />` : "") +
     "\n";
 
@@ -522,7 +516,7 @@ function blogPageHtml(e: BlogEntry): string {
     `<meta property="og:type" content="article" />` +
     `<meta property="og:site_name" content="aisumate" />` +
     `<meta property="og:title" content="${esc(title)}" />` +
-    `<meta property="og:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    `<meta property="og:description" content="${esc(metaDescription(metaDesc))}" />` +
     `<meta property="og:url" content="${SITE_URL}${esc(canonicalPath)}" />` +
     (ogImage ? `<meta property="og:image" content="${esc(ogImage)}" />` : "") +
     (e.publishedDate
@@ -530,7 +524,7 @@ function blogPageHtml(e: BlogEntry): string {
       : "") +
     `<meta name="twitter:card" content="summary_large_image" />` +
     `<meta name="twitter:title" content="${esc(title)}" />` +
-    `<meta name="twitter:description" content="${esc(truncate(metaDesc, 160))}" />` +
+    `<meta name="twitter:description" content="${esc(metaDescription(metaDesc))}" />` +
     "\n";
 
   // Markdown in, plain paragraphs out — same reasoning as reviewHtml().
@@ -631,7 +625,7 @@ function buildCatalogHtml(entries: Entry[], roundedTotal: string): string {
         .get(cat)!
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(e => {
-          const desc = e.desc ? ` — ${esc(truncate(e.desc, 110))}` : "";
+          const desc = e.desc ? ` — ${esc(metaDescription(e.desc, 110))}` : "";
           return `<li><a href="/tool/${esc(e.tableKey)}/${esc(e.id)}"><strong>${esc(e.name)}</strong></a>${desc}</li>`;
         })
         .join("");
